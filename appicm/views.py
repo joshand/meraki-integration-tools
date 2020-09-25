@@ -221,7 +221,7 @@ def config_conn(request):
 
     if request.GET.get("action") == "delorg":
         mer_id = request.GET.get("id")
-        Controller.objects.filter(id=mer_id).delete()
+        Controller.objects.filter(tenant_id=tenant_id).filter(id=mer_id).delete()
 
     dashboards = Controller.objects.filter(tenant_id=tenant_id).filter(devicetype=pm[0].devicetype)
 
