@@ -350,7 +350,11 @@ def config_package(request):
 
     if request.GET.get("action") == "delzip":
         intid = request.GET.get("id")
-        UploadZip.objects.filter(id=intid).delete()
+        if request.user.is_superuser:
+            UploadZip.objects.filter(Q(tenant_id=tenant_id) | Q(tenant_id=get_default_tenant())).\
+                filter(id=intid).delete()
+        else:
+            UploadZip.objects.filter(tenant_id=tenant_id).filter(id=intid).delete()
 
     uploadzip = UploadZip.objects.filter(tenant_id=tenant_id)
     uplzip_global = UploadZip.objects.filter(tenant_id=get_default_tenant())
