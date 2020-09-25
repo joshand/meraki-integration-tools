@@ -15,6 +15,7 @@ import string
 import random
 import time
 from django.core import management
+import scripts.tasks
 
 
 class BearerAuthentication(authentication.TokenAuthentication):
@@ -157,6 +158,7 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
         #     i = Upload.objects.create(description=instance.description + "-" + fn, file=fn)
         #     i.save()
 
+    scripts.tasks.run()
     post_save.connect(post_save_uploadzip, sender=UploadZip)
 
 
