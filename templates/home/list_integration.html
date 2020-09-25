@@ -19,7 +19,7 @@
                 {% for d in integrations %}
                     <tr>
                         <td>
-                            {{ d.integrationmodule.name }}
+                            {{ d.integrationmodule.description }}
                         </td>
                         <td>
                             {% for p in d.pm1.all %}
@@ -59,7 +59,7 @@
                 {% for d in avail %}
                     <tr>
                         <td>
-                            {{ d.name }}
+                            {{ d.description }}
                         </td>
                         <td>
                             {{ d.pm1.description }}
