@@ -45,37 +45,74 @@ def run():
     except Exception:
         # scheduler may already be running
         pass
-
     cron.remove_all_jobs()
-    pms = PluginModule.objects.all()
-    for pm in pms:
-        pmn = get_script(pm)
-        if not pmn:
-            continue
-        jobname = pmn + ".do_sync"
-        try:
-            globals()[pmn] = __import__(pmn)
-        except Exception:
-            print("Exception loading module", pm)
-            continue
-        job = eval(jobname)
-        # print(pmn, job, pm.sync_interval)
-        cron.add_job(job, 'interval', seconds=pm.sync_interval)
 
-    ims = IntegrationModule.objects.all()
-    for im in ims:
-        pmn = get_script(im)
-        if not pmn:
-            continue
-        jobname = pmn + ".do_sync"
-        try:
-            globals()[pmn] = __import__(pmn)
-        except Exception:
-            print("Exception loading module", im)
-            continue
-        job = eval(jobname)
-        # print(pmn, job, pm.sync_interval)
-        cron.add_job(job, 'interval', seconds=im.sync_interval)
+    tenant_list = []
+    tenants = Tenant.objects.exclude(id=get_default_tenant())
+    for tenant in tenants:
+        tenant_list.append(str(tenant.id))
+    tenant_map = {}
+
+    for x in range(0, 4):
+        pms = []
+        mode = "check"
+        if x == 0:
+            # Run plugin modules for any tenant that has them installed; each job will be unique to a single tenant
+            pms = PluginModule.objects.exclude(id=get_default_tenant())
+            mode = "add"
+        elif x == 1:
+            # Run integration modules for any tenant that has them installed; each job will be unique to a single tenant
+            pms = IntegrationModule.objects.exclude(id=get_default_tenant())
+            mode = "add"
+        elif x == 2:
+            # Run global plugin modules for remaining tenants
+            pms = PluginModule.objects.filter(id=get_default_tenant())
+            mode = "check"
+        elif x == 3:
+            # Run global integration modules for remaining tenants
+            pms = IntegrationModule.objects.filter(id=get_default_tenant())
+            mode = "check"
+
+        for pm in pms:
+            if mode == "add":
+                if pm.name in tenant_map:
+                    tenant_map[pm.name].remove(str(pm.tenant.id))
+                else:
+                    tenant_map[pm.name] = tenant_list
+                    if str(pm.tenant.id) in tenant_map[pm.name]:
+                        tenant_map[pm.name].remove(str(pm.tenant.id))
+            else:
+                if str(pm.tenant.id) not in tenant_map[pm.name]:
+                    # if it's been removed from the map, it's already had a module ran
+                    continue
+
+            pmn = get_script(pm)
+            if not pmn:
+                continue
+            jobname = pmn + ".do_sync"
+            try:
+                globals()[pmn] = __import__(pmn)
+            except Exception:
+                print("Exception loading module", pm)
+                continue
+            job = eval(jobname)
+            # print(pmn, job, pm.sync_interval)
+            cron.add_job(job, 'interval', kwargs={"tenant_list": [str(pm.tenant.id)]}, seconds=pm.sync_interval)
+
+    # ims = IntegrationModule.objects.all()
+    # for im in ims:
+    #     pmn = get_script(im)
+    #     if not pmn:
+    #         continue
+    #     jobname = pmn + ".do_sync"
+    #     try:
+    #         globals()[pmn] = __import__(pmn)
+    #     except Exception:
+    #         print("Exception loading module", im)
+    #         continue
+    #     job = eval(jobname)
+    #     # print(pmn, job, pm.sync_interval)
+    #     cron.add_job(job, 'interval', seconds=im.sync_interval)
 
     # job1 = cron.add_job(scripts.dashboard.do_sync, 'interval', seconds=60)
     # job2 = cron.add_job(scripts.network_monitor.run, 'interval', seconds=30)
