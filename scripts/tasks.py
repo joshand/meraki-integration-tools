@@ -31,7 +31,7 @@ import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 # import scripts.dashboard
 import scripts
-from appicm.models import Tenant, get_default_tenant, PluginModule, IntegrationModule
+from appicm.models import *
 from scripts.common import get_script
 
 

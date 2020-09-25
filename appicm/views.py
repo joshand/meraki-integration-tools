@@ -17,6 +17,7 @@ from datetime import timedelta
 from django.utils import timezone
 from .forms import UploadForm
 from scripts.common import get_script
+from scripts.tasks import run as task_refresh
 
 
 @xframe_options_exempt
@@ -396,6 +397,7 @@ def upload_package(request):
             for upl in uplfiles:
                 upl.tenant_id = ten_id
                 upl.save()
+            task_refresh()
             return redirect(reverse("config_package"))
 
     form = UploadForm()
