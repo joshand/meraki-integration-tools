@@ -29,6 +29,15 @@ class BearerAuthentication(authentication.TokenAuthentication):
     keyword = 'Bearer'
 
 
+def set_operation_dirty():
+    operations = Operation.objects.all()
+    if len(operations) == 0:
+        op = Operation.objects.create(reload_tasks=True)
+    else:
+        operations[0].reload_tasks = True
+        operations[0].save()
+
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_user_stuff(sender, instance=None, created=False, **kwargs):
     if created:
@@ -157,12 +166,7 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
         #     i = Upload.objects.create(description=instance.description + "-" + fn, file=fn)
         #     i.save()
 
-    operations = Operation.objects.all()
-    if len(operations) == 0:
-        op = Operation.objects.create(reload_tasks=True)
-    else:
-        operations[0].reload_tasks = True
-        operations[0].save()
+    set_operation_dirty()
 
     post_save.connect(post_save_uploadzip, sender=UploadZip)
 
@@ -176,6 +180,7 @@ def auto_delete_uploadzip_on_delete(sender, instance, **kwargs):
     if instance.file:
         if os.path.isfile(instance.file.path):
             os.remove(instance.file.path)
+    set_operation_dirty()
 
 
 @receiver(models.signals.pre_save, sender=UploadZip)
