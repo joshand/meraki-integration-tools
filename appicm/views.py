@@ -142,9 +142,12 @@ def exec_func(request):
     if len(pm) == 1:
         post_data = json.loads(request.body)
         cont_id = post_data["id"]
-        cont = Controller.objects.filter(tenant_id=tenant_id).filter(id=cont_id)
-        if len(cont) != 1:
-            return JsonResponse({"error": "Unable to load Device data."})
+        if cont_id == "blank":
+            cont = None
+        else:
+            cont = Controller.objects.filter(tenant_id=tenant_id).filter(id=cont_id)
+            if len(cont) != 1:
+                return JsonResponse({"error": "Unable to load Device data."})
         pmn = get_script(pm[0])
         if not pmn:
             return JsonResponse({"error": "Unable to load Plugin Module."})
@@ -197,6 +200,8 @@ def config_conn(request):
             authdata[pm[0].devicetype.authtype.name][fld["name"]] = pval
 
         int_id = request.POST.get("objId")
+        if int_id == "blank":
+            int_id = ""
         int_desc = request.POST.get("objDesc")
         if int_id is None or int_id == "":
             cont = Controller.objects.create(name=int_desc, devicetype=pm[0].devicetype, authparm=authdata, tenant_id=tenant_id)
