@@ -1,32 +1,32 @@
-from rest_framework.serializers import ModelSerializer
-from appicm.models import Tenant, Controller, Device, DeviceModelType, DeviceType, AuthType, L1InterfaceType, L1Interface, L1Domain, L2InterfaceType, L2Interface, L2DomainType, L2Domain, L3InterfaceType, L3Domain, L3Interface
+from rest_framework import serializers
+from appicm.models import *
 
 
-class ShowTenantSerializer(ModelSerializer):
+class ShowTenantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tenant
         fields = ('id', 'url', 'name')
 
 
-class ShowDeviceSerializer(ModelSerializer):
+class ShowDeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
         fields = ('id', 'url', 'name', 'devicetype')
 
 
-class ShowDeviceModelTypeSerializer(ModelSerializer):
+class ShowDeviceModelTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
         fields = ('id', 'url', 'name')
 
 
-class ShowAuthTypeSerializer(ModelSerializer):
+class ShowAuthTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuthType
         fields = ('id', 'url', 'name')
 
 
-class ShowDeviceTypeSerializer(ModelSerializer):
+class ShowDeviceTypeSerializer(serializers.ModelSerializer):
     authtype = ShowAuthTypeSerializer(many=False)
 
     class Meta:
@@ -34,19 +34,19 @@ class ShowDeviceTypeSerializer(ModelSerializer):
         fields = ('id', 'url', 'name', 'defaultmgmtaddress', 'py_mod_name', 'authtype')
 
 
-class ShowControllerSerializer(ModelSerializer):
+class ShowControllerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Controller
         fields = ('id', 'url', 'name')
 
 
-class ShowL1InterfaceTypeSerializer(ModelSerializer):
+class ShowL1InterfaceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = L1InterfaceType
         fields = ('id', 'url', 'name')
 
 
-class ShowL1InterfaceSerializer(ModelSerializer):
+class ShowL1InterfaceSerializer(serializers.ModelSerializer):
     device = ShowDeviceSerializer(many=False)
 
     class Meta:
@@ -54,46 +54,46 @@ class ShowL1InterfaceSerializer(ModelSerializer):
         fields = ('id', 'url', 'name', 'device')
 
 
-class ShowL2InterfaceTypeSerializer(ModelSerializer):
+class ShowL2InterfaceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = L2InterfaceType
         fields = ('id', 'url', 'name')
 
 
-class ShowL2InterfaceSerializer(ModelSerializer):
+class ShowL2InterfaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = L2Interface
         fields = ('id', 'url', 'number', 'name')
 
 
-class ShowL2DomainTypeSerializer(ModelSerializer):
+class ShowL2DomainTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = L2DomainType
         fields = ('id', 'url', 'name')
 
 
-class ShowL3InterfaceTypeSerializer(ModelSerializer):
+class ShowL3InterfaceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = L3InterfaceType
         fields = ('id', 'url', 'name')
 
 
-class ShowL3DomainSerializer(ModelSerializer):
+class ShowL3DomainSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = L3Domain
         fields = ('id', 'url', 'name')
 
 
-class TenantSerializer(ModelSerializer):
+class TenantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tenant
         fields = ('id', 'url', 'name')
 
 
-class AuthTypeSerializer(ModelSerializer):
+class AuthTypeSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
 
     class Meta:
@@ -118,13 +118,13 @@ class AuthTypeSerializer(ModelSerializer):
         return instance
 
 
-class DeviceModelTypeSerializerFlat(ModelSerializer):
+class DeviceModelTypeSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = DeviceModelType
         fields = ('id', 'name', 'tenant')
 
 
-class DeviceModelTypeSerializer(ModelSerializer):
+class DeviceModelTypeSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
 
     class Meta:
@@ -148,13 +148,13 @@ class DeviceModelTypeSerializer(ModelSerializer):
         return instance
 
 
-class DeviceTypeSerializerFlat(ModelSerializer):
+class DeviceTypeSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = DeviceType
         fields = ('id', 'name', 'py_mod_name', 'defaultmgmtaddress', 'tenant', 'authtype')
 
 
-class DeviceTypeSerializer(ModelSerializer):
+class DeviceTypeSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
     authtype = ShowAuthTypeSerializer(many=False)
 
@@ -188,13 +188,13 @@ class DeviceTypeSerializer(ModelSerializer):
         return instance
 
 
-class ControllerSerializerFlat(ModelSerializer):
+class ControllerSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = Controller
         fields = ('id', 'name', 'authparm', 'mgmtaddress', 'tenant', 'devicetype')
 
 
-class ControllerSerializer(ModelSerializer):
+class ControllerSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
     devicetype = ShowDeviceTypeSerializer(many=False)
 
@@ -228,13 +228,13 @@ class ControllerSerializer(ModelSerializer):
         return instance
 
 
-class DeviceSerializerFlat(ModelSerializer):
+class DeviceSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = Device
         fields = ('id', 'name', 'serial_number', 'authparm', 'mgmtaddress', 'tenant', 'devicetype', 'controller', 'devicemodeltype')
 
 
-class DeviceSerializer(ModelSerializer):
+class DeviceSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
     devicetype = ShowDeviceTypeSerializer(many=False)
     controller = ShowControllerSerializer(many=False)
@@ -286,13 +286,13 @@ class DeviceSerializer(ModelSerializer):
         return instance
 
 
-class L1InterfaceTypeSerializerFlat(ModelSerializer):
+class L1InterfaceTypeSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = L1InterfaceType
         fields = ('id', 'name', 'description', 'tenant')
 
 
-class L1InterfaceTypeSerializer(ModelSerializer):
+class L1InterfaceTypeSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
 
     class Meta:
@@ -317,13 +317,13 @@ class L1InterfaceTypeSerializer(ModelSerializer):
         return instance
 
 
-class L1InterfaceSerializerFlat(ModelSerializer):
+class L1InterfaceSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = L1Interface
         fields = ('id', 'name', 'tenant', 'l1interfacetype', 'device')
 
 
-class L1InterfaceSerializer(ModelSerializer):
+class L1InterfaceSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
     l1interfacetype = ShowL1InterfaceTypeSerializer(many=False)
     device = ShowDeviceSerializer(many=False)
@@ -366,13 +366,13 @@ class L1InterfaceSerializer(ModelSerializer):
         return instance
 
 
-class L1DomainSerializerFlat(ModelSerializer):
+class L1DomainSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = L1Domain
         fields = ('id', 'tenant', 'l1interfacea', 'l1interfaceb')
 
 
-class L1DomainSerializer(ModelSerializer):
+class L1DomainSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
     l1interfacea = ShowL1InterfaceSerializer(many=False)
     l1interfaceb = ShowL1InterfaceSerializer(many=False)
@@ -442,13 +442,13 @@ class L1DomainSerializer(ModelSerializer):
         return instance
 
 
-class L2InterfaceTypeSerializerFlat(ModelSerializer):
+class L2InterfaceTypeSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = L2InterfaceType
         fields = ('id', 'name', 'tenant')
 
 
-class L2InterfaceTypeSerializer(ModelSerializer):
+class L2InterfaceTypeSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
 
     class Meta:
@@ -473,13 +473,13 @@ class L2InterfaceTypeSerializer(ModelSerializer):
         return instance
 
 
-class L2InterfaceSerializerFlat(ModelSerializer):
+class L2InterfaceSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = L2Interface
         fields = ('id', 'number', 'name', 'tenant', 'l2interfacetype')
 
 
-class L2InterfaceSerializer(ModelSerializer):
+class L2InterfaceSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
     l2interfacetype = ShowL2InterfaceTypeSerializer(many=False)
     # device = ShowDeviceSerializer(many=False)
@@ -522,13 +522,13 @@ class L2InterfaceSerializer(ModelSerializer):
         return instance
 
 
-class L2DomainTypeSerializerFlat(ModelSerializer):
+class L2DomainTypeSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = L2DomainType
         fields = ('id', 'name', 'tenant')
 
 
-class L2DomainTypeSerializer(ModelSerializer):
+class L2DomainTypeSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
 
     class Meta:
@@ -553,13 +553,13 @@ class L2DomainTypeSerializer(ModelSerializer):
         return instance
 
 
-class L2DomainSerializerFlat(ModelSerializer):
+class L2DomainSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = L2Domain
         fields = ('id', 'allowedrange', 'tenant', 'l2domaintype', 'l2interface', 'l1interface')
 
 
-class L2DomainSerializer(ModelSerializer):
+class L2DomainSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
     l2domaintype = ShowL2DomainTypeSerializer(many=False)
     l2interface = ShowL2InterfaceSerializer(many=False)
@@ -626,13 +626,13 @@ class L2DomainSerializer(ModelSerializer):
         return instance
 
 
-class L3InterfaceTypeSerializerFlat(ModelSerializer):
+class L3InterfaceTypeSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = L3InterfaceType
         fields = ('id', 'name', 'tenant')
 
 
-class L3InterfaceTypeSerializer(ModelSerializer):
+class L3InterfaceTypeSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
 
     class Meta:
@@ -657,13 +657,13 @@ class L3InterfaceTypeSerializer(ModelSerializer):
         return instance
 
 
-class L3DomainSerializerFlat(ModelSerializer):
+class L3DomainSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = L3Domain
         fields = ('id', 'name', 'tenant', 'device')
 
 
-class L3DomainSerializer(ModelSerializer):
+class L3DomainSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
     device = ShowDeviceSerializer(many=True, required=False)
 
@@ -699,13 +699,13 @@ class L3DomainSerializer(ModelSerializer):
         return instance
 
 
-class L3InterfaceSerializerFlat(ModelSerializer):
+class L3InterfaceSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = L3Interface
         fields = ('id', 'ipaddress', 'mask', 'tenant', 'device', 'l3interfacetype', 'l2interface', 'l3domain')
 
 
-class L3InterfaceSerializer(ModelSerializer):
+class L3InterfaceSerializer(serializers.ModelSerializer):
     tenant = ShowTenantSerializer(many=False)
     device = ShowDeviceSerializer(many=False)
     l3interfacetype = ShowL3InterfaceTypeSerializer(many=False)
@@ -767,3 +767,15 @@ class L3InterfaceSerializer(ModelSerializer):
             break
         instance.save()
         return instance
+
+
+class UploadZipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadZip
+        fields = ('id', 'url', 'description', 'file', 'tenant', 'uploaded_at')
+
+
+class UploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Upload
+        fields = ('id', 'url', 'description', 'file', 'filename', 'tenant', 'uploaded_at')

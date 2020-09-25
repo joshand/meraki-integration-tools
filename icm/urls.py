@@ -18,6 +18,8 @@ from django.urls import include, path
 from django.conf.urls import url
 from rest_framework import routers
 from appicm import views
+from rest_framework.schemas import get_schema_view
+from rest_framework.renderers import JSONOpenAPIRenderer
 
 router = routers.DefaultRouter()
 router.register(r'tenants', views.TenantViewSet)
@@ -36,6 +38,10 @@ router.register(r'l2domain', views.L2DomainViewSet)
 router.register(r'l3interfacetype', views.L3InterfaceTypeViewSet)
 router.register(r'l3interface', views.L3InterfaceViewSet)
 router.register(r'l3domain', views.L3DomainViewSet)
+router.register(r'uploadzip', views.UploadZipViewSet)
+router.register(r'upload', views.UploadViewSet)
+
+schema_view = get_schema_view(title="Adaptive Policy Sync API", renderer_classes=[JSONOpenAPIRenderer])
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='root'),
@@ -45,7 +51,7 @@ urlpatterns = [
     url(r'^tenant/$', views.tenant, name='tenant'),
     path('logout/', views.MyLogoutView.as_view(), name='logout'),
     url(r'^signup/$', views.signup, name='signup'),
-    path('', include(router.urls)),
+    path(r'api/v0/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^home/config-conn', views.config_conn, name='config_conn'),
     url(r'^exec', views.exec_func, name='exec_func'),

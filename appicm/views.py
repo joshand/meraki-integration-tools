@@ -376,6 +376,7 @@ def upload_package(request):
         ten_id = request.POST.get("tenant")
         if not ten_id:
             ten_id = tenant_id
+
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
             obj = form.save(commit=False)
@@ -1251,3 +1252,31 @@ class DeviceTypeAPIListView(APIView):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+
+
+class UploadZipViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Uploaded ZIP files to be viewed, edited or deleted.
+
+    retrieve:
+    Return an Uploaded ZIP File instance.
+
+    list:
+    Return all Uploaded ZIP files.
+    """
+    queryset = UploadZip.objects.all().order_by('description')
+    serializer_class = UploadZipSerializer
+
+
+class UploadViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Uploaded files to be viewed, edited or deleted.
+
+    retrieve:
+    Return an Uploaded File instance.
+
+    list:
+    Return all Uploaded files.
+    """
+    queryset = Upload.objects.all().order_by('description')
+    serializer_class = UploadSerializer
