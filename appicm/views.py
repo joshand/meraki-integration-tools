@@ -33,6 +33,10 @@ def status_task_result(request):
         return JsonResponse({"data": "Error loading results."})
 
 
+def get_default_tenant():
+    return "00000000-0000-0000-0000-000000000000"
+
+
 def tenant(request):
     if not request.user.is_authenticated:
         return redirect('/')
@@ -349,12 +353,12 @@ def config_package(request):
         UploadZip.objects.filter(id=intid).delete()
 
     uploadzip = UploadZip.objects.filter(tenant_id=tenant_id)
-    upload = Upload.objects.filter(tenant_id=tenant_id)
+    uplzip_global = UploadZip.objects.filter(tenant_id=get_default_tenant())
 
     crumbs = '<li class="current">Configuration</li><li class="current">Packages</li>'
     return render(request, 'home/packages.html', {"crumbs": crumbs, "tenants": tenants, "current_tname": tenant,
                                                   "tenant_desc": tdesc, "connections": get_connections(tenant_id),
-                                                  "data": {"zip": uploadzip, "file": upload}})
+                                                  "data": {"zip": uploadzip, "global_zip": uplzip_global}})
 
 
 def upload_package(request):
