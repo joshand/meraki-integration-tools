@@ -59,10 +59,13 @@ class Tenant(models.Model):
         return self.name
 
 
-def get_default_tenant():
+def get_default_tenant(obj=False):
     deften = Tenant.objects.filter(name="Default")
     if len(deften) == 1:
-        return deften[0].id
+        if obj:
+            return deften[0]
+        else:
+            return deften[0].id
     else:
         deften = Tenant.objects.create(name="Default")
         return deften
@@ -118,6 +121,8 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
     pkg_json = json.loads(pkg.decode("utf-8"))
     instance.description = str(pkg_json.get("name", str(instance.file.name)))
     instance.pkg_ver = float(pkg_json.get("version", 0.0))
+    if not instance.tenant:
+        instance.tenant = get_default_tenant(obj=True)
     instance.save()
     for p in pkg_json.get("files", []):
         p_target = p.get("target", "")
