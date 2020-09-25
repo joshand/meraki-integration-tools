@@ -17,7 +17,6 @@ from datetime import datetime, timedelta
 from .forms import UploadForm
 from scripts.common import get_script
 import scripts.tasks
-from scripts.common import get_default_tenant
 
 
 @xframe_options_exempt
@@ -32,6 +31,15 @@ def status_task_result(request):
         return JsonResponse({"data": trs[0].result.replace("\n", "<br>")})
     else:
         return JsonResponse({"data": "Error loading results."})
+
+
+def get_default_tenant():
+    deften = Tenant.objects.filter(name="Default")
+    if len(deften) == 1:
+        return deften[0].id
+    else:
+        deften = Tenant.objects.create(name="Default")
+        return deften
 
 
 def tenant(request):
