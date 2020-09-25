@@ -141,7 +141,8 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
         else:
             open(fn, 'wb').write(unzipped.read(p_file))
 
-        i = Upload.objects.create(description=p_file, type=p_target, file=fn, uploadzip=instance)
+        i = Upload.objects.create(description=p_file, type=p_target, file=fn, uploadzip=instance,
+                                  tenant=instance.tenant)
         i.save()
 
         if p_target == "database":
