@@ -15,6 +15,7 @@ import string
 import random
 import time
 from django.core import management
+from scripts.common import get_default_tenant
 
 
 class BearerAuthentication(authentication.TokenAuthentication):
@@ -27,15 +28,6 @@ class BearerAuthentication(authentication.TokenAuthentication):
         Authorization: Bearer 1234567890abcdefghijklmnopqrstuvwxyz1234
     """
     keyword = 'Bearer'
-
-
-def get_default_tenant():
-    deften = Tenant.objects.filter(name="Default")
-    if len(deften) == 1:
-        return deften[0].id
-    else:
-        deften = Tenant.objects.create(name="Default")
-        return deften
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
