@@ -622,6 +622,7 @@ class IntegrationModule(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
     name = models.CharField(max_length=50, default=None, null=True)
+    description = models.CharField(max_length=50, null=True, default=None)
     notes = models.TextField(null=True, blank=True, default=None)
     pm1 = models.ForeignKey(PluginModule, related_name="pm1", on_delete=models.SET_NULL, null=True)
     pm2 = models.ForeignKey(PluginModule, related_name="pm2", on_delete=models.SET_NULL, null=True)

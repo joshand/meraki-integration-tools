@@ -33,15 +33,6 @@ def status_task_result(request):
         return JsonResponse({"data": "Error loading results."})
 
 
-def get_default_tenant():
-    deften = Tenant.objects.filter(name="Default")
-    if len(deften) == 1:
-        return deften[0].id
-    else:
-        deften = Tenant.objects.create(name="Default")
-        return deften
-
-
 def tenant(request):
     if not request.user.is_authenticated:
         return redirect('/')
@@ -332,7 +323,7 @@ def config_int(request):
         pm1_controllers = Controller.objects.filter(tenant_id=tenant_id).filter(devicetype=intopt.pm1.devicetype)
         pm2_controllers = Controller.objects.filter(tenant_id=tenant_id).filter(devicetype=intopt.pm2.devicetype)
 
-        crumbs = '<li><a href="/home/integrate">Integrate</a></li><li class="current">' + intopt.name + '</li>'
+        crumbs = '<li><a href="/home/integrate">Integrate</a></li><li class="current">' + intopt.description + '</li>'
         return render(request, "home/config_integration.html", {"crumbs": crumbs, "tenants": tenants,
                                                                 "current_tname": tenant, "tenant_desc": tdesc,
                                                                 "connections": get_connections(tenant_id),
