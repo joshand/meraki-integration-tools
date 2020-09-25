@@ -363,14 +363,17 @@ def upload_package(request):
         return redirect('/tenant')
 
     if request.method == 'POST':
+        ten_id = request.POST.get("tenant")
+        if not ten_id:
+            ten_id = tenant_id
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
             obj = form.save(commit=False)
-            obj.tenant_id = tenant_id
+            obj.tenant_id = ten_id
             obj.save()
             uplfiles = obj.upload_set.all()
             for upl in uplfiles:
-                upl.tenant_id = tenant_id
+                upl.tenant_id = ten_id
                 upl.save()
             scripts.tasks.run()
             return redirect(reverse("config_package"))
@@ -379,7 +382,7 @@ def upload_package(request):
     crumbs = '<li class="current">Configuration</li><li><a href="/home/config-package">Packages</a></li><li class="current">Upload</li>'
     return render(request, 'home/upload_package.html', {"crumbs": crumbs, "tenants": tenants, "current_tname": tenant,
                                                         "tenant_desc": tdesc, "connections": get_connections(tenant_id),
-                                                        "form": form})
+                                                        "form": form, "tenant_id": tenant_id})
 
 
 class TenantViewSet(viewsets.ModelViewSet):

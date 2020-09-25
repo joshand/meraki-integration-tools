@@ -1,10 +1,11 @@
 {% extends 'home/base.html' %}
+{% load extras %}
 
 {% block content %}
     <form class="md-panel__form" enctype="multipart/form-data" method="POST" action="/home/upload-package">
         {% csrf_token %}
-        <div class="md-input-group">
-            <div class="md-input__icon-container">
+        <tbody class="md-input-group">
+            <tr class="md-input__icon-container">
 {#                <div class="row" style="align-content:center; display:flex">#}
 {#                    <div class="md-input-container columns medium-6">#}
 {#                        <label class="md-label md-input__label" for="description">#}
@@ -20,16 +21,49 @@
 {#                        </div>#}
 {#                    </div>#}
 {#                </div>#}
-                <div class="row" style="align-content:center; display:flex">
-                    <div class="md-input-container columns medium-6">
-                        <label class="md-label md-input__label" for="file">
-                            <span style="float:left">{{ form.file.label }}</span>
-                        </label>
-                        <div class="md-input__wrapper">
-                            {{ form.file }}
-                        </div>
-                    </div>
-                </div>
+                <table class="testTableClass">
+                    <tbody class="md-data-table__tbody">
+                        {% if request.user.is_superuser %}
+                            <tr>
+                                <td style="width: 8rem;display: inline-block;vertical-align: top;">Tenant</td>
+                                <td style="width: 16rem">
+                                    <div class="md-input-container md-radio">
+                                        <input name="tenant" id="tenant-{{ t.id }}" value="00000000-0000-0000-0000-000000000000" type="radio" class="md-input md-radio__input">
+                                        <label class="md-radio__label" for="tenant-{{ t.id }}">
+                                            <span>Global</span>
+                                        </label>
+                                    </div>
+
+                                    {% for t in tenants %}
+                                        <div class="md-input-container md-radio">
+                                            {% if t.id|makestring == tenant_id|makestring %}
+                                                <input name="tenant" id="tenant-{{ t.id }}" value="{{ t.id }}" type="radio" class="md-input md-radio__input" checked>
+                                            {% else %}
+                                                <input name="tenant" id="tenant-{{ t.id }}" value="{{ t.id }}" type="radio" class="md-input md-radio__input">
+                                            {% endif %}
+                                            <label class="md-radio__label" for="tenant-{{ t.id }}">
+                                                <span>{{ t.name }}</span>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td style="display: inline-block;vertical-align: top;">
+{#                                <label class="md-label md-input__label" for="file">#}
+{#                                    <span style="float:left">{{ form.file.label }}</span>#}
+{#                                </label>#}
+                                File
+                            </td>
+                            <td>
+                                <div class="md-input__wrapper">
+                                    {{ form.file }}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div class="row" style="align-content:center; display:flex">
                     <div class="md-input-container columns medium-6">
                         <div class="md-input__wrapper">

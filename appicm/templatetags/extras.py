@@ -57,6 +57,12 @@ def dump(jsonval):
 
 
 @register.filter
+def makestring(value):
+    print(value)
+    return str(value)
+
+
+@register.filter
 def display(value, filt):
     if value:
         filt_list = filt.split("|")
