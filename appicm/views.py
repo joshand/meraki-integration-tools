@@ -207,7 +207,7 @@ def config_conn(request):
         if int_id is None or int_id == "":
             cont = Controller.objects.create(name=int_desc, devicetype=pm[0].devicetype, authparm=authdata, tenant_id=tenant_id)
             orgurl = eval(pmn).get_home_link(cont)
-            HomeLink.objects.create(name=int_desc, url=orgurl, controller=cont, icon_url=def_icon)
+            HomeLink.objects.create(name=int_desc, url=orgurl, controller=cont, icon_url=def_icon, tenant_id=tenant_id)
         else:
             controllers = Controller.objects.filter(tenant_id=tenant_id).filter(id=int_id)
             if len(controllers) == 1:
