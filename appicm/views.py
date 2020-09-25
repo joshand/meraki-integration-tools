@@ -13,7 +13,8 @@ from appicm.forms import *
 from django.db.models import F, Q
 import scripts
 from django.views.decorators.clickjacking import xframe_options_exempt
-from datetime import datetime, timedelta
+from datetime import timedelta
+from django.utils import timezone
 from .forms import UploadForm
 from scripts.common import get_script
 import scripts.tasks
@@ -346,7 +347,7 @@ def status_task(request):
     if not tenant_id:
         return redirect('/tenant')
 
-    time_threshold = datetime.now() - timedelta(hours=4)
+    time_threshold = timezone.now().replace(hour=0,minute=0, second=0) + timedelta(hours=4)
 
     trs = TaskResult.objects.filter(tenant_id=tenant_id).filter(runtime__gt=time_threshold)
     crumbs = '<li>Status</li><li class="current">Task Results</li>'
