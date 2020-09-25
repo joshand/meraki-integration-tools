@@ -18,43 +18,49 @@
                     </tr>
                 </thead>
                 <tbody class="md-data-table__tbody">
-                {% for d in data %}
-                    <tr>
-                        <td>
-                            {{ d.name }}
-                        </td>
-                        {% for fv in mod.devicetype.parmdef %}
-                            {% if fv.display != False %}
-                                {% if fv.secret %}
-                                    {% if fv.display %}
-                                        <td>{{ d.authparm|lookup:fv.name|apikey|display:fv.display|safe }}</td>
+{#                {% if data|length <= 0 %}#}
+{#                    {% for fv in mod.devicetype.parmdef %}#}
+{#                        <input type="hidden" name="modaldata-blank-{{ fv.name }}" id="modaldata-blank-{{ fv.name }}" value="{{ d.authparm|lookup:fv.default }}">#}
+{#                    {% endfor %}#}
+{#                {% else %}#}
+                    {% for d in data %}
+                        <tr>
+                            <td>
+                                {{ d.name }}
+                            </td>
+                            {% for fv in mod.devicetype.parmdef %}
+                                {% if fv.display != False %}
+                                    {% if fv.secret %}
+                                        {% if fv.display %}
+                                            <td>{{ d.authparm|lookup:fv.name|apikey|display:fv.display|safe }}</td>
+                                        {% else %}
+                                            <td>{{ d.authparm|lookup:fv.name|apikey }}</td>
+                                        {% endif %}
+                                        <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|apikey }}">
                                     {% else %}
-                                        <td>{{ d.authparm|lookup:fv.name|apikey }}</td>
+                                        {% if fv.display %}
+                                            <td>{{ d.authparm|lookup:fv.name|display:fv.display|safe }}</td>
+                                        {% else %}
+                                            <td>{{ d.authparm|lookup:fv.name }}</td>
+                                        {% endif %}
+                                        <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name }}">
                                     {% endif %}
-                                    <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|apikey }}">
                                 {% else %}
-                                    {% if fv.display %}
-                                        <td>{{ d.authparm|lookup:fv.name|display:fv.display|safe }}</td>
+                                    {% if fv.secret %}
+                                        <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|apikey }}">
                                     {% else %}
-                                        <td>{{ d.authparm|lookup:fv.name }}</td>
+                                        <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name }}">
                                     {% endif %}
-                                    <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name }}">
                                 {% endif %}
-                            {% else %}
-                                {% if fv.secret %}
-                                    <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|apikey }}">
-                                {% else %}
-                                    <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name }}">
-                                {% endif %}
-                            {% endif %}
-                        {% endfor %}
-                        <td>
-                            <input type="hidden" name="modaldata-{{ d.id }}" id="modaldata-{{ d.id }}" value="{{ mod.devicetype.parmdef|dump }}">
-                            <a title="Edit {{ mod.entity_name }}" onclick="loadModal('{{ d.id }}', '{{ d.name }}')"><span class="icon icon-edit_24"></span></a>
-                            <a title="Delete {{ mod.entity_name }}" href="/home/config-conn/{{ mod.py_mod_name }}?id={{ d.id }}&action=delobj"><span class="icon icon-delete_24"></span></a>
-                        </td>
-                    </tr>
-                {% endfor %}
+                            {% endfor %}
+                            <td>
+                                <input type="hidden" name="modaldata-{{ d.id }}" id="modaldata-{{ d.id }}" value="{{ mod.devicetype.parmdef|dump }}">
+                                <a title="Edit {{ mod.entity_name }}" onclick="loadModal('{{ d.id }}', '{{ d.name }}')"><span class="icon icon-edit_24"></span></a>
+                                <a title="Delete {{ mod.entity_name }}" href="/home/config-conn/{{ mod.py_mod_name }}?id={{ d.id }}&action=delobj"><span class="icon icon-delete_24"></span></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+{#                {% endif %}#}
                 </tbody>
             </table>
         </div>
@@ -69,12 +75,14 @@
                     for (let i in mod_json) {
                         let elm = document.getElementById("modaldata-" + inp_id + "-" + mod_json[i].name);
                         let mdl = document.getElementById(mod_json[i].name);
-                        if (mod_json[i].style === "dropdown") {
-                            postdata('/exec/{{ mod.name }}/' + mod_json[i].source, elm.value, 1, 'funcdata', mod_json[i].name + '-container', mod_json[i].name + '-content', mod_json[i].name + '-label', mod_json[i].name, mod_json[i].name + '-name', null);
-                        }
                         if (elm && mdl) {
+                            if (mod_json[i].style === "dropdown") {
+                                postdata('/exec/{{ mod.name }}/' + mod_json[i].source, elm.value, 1, 'funcdata', mod_json[i].name + '-container', mod_json[i].name + '-content', mod_json[i].name + '-label', mod_json[i].name, mod_json[i].name + '-name', null);
+                            }
                             mdl.value = elm.value;
                             fd_data[mod_json[i].name] = elm.value;
+                        } else {
+                            fd_data[mod_json[i].name] = mod_json[i].default;
                         }
                     }
                     fd.value = JSON.stringify(fd_data);
@@ -86,15 +94,35 @@
 
             function updatefuncdata(inp_name) {
                 let fd = document.getElementById("funcdata");
-                let fd_data = JSON.parse(fd.value);
-                fd_data[inp_name] = document.getElementById(inp_name).value;
-                fd.value = JSON.stringify(fd_data);
+                let oid = document.getElementById("objId").value;
+                if (fd) {
+                    let fd_data = JSON.parse(fd.value);
+                    fd_data[inp_name] = document.getElementById(inp_name).value;
+                    fd.value = JSON.stringify(fd_data);
+                    let mod_text = document.getElementById("modaldata-" + oid).value;
+                    if (mod_text !== "") {
+                        let mod_json = JSON.parse(mod_text);
+                        for (let i in mod_json) {
+                            let elm = document.getElementById("modaldata-" + oid + "-" + mod_json[i].name);
+                            if (!elm) {
+                                elm = document.getElementById("modaldata-blank");
+                            }
+                            let mdl = document.getElementById(mod_json[i].name);
+                            console.log(elm);
+                            console.log(mdl);
+                            if (elm && mdl) {
+                                if (mod_json[i].style === "dropdown") {
+                                    postdata('/exec/{{ mod.name }}/' + mod_json[i].source, elm.value, 1, 'funcdata', mod_json[i].name + '-container', mod_json[i].name + '-content', mod_json[i].name + '-label', mod_json[i].name, mod_json[i].name + '-name', null);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         </script>
 
         <form method="POST" action="/home/config-conn/{{ mod.name }}" style="width:100%;padding:0px">
             {% csrf_token %}
-            <input type="hidden" name="modaldata-blank" id="modaldata-blank" value="">
             <div id="editmodal" class="md-modal__backdrop fade in" style="display:none; width: 100px;height: 50px;position:fixed; top: calc(50% - 25px);left: calc(50% - 50px);">
                 <div role="dialog" id="react-aria-modal-dialog" class="md-modal md-modal--default in" aria-labelledby="modal1">
                     <div class="md-modal__content">
@@ -103,6 +131,7 @@
                                 <span class="md-modal__title">{{ mod.entity_name }} Configuration</span>
                                 <input type="hidden" name="objId" id="objId">
                                 <input type="hidden" name="funcdata" id="funcdata" value="">
+                                <input type="hidden" name="modaldata-blank" id="modaldata-blank" value="{{ mod.devicetype.parmdef|dump }}">
                                 <span class="md-modal__message">
                                     <table class="testTableClass">
                                         <thead class="md-data-table__thead">
