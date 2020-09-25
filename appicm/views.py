@@ -56,7 +56,12 @@ def check_tenant(request):
     if not tenant_id:
         return None, None, None
 
-    tenant = Tenant.objects.filter(id=tenant_id)[0]
+    tenants = Tenant.objects.filter(id=tenant_id)
+    if len(tenants) != 1:
+        return None, None, None
+    else:
+        tenant = tenants[0]
+
     tdesc = tenant.name[:13] + "..." if len(tenant.name) > 13 else tenant.name
     tenants = request.user.appuser.tenant.all()
 
