@@ -157,6 +157,13 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
         #     i = Upload.objects.create(description=instance.description + "-" + fn, file=fn)
         #     i.save()
 
+    operations = Operation.objects.all()
+    if len(operations) == 0:
+        op = Operation.objects.create(reload_tasks=True)
+    else:
+        operations[0].reload_tasks = True
+        operations[0].save()
+
     post_save.connect(post_save_uploadzip, sender=UploadZip)
 
 
@@ -649,3 +656,10 @@ class IntegrationConfiguration(models.Model):
 
     def __str__(self):
         return str(self.integrationmodule.name)
+
+
+class Operation(models.Model):
+    reload_tasks = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.reload_tasks)

@@ -38,6 +38,17 @@ from scripts.common import get_script
 cron = BackgroundScheduler()
 
 
+def check_operation():
+    operations = Operation.objects.all()
+    if len(operations) == 0:
+        Operation.objects.create(reload_tasks=False)
+
+    if operations[0].reload_tasks:
+        operations[0].reload_tasks = False
+        operations[0].save()
+        run()
+
+
 def run():
     # Explicitly kick off the background thread
     try:
@@ -46,6 +57,7 @@ def run():
         # scheduler may already be running
         pass
     cron.remove_all_jobs()
+    cron.add_job(check_operation, 'interval', seconds=60)
 
     tenant_list = []
     tenants = Tenant.objects.exclude(id=get_default_tenant())

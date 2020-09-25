@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from appicm.models import *
-from scripts.tasks import run as task_refresh
 
 
 class ShowTenantSerializer(serializers.ModelSerializer):
@@ -774,11 +773,6 @@ class UploadZipSerializer(serializers.ModelSerializer):
     class Meta:
         model = UploadZip
         fields = ('id', 'url', 'description', 'file', 'tenant', 'uploaded_at')
-
-    def create(self, validated_data):
-        uplzip = UploadZip.objects.create(**validated_data)
-        task_refresh()
-        return uplzip
 
 
 class UploadSerializer(serializers.ModelSerializer):
