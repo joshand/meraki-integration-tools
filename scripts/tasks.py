@@ -53,28 +53,29 @@ def run():
         tenant_list.append(str(tenant.id))
     tenant_map = {}
 
+    mode = "none"
     for x in range(0, 4):
         pms = []
-        mode = "check"
         if x == 0:
             # Run plugin modules for any tenant that has them installed; each job will be unique to a single tenant
-            pms = PluginModule.objects.exclude(id=get_default_tenant())
-            mode = "add"
+            pms = PluginModule.objects.exclude(tenant_id=get_default_tenant())
+            mode = "tenant"
         elif x == 1:
             # Run integration modules for any tenant that has them installed; each job will be unique to a single tenant
-            pms = IntegrationModule.objects.exclude(id=get_default_tenant())
-            mode = "add"
+            pms = IntegrationModule.objects.exclude(tenant_id=get_default_tenant())
+            mode = "tenant"
         elif x == 2:
             # Run global plugin modules for remaining tenants
-            pms = PluginModule.objects.filter(id=get_default_tenant())
-            mode = "check"
+            pms = PluginModule.objects.filter(tenant_id=get_default_tenant())
+            mode = "global"
         elif x == 3:
             # Run global integration modules for remaining tenants
-            pms = IntegrationModule.objects.filter(id=get_default_tenant())
-            mode = "check"
+            pms = IntegrationModule.objects.filter(tenant_id=get_default_tenant())
+            mode = "global"
 
+        # print(x, mode, pms)
         for pm in pms:
-            if mode == "add":
+            if mode == "tenant":
                 if pm.name in tenant_map:
                     tenant_map[pm.name].remove(str(pm.tenant.id))
                 else:
@@ -82,11 +83,15 @@ def run():
                     if str(pm.tenant.id) in tenant_map[pm.name]:
                         tenant_map[pm.name].remove(str(pm.tenant.id))
             else:
-                if str(pm.tenant.id) not in tenant_map[pm.name]:
+                if pm.name not in tenant_map:
+                    # if the module name isn't there, no tenants had that individual module
+                    pass
+                elif str(pm.tenant.id) not in tenant_map[pm.name]:
                     # if it's been removed from the map, it's already had a module ran
                     continue
 
             pmn = get_script(pm)
+            # print(pm, pmn)
             if not pmn:
                 continue
             jobname = pmn + ".do_sync"
@@ -97,7 +102,10 @@ def run():
                 continue
             job = eval(jobname)
             # print(pmn, job, pm.sync_interval)
-            cron.add_job(job, 'interval', kwargs={"tenant_list": [str(pm.tenant.id)]}, seconds=pm.sync_interval)
+            if mode == "tenant":
+                cron.add_job(job, 'interval', kwargs={"tenant_list": [str(pm.tenant.id)]}, seconds=pm.sync_interval)
+            else:
+                cron.add_job(job, 'interval', seconds=pm.sync_interval)
 
     # ims = IntegrationModule.objects.all()
     # for im in ims:
