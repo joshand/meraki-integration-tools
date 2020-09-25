@@ -85,7 +85,7 @@ def home(request):
 
 
 def signup(request):
-    print("signup", request)
+    # print("signup", request)
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -276,7 +276,7 @@ def config_int(request):
         modid = request.POST.get("imid")
         objid = request.POST.get("objid")
         postvars = request.POST
-        print(postvars)
+        # print(postvars)
         cg1vals = []
         cg2vals = []
         if "cg1" in postvars and "cg2" in postvars:
