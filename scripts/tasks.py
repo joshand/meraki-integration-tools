@@ -42,11 +42,11 @@ def check_operation():
     operations = Operation.objects.all()
     if len(operations) == 0:
         Operation.objects.create(reload_tasks=False)
-
-    if operations[0].reload_tasks:
-        operations[0].reload_tasks = False
-        operations[0].save()
-        run()
+    elif len(operations) > 0:
+        if operations[0].reload_tasks:
+            operations[0].reload_tasks = False
+            operations[0].save()
+            run()
 
 
 def run():
