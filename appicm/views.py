@@ -123,7 +123,7 @@ class MyLogoutView(auth_views.LogoutView):
 
 
 def get_connections(tenant_id):
-    return PluginModule.objects.filter(Q(tenant__name="Default") | Q(tenant_id=tenant_id))
+    return PluginModule.objects.filter(Q(tenant_id=get_default_tenant()) | Q(tenant_id=tenant_id))
 
 
 def exec_func(request):
@@ -135,7 +135,9 @@ def exec_func(request):
     url_list = url.split("/")
     get_mod_name = url_list[-2:][0]
     get_func_name = url_list[-1:][0]
-    pm = PluginModule.objects.filter(name=get_mod_name)
+    pm = PluginModule.objects.filter(tenant_id=tenant_id).filter(name=get_mod_name)
+    if len(pm) == 0:
+        pm = PluginModule.objects.filter(tenant_id=get_default_tenant()).filter(name=get_mod_name)
     if len(pm) == 1:
         post_data = json.loads(request.body)
         cont_id = post_data["id"]
@@ -172,7 +174,9 @@ def config_conn(request):
     url = request.META['PATH_INFO']         # /home/config-int/meraki
     url_list = url.split("/")
     get_mod_name = url_list[-1:][0]
-    pm = PluginModule.objects.filter(name=get_mod_name)
+    pm = PluginModule.objects.filter(tenant_id=tenant_id).filter(name=get_mod_name)
+    if len(pm) == 0:
+        pm = PluginModule.objects.filter(tenant_id=get_default_tenant()).filter(name=get_mod_name)
     if len(pm) == 1:
         pmn = get_script(pm[0])
         if not pmn:
@@ -198,7 +202,7 @@ def config_conn(request):
             orgurl = eval(pmn).get_home_link(cont)
             HomeLink.objects.create(name=int_desc, url=orgurl, controller=cont, icon_url=def_icon)
         else:
-            controllers = Controller.objects.filter(id=int_id)
+            controllers = Controller.objects.filter(tenant_id=tenant_id).filter(id=int_id)
             if len(controllers) == 1:
                 cont = controllers[0]
                 cont.name = int_desc
@@ -219,7 +223,7 @@ def config_conn(request):
         mer_id = request.GET.get("id")
         Controller.objects.filter(id=mer_id).delete()
 
-    dashboards = Controller.objects.filter(tenant=tenant_id).filter(devicetype=pm[0].devicetype)
+    dashboards = Controller.objects.filter(tenant_id=tenant_id).filter(devicetype=pm[0].devicetype)
 
     crumbs = '<li class="current">Connect</li><li class="current">' + pm[0].description + '</li>'
     return render(request, "home/config_connection.html", {"crumbs": crumbs, "tenants": tenants, "menuopen": 2,
@@ -233,7 +237,7 @@ def show_int(request):
     if not tenant_id:
         return redirect('/tenant')
 
-    intopts = IntegrationModule.objects.filter(Q(tenant__name="Default") | Q(tenant_id=tenant_id))
+    intopts = IntegrationModule.objects.filter(Q(tenant_id=get_default_tenant()) | Q(tenant_id=tenant_id))
     intconfigs = IntegrationConfiguration.objects.filter(tenant_id=tenant_id)
     avail_opts = []
     unavail_opts = []
@@ -242,8 +246,8 @@ def show_int(request):
         # pm2_dts = intopt.pm2.devicetype.all()
         # pm1_cont = Controller.objects.filter(devicetype__in=pm1_dts)
         # pm2_cont = Controller.objects.filter(devicetype__in=pm2_dts)
-        pm1_cont = Controller.objects.filter(devicetype=intopt.pm1.devicetype)
-        pm2_cont = Controller.objects.filter(devicetype=intopt.pm2.devicetype)
+        pm1_cont = Controller.objects.filter(tenant_id=tenant_id).filter(devicetype=intopt.pm1.devicetype)
+        pm2_cont = Controller.objects.filter(tenant_id=tenant_id).filter(devicetype=intopt.pm2.devicetype)
         if len(pm1_cont) > 0 and len(pm2_cont) > 0:
             avail_opts.append(intopt)
         else:
@@ -282,13 +286,13 @@ def config_int(request):
                     cg2vals.append(cg2id)
 
         if objid:
-            ic = IntegrationConfiguration.objects.filter(id=objid)[0]
+            ic = IntegrationConfiguration.objects.filter(tenant_id=tenant_id).filter(id=objid)[0]
         else:
             ic = IntegrationConfiguration.objects.create(tenant_id=tenant_id, integrationmodule_id=modid)
-        c1 = Controller.objects.filter(id__in=cg1vals)
+        c1 = Controller.objects.filter(tenant_id=tenant_id).filter(id__in=cg1vals)
         ic.pm1.clear()
         ic.pm1.add(*c1)
-        c2 = Controller.objects.filter(id__in=cg2vals)
+        c2 = Controller.objects.filter(tenant_id=tenant_id).filter(id__in=cg2vals)
         ic.pm2.clear()
         ic.pm2.add(*c2)
         # ic.pm1.add(cg1vals)
@@ -299,16 +303,18 @@ def config_int(request):
 
     if request.GET.get("action") == "delint":
         intid = request.GET.get("id")
-        IntegrationConfiguration.objects.filter(id=intid).delete()
+        IntegrationConfiguration.objects.filter(tenant_id=tenant_id).filter(id=intid).delete()
         return redirect(reverse('show_int'))
     elif request.GET.get("action") == "addint" or request.GET.get("action") == "editint":
         intid = request.GET.get("id")
         if request.GET.get("action") == "addint":
-            intopts = IntegrationModule.objects.filter(id=intid)
+            intopts = IntegrationModule.objects.filter(tenant_id=tenant_id).filter(id=intid)
+            if len(intopts) == 0:
+                intopts = IntegrationModule.objects.filter(tenant_id=get_default_tenant()).filter(id=intid)
             intopt = intopts[0]
             ic = None
         else:
-            ics = IntegrationConfiguration.objects.filter(id=intid)
+            ics = IntegrationConfiguration.objects.filter(tenant_id=tenant_id).filter(id=intid)
             if len(ics) != 1:
                 return redirect(reverse('show_int'))
             ic = ics[0]
