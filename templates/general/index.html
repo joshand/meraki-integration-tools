@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IDP</title>
+</head>
+
+<body>
+    {% if request.user.is_authenticated %}
+        <form id="myform" method="get" action="{% url 'djangosaml2idp:saml_idp_init' %}">
+            <input type="hidden" name="sp" value="{{known_sp_ids|safe}}" />
+            <input type="hidden" name="RelayState" value="%2F" />
+            <input type="submit" value="Submit" />
+        </form>
+    {% else %}
+        <meta http-equiv="REFRESH" content="0;url=/">
+    {% endif %}
+
+</body>
+<script>
+document.getElementById("myform").submit();
+</script>
+</html>

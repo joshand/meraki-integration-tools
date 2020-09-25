@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/old/
+upload
+/scripts/f*.py
+/appicm/migrations
+.DS_Store
+.idea

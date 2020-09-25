@@ -1,0 +1,22 @@
+{% extends 'general/base.html' %}
+
+{% block content %}
+  <h2>Sign up</h2>
+  <form method="post">
+    {% csrf_token %}
+{#    {{ form.as_table }}#}
+
+{#    {% for field in form %}#}
+{#    <p{% if field.errors %}#}
+{#        class="error"#}
+{#    {% endif %}#}
+{#        >{{ field.label_tag }} &nbsp; {{ field }}<br>{{ field.description }}</p>#}
+{#    {% endfor %}#}
+
+        <table border="0">
+        {{ form }}
+        </table>
+
+    <tr><td colspan="2"><button type="submit">Sign up</button></td></tr>
+  </form>
+{% endblock %}

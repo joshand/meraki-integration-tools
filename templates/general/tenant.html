@@ -1,0 +1,21 @@
+{% extends 'general/base.html' %}
+{% load extras %}
+
+{% block content %}
+    <div class="md-data-table" style="width: 100%;">
+        <div class="md-data-table__wrapper">
+            <table class="testTableClass">
+                <thead class="md-data-table__thead">
+                    <tr>
+                        <th style="width: 8rem">Select Tenant</th>
+                    </tr>
+                </thead>
+                <tbody class="md-data-table__tbody">
+                {% for t in tenants %}
+                    <tr><td><a href="{{ baseurl }}?tenant={{ t.id }}">{{ t.name }}</a></td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

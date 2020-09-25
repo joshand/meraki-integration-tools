@@ -1,0 +1,95 @@
+{% extends 'home/base.html' %}
+{% load extras %}
+
+{% block content %}
+    <h4 class="md-h4--bold md-font-color--alternate docs-section__title">Enabled Integrations</h4>
+    <div class="md-data-table" style="width: 100%;">
+        <div class="md-data-table__wrapper">
+{#            Enabled Integrations#}
+            <table class="testTableClass">
+                <thead class="md-data-table__thead">
+                    <tr>
+                        <th style="width: 16rem">Description</th>
+                        <th style="width: 10rem">Connection 1</th>
+                        <th style="width: 10rem">Connection 2</th>
+                        <th style="width: 6rem">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="md-data-table__tbody">
+                {% for d in integrations %}
+                    <tr>
+                        <td>
+                            {{ d.integrationmodule.name }}
+                        </td>
+                        <td>
+                            {% for p in d.pm1.all %}
+                                {{ p.name }}<br>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for p in d.pm2.all %}
+                                {{ p.name }}<br>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <a title="Edit Integration" href="/home/config-int?id={{ d.id }}&action=editint"><span class="icon icon-edit_24"></span></a>
+                            <a title="Delete Integration" href="/home/config-int?id={{ d.id }}&action=delint"><span class="icon icon-delete_24"></span></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br><br>
+    <h4 class="md-h4--bold md-font-color--alternate docs-section__title">Available Integrations</h4>
+    <div class="md-data-table" style="width: 100%;">
+        <div class="md-data-table__wrapper">
+{#            Available Integrations#}
+            <table class="testTableClass">
+                <thead class="md-data-table__thead">
+                    <tr>
+                        <th style="width: 16rem">Description</th>
+                        <th style="width: 10rem">Connection 1</th>
+                        <th style="width: 10rem">Connection 2</th>
+                        <th style="width: 6rem">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="md-data-table__tbody">
+                {% for d in avail %}
+                    <tr>
+                        <td>
+                            {{ d.name }}
+                        </td>
+                        <td>
+                            {{ d.pm1.description }}
+                        </td>
+                        <td>
+                            {{ d.pm2.description }}
+                        </td>
+                        <td>
+                            <a title="Add Integration" href="/home/config-int?id={{ d.id }}&action=addint"><span class="icon icon-plus_24"></span></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                {% for d in unavail %}
+                    <tr>
+                        <td>
+                            {{ d.name }}
+                        </td>
+                        <td>
+                            {{ d.pm1.description }}
+                        </td>
+                        <td>
+                            {{ d.pm2.description }}
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

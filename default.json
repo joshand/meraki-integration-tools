@@ -1,0 +1,60 @@
+[{
+	"model": "appicm.tenant",
+	"pk": "00000000-0000-0000-0000-000000000000",
+	"fields": {
+		"name": "Default"
+	}
+}, {
+	"model": "appicm.authtype",
+	"pk": "d3803b98-c9f0-436b-b6ec-1c2b6bbafb67",
+	"fields": {
+		"name": "api",
+		"tenant": "00000000-0000-0000-0000-000000000000"
+	}
+}, {
+	"model": "appicm.l1interfacetype",
+	"fields": {
+		"tenant": "00000000-0000-0000-0000-000000000000",
+		"name": "802.3z",
+		"description": "1000BASE-X Gbit/s Ethernet over Fiber-Optic at 1 Gbit/s"
+	}
+}, {
+	"model": "appicm.l1interfacetype",
+	"fields": {
+		"tenant": "00000000-0000-0000-0000-000000000000",
+		"name": "802.3ae",
+		"description": "10 Gigabit Ethernet over fiber; 10GBASE-SR, 10GBASE-LR, 10GBASE-ER, 10GBASE-SW, 10GBASE-LW, 10GBASE-EW"
+	}
+}, {
+	"model": "appicm.l1interfacetype",
+	"fields": {
+		"tenant": "00000000-0000-0000-0000-000000000000",
+		"name": "802.3ba",
+		"description": "40 Gbit/s and 100 Gbit/s Ethernet. 40 Gbit/s over 1 m backplane, 10 m Cu cable assembly (4×25 Gbit or 10×10 Gbit lanes) and 100 m of MMF and 100 Gbit/s up to 10 m of Cu cable assembly, 100 m of MMF or 40 km of SMF respectively"
+	}
+}, {
+	"model": "appicm.l1interfacetype",
+	"fields": {
+		"tenant": "00000000-0000-0000-0000-000000000000",
+		"name": "802.3ab",
+		"description": "1000BASE-T Gbit/s Ethernet over twisted pair at 1 Gbit/s"
+	}
+}, {
+	"model": "appicm.l2interfacetype",
+	"fields": {
+		"tenant": "00000000-0000-0000-0000-000000000000",
+		"name": "VLAN"
+	}
+}, {
+	"model": "appicm.l2domaintype",
+	"fields": {
+		"tenant": "00000000-0000-0000-0000-000000000000",
+		"name": "Access"
+	}
+}, {
+	"model": "appicm.l2domaintype",
+	"fields": {
+		"tenant": "00000000-0000-0000-0000-000000000000",
+		"name": "Trunk"
+	}
+}]

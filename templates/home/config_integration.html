@@ -1,0 +1,104 @@
+{% extends 'home/base.html' %}
+{% load extras %}
+
+{% block content %}
+    <h4 class="md-h4--bold md-font-color--alternate docs-section__title">Configure Integration -- {{ intmod.name }}</h4>
+    <form method="POST" action="/home/config-int" style="width:100%;padding:0px">
+        <div class="md-data-table" style="width: 100%;">
+            <div class="md-data-table__wrapper">
+{#                Configure Integration -- {{ intmod.name }}#}
+                <table class="testTableClass">
+                    <tbody class="md-data-table__tbody">
+                        <tr>
+                            <td style="width: 8rem">Notes</td>
+                            <td style="width: 16rem">{{ intmod.notes|linebreaksbr }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Connection Group 1 ({{ intmod.pm1.description }})
+                            </td>
+                            <td>
+                                {% for cg in m1 %}
+                                    {% if intmod.is_multi_select %}
+                                        <div class="md-input-container md-checkbox">
+                                            {% if cg in intconfig.pm1.all %}
+                                            <input name="cg1-{{ cg.id }}" id="cg1-{{ cg.id }}" type="checkbox" class="md-input md-checkbox__input" checked>
+                                            {% else %}
+                                            <input name="cg1-{{ cg.id }}" id="cg1-{{ cg.id }}" type="checkbox" class="md-input md-checkbox__input">
+                                            {% endif %}
+                                            <label class="md-checkbox__label" for="cg1-{{ cg.id }}">
+                                                <span>{{ cg.name }}</span>
+                                            </label>
+                                        </div>
+                                    {% else %}
+                                        <div class="md-input-container md-radio">
+                                            {% if cg in intconfig.pm1.all %}
+                                            <input name="cg1" id="cg1-{{ cg.id }}" value="{{ cg.id }}" type="radio" class="md-input md-radio__input" checked>
+                                            {% else %}
+                                            <input name="cg1" id="cg1-{{ cg.id }}" value="{{ cg.id }}" type="radio" class="md-input md-radio__input">
+                                            {% endif %}
+                                            <label class="md-radio__label" for="cg1-{{ cg.id }}">
+                                                <span>{{ cg.name }}</span>
+                                            </label>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Connection Group 2 ({{ intmod.pm2.description }})
+                            </td>
+                            <td>
+                                {% for cg in m2 %}
+                                    {% if intmod.is_multi_select %}
+                                        <div class="md-input-container md-checkbox">
+                                            {% if cg in intconfig.pm2.all %}
+                                            <input name="cg2-{{ cg.id }}" id="cg2-{{ cg.id }}" type="checkbox" class="md-input md-checkbox__input" checked>
+                                            {% else %}
+                                            <input name="cg2-{{ cg.id }}" id="cg2-{{ cg.id }}" type="checkbox" class="md-input md-checkbox__input">
+                                            {% endif %}
+                                            <label class="md-checkbox__label" for="cg2-{{ cg.id }}">
+                                                <span>{{ cg.name }}</span>
+                                            </label>
+                                        </div>
+                                    {% else %}
+                                        <div class="md-input-container md-radio">
+                                            {% if cg in intconfig.pm2.all %}
+                                            <input name="cg2" id="cg2-{{ cg.id }}" value="{{ cg.id }}" type="radio" class="md-input md-radio__input" checked>
+                                            {% else %}
+                                            <input name="cg2" id="cg2-{{ cg.id }}" value="{{ cg.id }}" type="radio" class="md-input md-radio__input">
+                                            {% endif %}
+                                            <label class="md-radio__label" for="cg2-{{ cg.id }}">
+                                                <span>{{ cg.name }}</span>
+                                            </label>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row">&nbsp;</div>
+            <div id="bottom_save">
+                <div class="md-panel md-panel__form" style="width:100%;padding:0px">
+                    {% csrf_token %}
+                    <input type="hidden" name="imid" value="{{ intmod.id }}">
+                    <input type="hidden" name="objid" value="{{ intconfig.id }}">
+                    <div class="md-input-group" style="width:100%;padding:20px;background-color:#FFF5E0;border-color:#cbb013;border-width:1px;border-style:solid">
+                        <div class="md-input__icon-container">
+                            <div class="row" style="align-content:center; display:flex">
+                                <div class="md-input-container columns medium-6">
+                                    <div class="md-input__wrapper">
+                                        <button class="md-button md-button--blue" tabindex="50">Save Changes</button> or <a href="/home/integrate">cancel</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

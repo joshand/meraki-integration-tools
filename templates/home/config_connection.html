@@ -1,0 +1,235 @@
+{% extends 'home/base.html' %}
+{% load extras %}
+
+{% block content %}
+    <h4 class="md-h4--bold md-font-color--alternate docs-section__title">Connected {{ mod.description }} {{ mod.entity_name_plural }}  <a title="Add {{ mod.entity_name }}" onclick="loadModal('blank', '')"><span class="icon icon-document-create_16"></span></a></h4>
+    <div class="md-data-table" style="width: 100%;">
+        <div class="md-data-table__wrapper">
+            <table class="testTableClass">
+                <thead class="md-data-table__thead">
+                    <tr>
+                        <th style="width: 8rem">Description</th>
+                        {% for fn in mod.devicetype.parmdef %}
+                            {% if fn.display != False %}
+                                <th style="width: 12rem">{{ fn.desc }}</th>
+                            {% endif %}
+                        {% endfor %}
+                        <th style="width: 6rem">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="md-data-table__tbody">
+                {% for d in data %}
+                    <tr>
+                        <td>
+                            {{ d.name }}
+                        </td>
+                        {% for fv in mod.devicetype.parmdef %}
+                            {% if fv.display != False %}
+                                {% if fv.secret %}
+                                    {% if fv.display %}
+                                        <td>{{ d.authparm|lookup:fv.name|apikey|display:fv.display|safe }}</td>
+                                    {% else %}
+                                        <td>{{ d.authparm|lookup:fv.name|apikey }}</td>
+                                    {% endif %}
+                                    <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|apikey }}">
+                                {% else %}
+                                    {% if fv.display %}
+                                        <td>{{ d.authparm|lookup:fv.name|display:fv.display|safe }}</td>
+                                    {% else %}
+                                        <td>{{ d.authparm|lookup:fv.name }}</td>
+                                    {% endif %}
+                                    <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name }}">
+                                {% endif %}
+                            {% else %}
+                                {% if fv.secret %}
+                                    <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|apikey }}">
+                                {% else %}
+                                    <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name }}">
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        <td>
+                            <input type="hidden" name="modaldata-{{ d.id }}" id="modaldata-{{ d.id }}" value="{{ mod.devicetype.parmdef|dump }}">
+                            <a title="Edit {{ mod.entity_name }}" onclick="loadModal('{{ d.id }}', '{{ d.name }}')"><span class="icon icon-edit_24"></span></a>
+                            <a title="Delete {{ mod.entity_name }}" href="/home/config-conn/{{ mod.py_mod_name }}?id={{ d.id }}&action=delobj"><span class="icon icon-delete_24"></span></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            function loadModal(inp_id, inp_name) {
+                let fd = document.getElementById("funcdata");
+                let fd_data = {"id": inp_id};
+                let mod_text = document.getElementById("modaldata-" + inp_id).value;
+                if (mod_text !== "") {
+                    let mod_json = JSON.parse(mod_text);
+                    for (let i in mod_json) {
+                        let elm = document.getElementById("modaldata-" + inp_id + "-" + mod_json[i].name);
+                        let mdl = document.getElementById(mod_json[i].name);
+                        if (mod_json[i].style === "dropdown") {
+                            postdata('/exec/{{ mod.name }}/' + mod_json[i].source, elm.value, 1, 'funcdata', mod_json[i].name + '-container', mod_json[i].name + '-content', mod_json[i].name + '-label', mod_json[i].name, mod_json[i].name + '-name', null);
+                        }
+                        if (elm && mdl) {
+                            mdl.value = elm.value;
+                            fd_data[mod_json[i].name] = elm.value;
+                        }
+                    }
+                    fd.value = JSON.stringify(fd_data);
+                    document.getElementById("objId").value = inp_id;
+                    document.getElementById("objDesc").value = inp_name;
+                }
+                document.getElementById("editmodal").style = "display:inline;";
+            }
+
+            function updatefuncdata(inp_name) {
+                let fd = document.getElementById("funcdata");
+                let fd_data = JSON.parse(fd.value);
+                fd_data[inp_name] = document.getElementById(inp_name).value;
+                fd.value = JSON.stringify(fd_data);
+            }
+        </script>
+
+        <form method="POST" action="/home/config-conn/{{ mod.name }}" style="width:100%;padding:0px">
+            {% csrf_token %}
+            <input type="hidden" name="modaldata-blank" id="modaldata-blank" value="">
+            <div id="editmodal" class="md-modal__backdrop fade in" style="display:none; width: 100px;height: 50px;position:fixed; top: calc(50% - 25px);left: calc(50% - 50px);">
+                <div role="dialog" id="react-aria-modal-dialog" class="md-modal md-modal--default in" aria-labelledby="modal1">
+                    <div class="md-modal__content">
+                        <span class="md-modal__flex-container">
+                            <div class="md-modal__header">
+                                <span class="md-modal__title">{{ mod.entity_name }} Configuration</span>
+                                <input type="hidden" name="objId" id="objId">
+                                <input type="hidden" name="funcdata" id="funcdata" value="">
+                                <span class="md-modal__message">
+                                    <table class="testTableClass">
+                                        <thead class="md-data-table__thead">
+                                            <tr>
+                                                <td>
+                                                    <p style="text-align: left">{{ mod.entity_name }} Description</p>
+                                                    <div class="md-input__wrapper">
+                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="objDesc" name="objDesc" placeholder="{{ pm.entity_name }} Description">
+                                                        <span class="md-input__after">
+                                                            <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('objDesc')">
+                                                                <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% for fv in mod.devicetype.parmdef %}
+                                                {% if fv.display != False %}
+                                                    {% if fv.style == "dropdown" %}
+                                                        <tr>
+                                                        <td>
+                                                            <p style="text-align: left">{{ fv.desc }}</p>
+                                                            <div class="md-input-container columns medium-12" id="{{ fv.name }}-container">
+                                                                <div class="md-input__wrapper md-select">
+                                                                    <button id="{{ fv.name }}-btn" class="ignore md-button md-button--36 active" alt="" type="button" aria-labelledby="{{ fv.name }}-label" tabindex="30" name="md-select-69" aria-haspopup="listbox" onclick="toggleList('{{ fv.name }}-btn', '{{ fv.name }}-dropdown', '{{ fv.name }}-list')">
+                                                                        <span class="ignore md-button__children" style="opacity: 1;">
+                                                                            <div style="font-size: small" class="ignore md-list-item__left" id="{{ fv.name }}-label">
+                                                                                N/A
+                                                                                <i class="ignore icon icon-arrow-down_16"></i>
+                                                                            </div>
+                                                                        </span>
+                                                                    </button>
+                                                                    <div class="md-event-overlay md-event-overlay--bottom" id="{{ fv.name }}-dropdown" style="display:none;">
+                                                                        <div class="md-event-overlay__children" id="{{ fv.name }}-list">
+                                                                            <div id="{{ fv.name }}-content" class="md-list md-list--vertical md-list" role="listbox" aria-labelledby="md-select-69__label" aria-multiselectable="false">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <input type="hidden" id="{{ fv.name }}" name="{{ fv.name }}" value="" />
+                                                            <input type="hidden" id="{{ fv.name }}-name" name="{{ fv.name }}-name" value="" />
+                                                        </td>
+                                                        </tr>
+{#                                                        <tr>#}
+{#                                                            <td>#}
+{#                                                                <input name="test" type="button" onclick="postdata('/exec/{{ mod.name }}/{{ fv.source }}', null, null, 'funcdata', null, null, null, null, null, null)">#}
+{#                                                            </td>#}
+{#                                                        </tr>#}
+                                                    {% else %}
+                                                        <tr>
+                                                            <td>
+                                                                <p style="text-align: left">{{ fv.desc }}</p>
+                                                                <div class="md-input__wrapper">
+                                                                    <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="{{ fv.name }}" name="{{ fv.name }}" placeholder="{{ fv.desc }}" onchange="updatefuncdata('{{ fv.name }}')">
+                                                                    <span class="md-input__after">
+                                                                        <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('{{ fv.name }}')">
+                                                                            <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>
+                                                                        </button>
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <input type="hidden" id="{{ fv.name }}" name="{{ fv.name }}" placeholder="{{ fv.desc }}" onchange="updatefuncdata('{{ fv.name }}')">
+                                                {% endif %}
+                                            {% endfor %}
+
+{#                                            <tr>#}
+{#                                                <td>#}
+{#                                                    <p style="text-align: left">Umbrella API Key</p>#}
+{#                                                    <div class="md-input__wrapper">#}
+{#                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="objKey" name="objKey" placeholder="Umbrella API Key">#}
+{#                                                        <span class="md-input__after">#}
+{#                                                            <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('objKey')">#}
+{#                                                                <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>#}
+{#                                                            </button>#}
+{#                                                        </span>#}
+{#                                                    </div>#}
+{#                                                </td>#}
+{#                                            </tr>#}
+{#                                            <tr>#}
+{#                                                <td>#}
+{#                                                    <p style="text-align: left">Umbrella API Secret</p>#}
+{#                                                    <div class="md-input__wrapper">#}
+{#                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="objSec" name="objSec" placeholder="Umbrella API Secret">#}
+{#                                                        <span class="md-input__after">#}
+{#                                                            <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('objSec')">#}
+{#                                                                <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>#}
+{#                                                            </button>#}
+{#                                                        </span>#}
+{#                                                    </div>#}
+{#                                                </td>#}
+{#                                            </tr>#}
+{#                                            <tr>#}
+{#                                                <td>#}
+{#                                                    <p style="text-align: left">Organization ID</p>#}
+{#                                                    <div class="md-input__wrapper">#}
+{#                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="objOrg" name="objOrg" placeholder="Umbrella Organization ID">#}
+{#                                                        <span class="md-input__after">#}
+{#                                                            <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('objOrg')">#}
+{#                                                                <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>#}
+{#                                                            </button>#}
+{#                                                        </span>#}
+{#                                                    </div>#}
+{#                                                </td>#}
+{#                                            </tr>#}
+                                        </thead>
+                                    </table>
+                                </span>
+
+                                <button type="button" class="md-close md-modal__close" onclick="document.getElementById('editmodal').style = 'display:none;'"></button>
+                            </div>
+                            <div class="md-modal__body"></div>
+                            <div class="md-modal__footer">
+                                <button class="md-button md-button--36 md-button--default" alt="Close Modal" type="button" aria-label="Close Modal">
+                                    <span class="md-button__children" onclick="document.getElementById('editmodal').style = 'display:none;'">Cancel</span>
+                                </button>
+                                <button type="submit" class="md-button md-button--36 md-button--blue" alt="Submit Form" type="button" aria-label="Submit Form">
+                                    <span class="md-button__children">OK</span>
+                                </button>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
