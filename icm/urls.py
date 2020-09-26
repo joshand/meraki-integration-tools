@@ -40,6 +40,10 @@ router.register(r'l3interface', views.L3InterfaceViewSet)
 router.register(r'l3domain', views.L3DomainViewSet)
 router.register(r'uploadzip', views.UploadZipViewSet)
 router.register(r'upload', views.UploadViewSet)
+router.register(r'integrationconfigurations', views.IntegrationConfigurationViewSet)
+router.register(r'integrationmodules', views.IntegrationModuleViewSet)
+router.register(r'pluginmodules', views.PluginModuleViewSet)
+
 
 schema_view = get_schema_view(title="Adaptive Policy Sync API", renderer_classes=[JSONOpenAPIRenderer])
 
