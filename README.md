@@ -21,8 +21,8 @@
 2) Keep your API key safe and secure, as it is similar to a password for your dashboard. You will supply this API key to Adaptive Policy Sync later.
 
 #### Cisco Umbrella<a name="cisco-umbrella"/> ([^ Top](#top))
-1) Enable API ([ERS](https://community.cisco.com/t5/security-documents/ise-ers-api-examples/ta-p/3622623#toc-hId-1183657558)) access in Cisco ISE
-2) Create an [ERS Admin](https://community.cisco.com/t5/security-documents/ise-ers-api-examples/ta-p/3622623#toc-hId-1863715928) user account for ISE ERS access.
+1) Create Management API Key
+2) Create Network Devices API Key
 
 ### Deploy the Application<a name="deploy"/> ([^ Top](#top))
 
