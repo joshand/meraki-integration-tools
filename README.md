@@ -21,8 +21,8 @@
 2) Keep your API key safe and secure, as it is similar to a password for your dashboard. You will supply this API key to Meraki Integration Tools later.
 
 #### Cisco Umbrella<a name="cisco-umbrella"/> ([^ Top](#top))
-1) Create Management API Key
-2) Create Network Devices API Key
+1) (placeholder) Create Management API Key
+2) (placeholder) Create Network Devices API Key
 
 ### Deploy the Application<a name="deploy"/> ([^ Top](#top))
 
