@@ -80,6 +80,7 @@ python manage.py runserver 8000
     ![mit-add-meraki-org](images/021-add_meraki_org.png)
 
 10. Enter a description for your Organzation. Then enter your Meraki API Key. Press tab or click on an empty space in the dialog box, and the tool will retrieve a list of Organzations that you have access to. Once the list is loaded, click the Dropdown box, then click the name of the Organization you want to connect. Then click the "OK" button.
+
     ![mit-meraki-org-settings1](images/022-new_org_settings.png)
 
     ![mit-meraki-org-settings2](images/023-new_org_settings2.png)
