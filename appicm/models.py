@@ -660,7 +660,10 @@ class IntegrationConfiguration(models.Model):
     pm2 = models.ManyToManyField(Controller, related_name="pm2")
 
     def __str__(self):
-        return str(self.integrationmodule.name)
+        if self.integrationmodule:
+            return str(self.integrationmodule.name)
+        else:
+            return str(self.id)
 
 
 class Operation(models.Model):
