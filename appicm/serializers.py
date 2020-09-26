@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from appicm.models import *
+from django.forms import ValidationError
 
 
 class ShowTenantSerializer(serializers.ModelSerializer):
@@ -195,37 +196,145 @@ class ControllerSerializerFlat(serializers.ModelSerializer):
 
 
 class ControllerSerializer(serializers.ModelSerializer):
-    tenant = ShowTenantSerializer(many=False)
-    devicetype = ShowDeviceTypeSerializer(many=False)
+    tenant_detail = ShowTenantSerializer(source='tenant', many=False, read_only=True)
+    devicetype_detail = ShowDeviceTypeSerializer(source='devicetype', many=False, read_only=True)
+    devicetype = serializers.CharField()
+    # tenant = serializers.UUIDField()
 
     class Meta:
-        model = Device
-        depth = 2
-        fields = ('id', 'url', 'name', 'authparm', 'mgmtaddress', 'tenant', 'devicetype')
+        model = Controller
+        fields = ('id', 'url', 'name', 'authparm', 'mgmtaddress', 'tenant', 'devicetype', 'tenant_detail', 'devicetype_detail')
+        read_only_fields = ('tenant', 'devicetype')
 
-    def create(self, validated_data):
-        tenants_data = validated_data.pop('tenant')
-        devicetypes_data = validated_data.pop('devicetype')
-        for t in Tenant.objects.filter(name__iexact=tenants_data["name"]):
-            validated_data["tenant"] = t
-            break
-        for t in DeviceType.objects.filter(name__iexact=devicetypes_data["name"]):
-            validated_data["devicetype"] = t
-            break
-        sdata = Device.objects.create(**validated_data)
-        return sdata
+    def get_devicetype(self, obj):
+        return str(obj.id)
 
-    def update(self, instance, validated_data):
-        tenants_data = validated_data.pop('tenant')
-        devicetypes_data = validated_data.pop('devicetype')
-        for t in Tenant.objects.filter(name__iexact=tenants_data["name"]):
-            instance.tenant = t
-            break
-        for t in DeviceType.objects.filter(name__iexact=devicetypes_data["name"]):
-            instance.devicetype = t
-            break
-        instance.save()
-        return instance
+    def to_representation(self, instance):
+        data = super(ControllerSerializer, self).to_representation(instance)
+        data['devicetype'] = self.get_devicetype(instance)
+        return data
+
+    def validate(self, data):
+        """
+        set tenantid and devicetype
+        """
+        user = None
+        tenant = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+            tenant = user.appuser.hometenant
+
+        if user:
+            dts = DeviceType.objects.filter(tenant_id=str(tenant.id)).filter(name=data["devicetype"])
+            if len(dts) <= 0:
+                dts = DeviceType.objects.filter(tenant_id=get_default_tenant()).filter(name=data["devicetype"])
+
+            if len(dts) > 0:
+                data["devicetype"] = dts[0]
+                data["tenant"] = tenant
+
+        return data
+
+    def __init__(self, *args, **kwargs):
+        super(ControllerSerializer, self).__init__(*args, **kwargs)
+        if "context" in kwargs:
+            request = kwargs['context']['request']
+            include_detail = request.GET.get('detail', "false")
+            if include_detail.lower() == "false":
+                self.fields.pop("tenant_detail")
+                self.fields.pop("devicetype_detail")
+
+
+class PluginModuleSerializer(serializers.ModelSerializer):
+    tenant_detail = ShowTenantSerializer(source='tenant', many=False, read_only=True)
+    devicetype_detail = ShowDeviceTypeSerializer(source='devicetype', many=False, read_only=True)
+
+    class Meta:
+        model = PluginModule
+        fields = ('id', 'url', 'name', 'description', 'entity_name', 'entity_name_plural', 'py_mod_name', 'sync_interval', 'default_icon', 'tenant', 'devicetype', 'tenant_detail', 'devicetype_detail')
+
+    def __init__(self, *args, **kwargs):
+        super(PluginModuleSerializer, self).__init__(*args, **kwargs)
+        if "context" in kwargs:
+            request = kwargs['context']['request']
+            include_detail = request.GET.get('detail', "false")
+            if include_detail.lower() == "false":
+                self.fields.pop("tenant_detail")
+                self.fields.pop("devicetype_detail")
+
+
+class IntegrationModuleSerializer(serializers.ModelSerializer):
+    tenant_detail = ShowTenantSerializer(source='tenant', many=False, read_only=True)
+    pm1_detail = PluginModuleSerializer(source='pm1', many=False, read_only=True)
+    pm2_detail = PluginModuleSerializer(source='pm2', many=False, read_only=True)
+
+    class Meta:
+        model = IntegrationModule
+        fields = ('id', 'url', 'name', 'description', 'notes', 'py_mod_name', 'sync_interval', 'is_multi_select', 'tenant', 'pm1', 'pm2', 'tenant_detail', 'pm1_detail', 'pm2_detail')
+
+    def __init__(self, *args, **kwargs):
+        super(IntegrationModuleSerializer, self).__init__(*args, **kwargs)
+        if "context" in kwargs:
+            request = kwargs['context']['request']
+            include_detail = request.GET.get('detail', "false")
+            if include_detail.lower() == "false":
+                self.fields.pop("tenant_detail")
+                self.fields.pop("pm1_detail")
+                self.fields.pop("pm2_detail")
+
+
+class IntegrationConfigurationSerializer(serializers.ModelSerializer):
+    tenant_detail = ShowTenantSerializer(source='tenant', many=False, read_only=True)
+    integrationmodule_detail = IntegrationModuleSerializer(source='integrationmodule', many=False, read_only=True)
+    pm1_detail = ControllerSerializer(source='pm1', many=True, read_only=True)
+    pm2_detail = ControllerSerializer(source='pm2', many=True, read_only=True)
+    integrationmodule = serializers.CharField()
+
+    class Meta:
+        model = IntegrationConfiguration
+        fields = ('id', 'url', 'tenant', 'integrationmodule', 'pm1', 'pm2', 'tenant_detail', 'integrationmodule_detail', 'pm1_detail', 'pm2_detail')
+
+    def get_integrationmodule(self, obj):
+        return str(obj.id)
+
+    def to_representation(self, instance):
+        data = super(IntegrationConfigurationSerializer, self).to_representation(instance)
+        data['integrationmodule'] = self.get_integrationmodule(instance)
+        return data
+
+    def validate(self, data):
+        """
+        set tenantid and devicetype
+        """
+        user = None
+        tenant = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+            tenant = user.appuser.hometenant
+
+        if user:
+            ims = IntegrationModule.objects.filter(tenant_id=str(tenant.id)).filter(name=data["integrationmodule"])
+            if len(ims) <= 0:
+                ims = IntegrationModule.objects.filter(tenant_id=get_default_tenant()).filter(name=data["integrationmodule"])
+
+            if len(ims) > 0:
+                data["integrationmodule"] = ims[0]
+                data["tenant"] = tenant
+
+        return data
+
+    def __init__(self, *args, **kwargs):
+        super(IntegrationConfigurationSerializer, self).__init__(*args, **kwargs)
+        if "context" in kwargs:
+            request = kwargs['context']['request']
+            include_detail = request.GET.get('detail', "false")
+            if include_detail.lower() == "false":
+                self.fields.pop("tenant_detail")
+                self.fields.pop("integrationmodule_detail")
+                self.fields.pop("pm1_detail")
+                self.fields.pop("pm2_detail")
 
 
 class DeviceSerializerFlat(serializers.ModelSerializer):

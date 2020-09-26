@@ -17,6 +17,7 @@ from datetime import timedelta
 from django.utils import timezone
 from .forms import UploadForm
 from scripts.common import get_script
+from rest_framework import status
 
 
 @xframe_options_exempt
@@ -419,6 +420,30 @@ class ControllerViewSet(viewsets.ModelViewSet):
     """
     queryset = Controller.objects.all()
     serializer_class = ControllerSerializer
+
+
+class IntegrationConfigurationViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows integration configurations to be viewed or edited.
+    """
+    queryset = IntegrationConfiguration.objects.all()
+    serializer_class = IntegrationConfigurationSerializer
+
+
+class IntegrationModuleViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows integration modules to be viewed or edited.
+    """
+    queryset = IntegrationModule.objects.all()
+    serializer_class = IntegrationModuleSerializer
+
+
+class PluginModuleViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows plugin modules to be viewed or edited.
+    """
+    queryset = PluginModule.objects.all()
+    serializer_class = PluginModuleSerializer
 
 
 class DeviceViewSet(viewsets.ModelViewSet):
