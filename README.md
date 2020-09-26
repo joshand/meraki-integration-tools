@@ -6,7 +6,7 @@
     - [Cisco Umbrella](#cisco-umbrella)
 2) [Deploy the Application](#deploy)
     - [Clone the Github repo and run locally](#deploy-local)
-3) [Configure Adaptive Policy Sync](#configure)
+3) [Configure Meraki Integration Tools](#configure)
     - [Using the UI](#configure-ui)
     - [Using the API](#configure-api)
 4) [Backup/Restore](#backup-restore)
@@ -18,7 +18,7 @@
 
 #### Meraki Dashboard<a name="configure-dashboard"/> ([^ Top](#top))
 1) Enable API access in your Meraki dashboard organization and obtain an API key ([instructions](https://documentation.meraki.com/zGeneral_Administration/Other_Topics/The_Cisco_Meraki_Dashboard_API))
-2) Keep your API key safe and secure, as it is similar to a password for your dashboard. You will supply this API key to Adaptive Policy Sync later.
+2) Keep your API key safe and secure, as it is similar to a password for your dashboard. You will supply this API key to Meraki Integration Tools later.
 
 #### Cisco Umbrella<a name="cisco-umbrella"/> ([^ Top](#top))
 1) Create Management API Key
