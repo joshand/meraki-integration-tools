@@ -671,3 +671,163 @@ class Operation(models.Model):
 
     def __str__(self):
         return str(self.reload_tasks)
+
+
+class CloudImage(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    controller = models.ForeignKey(Controller, on_delete=models.SET_NULL, null=True, blank=False, default=None)
+    description = models.CharField(max_length=100, blank=True, null=True, default=None)
+    default_username = models.CharField(max_length=100, blank=True, null=True, default=None)
+    cloudid = models.CharField(max_length=100, blank=True, null=True, default=None)
+    rawdata = models.TextField(blank=True, null=True, default=None)
+    skip_sync = models.BooleanField(default=False, editable=False)
+    last_update = models.DateTimeField(default=django.utils.timezone.now)
+    last_sync = models.DateTimeField(null=True, default=None, blank=True)
+    last_sync_log = models.TextField(blank=True, null=True, default=None)
+
+    def __str__(self):
+        if self.description:
+            return self.cloudid + " (" + self.description + ")"
+        else:
+            return self.cloudid
+
+
+class CloudVPC(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    controller = models.ForeignKey(Controller, on_delete=models.SET_NULL, null=True, blank=False, default=None)
+    cidr = models.CharField(max_length=20, blank=True, null=True, default=None)
+    description = models.CharField(max_length=100, blank=True, null=True, default=None)
+    cloudid = models.CharField(max_length=100, blank=True, null=True, default=None)
+    rawdata = models.TextField(blank=True, null=True, default=None)
+    skip_sync = models.BooleanField(default=False, editable=False)
+    last_update = models.DateTimeField(default=django.utils.timezone.now)
+    last_sync = models.DateTimeField(null=True, default=None, blank=True)
+    last_sync_log = models.TextField(blank=True, null=True, default=None)
+
+    def __str__(self):
+        if self.cloudid:
+            return self.cloudid + " (" + self.cidr + " || " + self.description + ")"
+        else:
+            return "(" + self.cidr + " || " + self.description + ")"
+
+
+class CloudSubnet(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    controller = models.ForeignKey(Controller, on_delete=models.SET_NULL, null=True, blank=False, default=None)
+    vpc = models.ForeignKey(CloudVPC, on_delete=models.SET_NULL, null=True, blank=False, default=None)
+    cidr = models.CharField(max_length=20, blank=True, null=True, default=None)
+    description = models.CharField(max_length=100, blank=True, null=True, default=None)
+    cloudid = models.CharField(max_length=100, blank=True, null=True, default=None)
+    rawdata = models.TextField(blank=True, null=True, default=None)
+    assign_public_ip = models.BooleanField(default=True, editable=True)
+    skip_sync = models.BooleanField(default=False, editable=False)
+    last_update = models.DateTimeField(default=django.utils.timezone.now)
+    last_sync = models.DateTimeField(null=True, default=None, blank=True)
+    last_sync_log = models.TextField(blank=True, null=True, default=None)
+
+    def __str__(self):
+        if self.cloudid:
+            return self.vpc.cloudid + "/" + self.cloudid + " (" + self.cidr + " || " + self.description + ")"
+        else:
+            return self.vpc.cloudid + " (" + self.cidr + " || " + self.description + ")"
+
+
+def aws_sg_parser(rulelist):
+    out = ""
+    for r in rulelist:
+        if r["IpProtocol"] == "-1":
+            prefix = "permit ip"
+        else:
+            prefix = "permit " + r["IpProtocol"]
+
+        if "FromPort" in r:
+            if r["FromPort"] == r["ToPort"]:
+                portseq = " eq " + str(r["FromPort"])
+            else:
+                portseq = " range " + str(r["FromPort"]) + " " + str(r["ToPort"])
+        else:
+            portseq = " any"
+
+        for v4 in r["IpRanges"]:
+            desc = ""
+            if "Description" in v4:
+                desc = " remark " + v4["Description"]
+            out += prefix + " " + v4["CidrIp"] + portseq + desc + "\n"
+        for v6 in r["Ipv6Ranges"]:
+            desc = ""
+            if "Description" in v6:
+                desc = " remark " + v6["Description"]
+            out += prefix + " " + v6["CidrIpv6"] + portseq + desc + "\n"
+        for g in r["UserIdGroupPairs"]:
+            desc = ""
+            if "Description" in g:
+                desc = " remark " + g["Description"]
+            out += prefix + " " + g["GroupId"] + portseq + desc + "\n"
+
+    return out
+
+
+class CloudSecurityGroup(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    controller = models.ForeignKey(Controller, on_delete=models.SET_NULL, null=True, blank=False, default=None)
+    description = models.CharField(max_length=100, blank=True, null=True, default=None)
+    cloudvpc = models.ForeignKey(CloudVPC, on_delete=models.SET_NULL, null=True, blank=False, default=None)
+    cloudid = models.CharField(max_length=100, blank=True, null=True, default=None)
+    rawdata = models.TextField(blank=True, null=True, default=None)
+    skip_sync = models.BooleanField(default=False, editable=False)
+    last_update = models.DateTimeField(default=django.utils.timezone.now)
+    last_sync = models.DateTimeField(null=True, default=None, blank=True)
+    last_sync_log = models.TextField(blank=True, null=True, default=None)
+
+    def __str__(self):
+        return self.cloudid + " (" + self.description + ")"
+
+    def inboundrules(self):
+        rules = json.loads(self.rawdata.replace("'", '"'))["IpPermissions"]
+        return aws_sg_parser(rules)
+
+    def outboundrules(self):
+        rules = json.loads(self.rawdata.replace("'", '"'))["IpPermissionsEgress"]
+        return aws_sg_parser(rules)
+
+
+class CloudInstance(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    controller = models.ForeignKey(Controller, on_delete=models.SET_NULL, null=True, blank=False, default=None)
+    cloudimage = models.ForeignKey(CloudImage, on_delete=models.SET_NULL, null=True, blank=False, default=None)
+    # instanceautomation = models.ForeignKey(InstanceAutomation, on_delete=models.SET_NULL, null=True, blank=True, default=None)
+    automationvars = models.TextField(blank=True, null=True, default=None)
+    cloudsubnet = models.ForeignKey(CloudSubnet, on_delete=models.SET_NULL, null=True, blank=False, default=None)
+    cloudsecuritygroup = models.ManyToManyField(CloudSecurityGroup, blank=True)
+    srcdstcheck = models.BooleanField(default=True, editable=True)
+    username = models.CharField(max_length=100, blank=True, null=True, default=None)
+    description = models.CharField(max_length=100, blank=True, null=True, default=None)
+    publicip = models.CharField(max_length=100, blank=True, null=True, default=None)
+    publicdns = models.CharField(max_length=100, blank=True, null=True, default=None)
+    privateip = models.CharField(max_length=100, blank=True, null=True, default=None)
+    cloudid = models.CharField(max_length=100, blank=True, null=True, default=None)
+    imagesize = models.CharField(max_length=100, blank=True, null=True, default=None)
+    userdata = models.TextField(blank=True, null=True, default=None)
+    prevuserdata = models.TextField(blank=True, null=True, default=None, editable=False)
+    rawdata = models.TextField(blank=True, null=True, default=None)
+    force_script = models.BooleanField("Force Instance Script Update", default=False, editable=True)
+    skip_sync = models.BooleanField(default=False, editable=False)
+    last_update = models.DateTimeField(default=django.utils.timezone.now)
+    last_sync = models.DateTimeField(null=True, default=None, blank=True)
+    last_sync_log = models.TextField(blank=True, null=True, default=None)
+    last_deployed_hash = models.CharField(max_length=32, blank=True, null=True, default=None)
+
+    def __str__(self):
+        if self.cloudid:
+            return self.cloudid + " (" + self.description + ")"
+        else:
+            return self.description
+    #
+    # def instanceautomationscript(self):
+    #     return fix_up_command(self.instanceautomation.rawdata)
+    #
+    # def instanceautomationscripthash(self):
+    #     if self.instanceautomationscript() is None or self.instanceautomationscript() == "":
+    #         return ""
+    #     else:
+    #         return hashlib.md5(self.instanceautomationscript().encode("utf-8")).hexdigest()
