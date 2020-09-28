@@ -44,6 +44,9 @@ def tenant(request):
 
 
 def check_tenant(request):
+    if not request.user.is_authenticated:
+        return None, None, None
+
     tenant_id = None
 
     tenant_get = request.GET.get('tenant', None)
