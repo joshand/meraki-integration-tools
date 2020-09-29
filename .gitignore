@@ -133,3 +133,4 @@ upload
 /appicm/migrations
 .DS_Store
 .idea
+/templates/custom/*.html
