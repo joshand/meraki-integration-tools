@@ -837,3 +837,21 @@ class CloudInstance(models.Model):
     #         return ""
     #     else:
     #         return hashlib.md5(self.instanceautomationscript().encode("utf-8")).hexdigest()
+
+
+class CustomMenu(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=20, blank=False)
+
+    def __str__(self):
+        return self.name
+
+
+class CustomTemplate(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    custommenu = models.ForeignKey(CustomMenu, on_delete=models.SET_NULL, null=True, blank=False, default=None)
+    pluginmodule = models.ForeignKey(PluginModule, on_delete=models.SET_NULL, null=True, blank=True, default=None)
+    integrationmodule = models.ForeignKey(IntegrationModule, on_delete=models.SET_NULL, null=True, blank=True, default=None)
+
+    def __str__(self):
+        return self.custommenu.name
