@@ -37,6 +37,13 @@
                                             <td>{{ d.authparm|lookup:fv.name|apikey }}</td>
                                         {% endif %}
                                         <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|apikey }}">
+                                    {% elif fv.password %}
+                                        {% if fv.display %}
+                                            <td>{{ d.authparm|lookup:fv.name|password|display:fv.display|safe }}</td>
+                                        {% else %}
+                                            <td>{{ d.authparm|lookup:fv.name|password }}</td>
+                                        {% endif %}
+                                        <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|password }}">
                                     {% else %}
                                         {% if fv.display %}
                                             <td>{{ d.authparm|lookup:fv.name|display:fv.display|safe }}</td>
@@ -48,6 +55,8 @@
                                 {% else %}
                                     {% if fv.secret %}
                                         <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|apikey }}">
+                                    {% elif fv.password %}
+                                        <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|password }}">
                                     {% else %}
                                         <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name }}">
                                     {% endif %}
