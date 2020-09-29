@@ -142,6 +142,9 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
         if p_target == "scripts":
             fp = "scripts"
             ext = ".py"
+        elif p_target == "template":
+            fp = os.path.join("templates", "custom")
+            ext = ".html"
 
         fn = fp + "/f" + string_generator(8) + ext
         if p_target == "database":
@@ -156,6 +159,9 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
 
         if p_target == "database":
             management.call_command('loaddata', fn)
+
+        # call_command('makemigrations')
+        # call_command('migrate')
 
         # for libitem in unzipped.namelist():
         #     if libitem.startswith('')
