@@ -65,6 +65,7 @@ urlpatterns = [
     url(r'^home/config-package$', views.config_package, name='config_package'),
     url(r'^home/upload-package$', views.upload_package, name='upload_package'),
     url(r'^task/result', views.status_task_result, name='status_task_result'),
+    url(r'^module', views.module_ui, name='module_ui'),
 
     # url(r'^api/v0/tenant/(?P<id>[0-9a-f-]+)$', views.TenantAPIView.as_view()),
     # url(r'^api/v0/tenant/$', views.TenantAPIListView.as_view()),
