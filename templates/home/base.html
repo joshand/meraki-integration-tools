@@ -379,8 +379,8 @@
                                         <div class="md-input__wrapper md-select">
                                             <button id="btntenant" class="ignore md-button md-button--36 active" alt="" type="button" aria-labelledby="orglabel" tabindex="30" name="md-select-69" aria-haspopup="listbox" onclick="toggleList('btntenant', 'dropdowntenant', 'listtenant')">
                                                 <span class="ignore md-button__children" style="opacity: 1;">
-                                                    <div class="ignore md-list-item__left" id="tenantlabel">
-                                                        {{ tenant_desc }}
+                                                    <div class="ignore md-list-item__left" id="tenantlabel" style="font-size: small">
+                                                        {{ tenant.name }}
                                                         <i class="ignore icon icon-arrow-down_16"></i>
                                                     </div>
                                                 </span>
@@ -388,9 +388,9 @@
                                             <div class="md-event-overlay md-event-overlay--bottom" id="dropdowntenant" style="display:none;">
                                                 <div class="md-event-overlay__children" id="listtenant">
                                                     <div id="tenantcontent" class="md-list md-list--vertical md-list" role="listbox" aria-labelledby="md-select-69__label" aria-multiselectable="false">
-                                                        {% for tenant in tenants %}
+                                                        {% for tenant in global.tenants %}
                                                         <div aria-current="true" class="md-list-item" id="md-list-73__so-item" role="option" value="{{ tenant.id }}" tabindex="0" title="{{ tenant.name }}">
-                                                            <div style="color: black" class="md-list-item__center" onclick="location.href = '{{ baseurl }}?tenant={{ tenant.id }}'">{{ tenant.name }}</div>
+                                                            <div style="color: black; font-size: small" class="md-list-item__center" onclick="location.href = '{{ baseurl }}?tenant={{ tenant.id }}'">{{ tenant.name }}</div>
                                                             <div class="md-list-item__right"></div>
                                                         </div>
                                                         {% endfor %}
@@ -413,14 +413,14 @@
                                     </div>
                                     <div class="md-list-item__center">Status</div>
                                     <div class="md-list-item__right">
-                                        {% if menuopen == 1 %}
+                                        {% if menuopen == "status" %}
                                         <i class="md-icon icon icon-arrow-up_12" style="font-size: 12px;"></i>
                                         {% else %}
                                         <i class="md-icon icon icon-arrow-down_12" style="font-size: 12px;"></i>
                                         {% endif %}
                                     </div>
                                 </div>
-                                {% if menuopen == 1 %}
+                                {% if menuopen == "status" %}
                                 <div id="statusmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--expanded">
                                 {% else %}
                                 <div id="statusmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--collapsed">
@@ -441,19 +441,19 @@
                                     </div>
                                     <div class="md-list-item__center">Connect</div>
                                     <div class="md-list-item__right">
-                                        {% if menuopen == 2 %}
+                                        {% if menuopen == "connect" %}
                                         <i class="md-icon icon icon-arrow-up_12" style="font-size: 12px;"></i>
                                         {% else %}
                                         <i class="md-icon icon icon-arrow-down_12" style="font-size: 12px;"></i>
                                         {% endif %}
                                     </div>
                                 </div>
-                                {% if menuopen == 2 %}
+                                {% if menuopen == "connect" %}
                                 <div id="configmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--expanded">
                                 {% else %}
                                 <div id="configmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--collapsed">
                                 {% endif %}
-                                    {% for connection in connections %}
+                                    {% for connection in global.connections %}
                                     <a class="md-list-item" id="md-sidebar__nav-item-3-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-3-1" data-md-keyboard-key="config-conn" href="/home/config-conn/{{ connection.name }}">
                                         <div class="md-list-item__center">{{ connection.description }}</div>
                                     </a>
@@ -471,7 +471,40 @@
                                     </div>
                                     <div class="md-list-item__center">Packages</div>
                                 </a>
-
+                                {% if global.menus|length > 0 %}
+                                    {% for menu in global.menus %}
+                                        <div class="md-list-item" id="md-sidebar__nav-item-6-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-6-0" data-md-keyboard-key="{{ menu.name }}" onclick="toggleMenu('{{ menu.name }}menu');">
+                                            <div class="md-list-item__left">
+                                                <i class="md-icon icon {{ menu.icon }}" style="font-size: 20px;"></i>
+                                            </div>
+                                            <div class="md-list-item__center">{{ menu.name }}</div>
+                                            <div class="md-list-item__right">
+                                                {% if menuopen == menu.name %}
+                                                <i class="md-icon icon icon-arrow-up_12" style="font-size: 12px;"></i>
+                                                {% else %}
+                                                <i class="md-icon icon icon-arrow-down_12" style="font-size: 12px;"></i>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% if menuopen == menu.name %}
+                                        <div id="{{ menu.name }}menu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--expanded">
+                                        {% else %}
+                                        <div id="{{ menu.name }}menu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--collapsed">
+                                        {% endif %}
+                                            {% for submenu in menu.customtemplate_set.all %}
+                                                {% if submenu.pluginmodule %}
+                                                    <a class="md-list-item" id="md-sidebar__nav-item-6-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-6-1" data-md-keyboard-key="config-conn" href="/module/plugin/{{ submenu.pluginmodule.id }}">
+                                                        <div class="md-list-item__center">{{ submenu.name }}</div>
+                                                    </a>
+                                                {% else %}
+                                                    <a class="md-list-item" id="md-sidebar__nav-item-6-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-6-1" data-md-keyboard-key="config-conn" href="/module/integration/{{ submenu.integrationmodule.id }}">
+                                                        <div class="md-list-item__center">{{ submenu.name }}</div>
+                                                    </a>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
 {#                                <div class="md-list-item" id="md-sidebar__nav-item-4-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-4-0" data-md-keyboard-key="integration" onclick="toggleMenu('intmenu');">#}
 {#                                    <div class="md-list-item__left">#}
 {#                                        <i class="md-icon icon icon-accessories_20" style="font-size: 20px;"></i>#}
