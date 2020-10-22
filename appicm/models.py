@@ -681,6 +681,7 @@ class Operation(models.Model):
 
 class CloudImage(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
     controller = models.ForeignKey(Controller, on_delete=models.SET_NULL, null=True, blank=False, default=None)
     description = models.CharField(max_length=100, blank=True, null=True, default=None)
     default_username = models.CharField(max_length=100, blank=True, null=True, default=None)
@@ -700,6 +701,7 @@ class CloudImage(models.Model):
 
 class CloudVPC(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
     controller = models.ForeignKey(Controller, on_delete=models.SET_NULL, null=True, blank=False, default=None)
     cidr = models.CharField(max_length=20, blank=True, null=True, default=None)
     description = models.CharField(max_length=100, blank=True, null=True, default=None)
@@ -719,6 +721,7 @@ class CloudVPC(models.Model):
 
 class CloudSubnet(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
     controller = models.ForeignKey(Controller, on_delete=models.SET_NULL, null=True, blank=False, default=None)
     vpc = models.ForeignKey(CloudVPC, on_delete=models.SET_NULL, null=True, blank=False, default=None)
     cidr = models.CharField(max_length=20, blank=True, null=True, default=None)
@@ -775,6 +778,7 @@ def aws_sg_parser(rulelist):
 
 class CloudSecurityGroup(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
     controller = models.ForeignKey(Controller, on_delete=models.SET_NULL, null=True, blank=False, default=None)
     description = models.CharField(max_length=100, blank=True, null=True, default=None)
     cloudvpc = models.ForeignKey(CloudVPC, on_delete=models.SET_NULL, null=True, blank=False, default=None)
@@ -799,6 +803,7 @@ class CloudSecurityGroup(models.Model):
 
 class CloudInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
     controller = models.ForeignKey(Controller, on_delete=models.SET_NULL, null=True, blank=False, default=None)
     cloudimage = models.ForeignKey(CloudImage, on_delete=models.SET_NULL, null=True, blank=False, default=None)
     # instanceautomation = models.ForeignKey(InstanceAutomation, on_delete=models.SET_NULL, null=True, blank=True, default=None)
@@ -841,7 +846,9 @@ class CloudInstance(models.Model):
 
 class CustomMenu(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
     name = models.CharField(max_length=20, blank=False)
+    icon = models.CharField(max_length=20, blank=True, default="icon-3d-object_20")
 
     def __str__(self):
         return self.name
@@ -849,7 +856,9 @@ class CustomMenu(models.Model):
 
 class CustomTemplate(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
     custommenu = models.ForeignKey(CustomMenu, on_delete=models.SET_NULL, null=True, blank=False, default=None)
+    name = models.CharField(max_length=20, blank=False)
     pluginmodule = models.ForeignKey(PluginModule, on_delete=models.SET_NULL, null=True, blank=True, default=None)
     integrationmodule = models.ForeignKey(IntegrationModule, on_delete=models.SET_NULL, null=True, blank=True, default=None)
 
