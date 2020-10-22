@@ -77,7 +77,10 @@ def get_default_tenant(obj=False):
             return deften[0].id
     else:
         deften = Tenant.objects.create(name="Default")
-        return deften
+        if obj:
+            return deften
+        else:
+            return deften.id
 
 
 def get_file_path(instance, filename):
