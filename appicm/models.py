@@ -70,7 +70,7 @@ class Tenant(models.Model):
 
 def get_default_tenant(obj=False):
     deften = Tenant.objects.filter(name="Default")
-    if len(deften) == 1:
+    if len(deften) >= 1:
         if obj:
             return deften[0]
         else:
@@ -86,7 +86,9 @@ def get_default_tenant(obj=False):
 def get_file_path(instance, filename):
     ext = "." + filename.split('.')[-1]
     filename = string_generator(8) + ext
-    return os.path.join('upload', filename)
+    fp = os.path.join('upload', filename)
+    fp = os.path.join(settings.BASE_DIR, fp)
+    return fp
 
 
 class UploadZip(models.Model):
@@ -149,6 +151,7 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
             fp = os.path.join("templates", "custom")
             ext = ".html"
 
+        fp = os.path.join(settings.BASE_DIR, fp)
         fn = fp + "/f" + string_generator(8) + ext
         if p_target == "database":
             bfd = unzipped.read(p_file).decode("utf-8").replace("{{tenant}}", str(instance.tenant.id))
