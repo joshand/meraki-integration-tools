@@ -139,6 +139,7 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
         instance.tenant = get_default_tenant(obj=True)
     instance.save()
     for p in pkg_json.get("files", []):
+        print(p)
         p_target = p.get("target", "")
         p_file = p.get("file", "")
         print(p_target, p_file)
