@@ -415,8 +415,8 @@ def config_package(request):
 
     crumbs = '<li class="current">Configuration</li><li class="current">Packages</li>'
     return render(request, 'home/packages.html', {"crumbs": crumbs, "tenant": tenant,
-                                                  "data": {"zip": uploadzip, "global_zip": uplzip_global,
-                                                  "global": get_globals(request, tenant)}})
+                                                  "data": {"zip": uploadzip, "global_zip": uplzip_global},
+                                                  "global": get_globals(request, tenant)})
 
 
 def upload_package(request):
