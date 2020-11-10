@@ -44,6 +44,7 @@ def check_operation():
         Operation.objects.create(reload_tasks=False)
     elif len(operations) > 0:
         if operations[0].reload_tasks:
+            TaskResult.objects.create(tenant=get_default_tenant(), taskname="task_scheduler", result="reloaded tasks")
             operations[0].reload_tasks = False
             operations[0].save()
             start()
