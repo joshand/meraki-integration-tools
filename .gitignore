@@ -134,3 +134,4 @@ upload
 .DS_Store
 .idea
 /templates/custom/*.html
+icm/settings.py
