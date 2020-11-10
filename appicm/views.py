@@ -18,6 +18,7 @@ from django.utils import timezone
 from .forms import UploadForm
 from scripts.common import get_script, get_template, get_menu
 from rest_framework import status
+import logging
 
 
 @xframe_options_exempt
@@ -486,9 +487,9 @@ def module_ui(request):
         retval["menuopen"] = menuopen
         retval["tenant"] = tenant
         # print(retval)
-        print(request)
-        print(templ)
-        print(retval)
+        logging.error(request)
+        logging.error(templ)
+        logging.error(retval)
         return render(request, templ, retval)
     else:
         return HttpResponse("Error: Connection Not Defined in Plugin Modules.")
