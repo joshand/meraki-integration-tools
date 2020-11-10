@@ -16,7 +16,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from datetime import timedelta
 from django.utils import timezone
 from .forms import UploadForm
-from scripts.common import get_script
+from scripts.common import get_script, get_template, get_menu
 from rest_framework import status
 
 
@@ -455,15 +455,18 @@ def module_ui(request):
     url_list = url.split("/")
     get_mod_name = url_list[-2:][0]
     get_func_name = url_list[-1:][0]
-    print(get_mod_name, get_func_name)
+    # print(get_mod_name, get_func_name)
+    item_type = None
     if get_mod_name == "plugin":
         pm = PluginModule.objects.filter(tenant=tenant).filter(id=get_func_name)
     else:
         pm = IntegrationModule.objects.filter(tenant=tenant).filter(id=get_func_name)
     if len(pm) == 0:
         if get_mod_name == "plugin":
+            item_type = "plugin"
             pm = PluginModule.objects.filter(tenant=get_default_tenant(obj=True)).filter(id=get_func_name)
         else:
+            item_type = "integration"
             pm = IntegrationModule.objects.filter(tenant=get_default_tenant(obj=True)).filter(id=get_func_name)
 
     if len(pm) == 1:
@@ -472,15 +475,16 @@ def module_ui(request):
             return JsonResponse({"error": "Unable to load Plugin Module."})
         globals()[pmn] = __import__(pmn)
         retval = eval(pmn).do_render(request, tenant)
-        templ = retval["template"]
-        del retval["template"]
+        templ = get_template(pm[0])
         crumbdesc = retval["desc"]
         del retval["desc"]
 
         retval["global"] = get_globals(request, tenant)
         crumbs = '<li class="current">Connect</li><li class="current">' + crumbdesc + '</li>'
         retval["crumbs"] = crumbs
-        retval["menuopen"] = "connect"
+        menuopen = get_menu(pm[0], item_type)
+        retval["menuopen"] = menuopen
+        retval["tenant"] = tenant
         # print(retval)
 
         return render(request, templ, retval)
