@@ -46,10 +46,10 @@ def check_operation():
         if operations[0].reload_tasks:
             operations[0].reload_tasks = False
             operations[0].save()
-            run()
+            start()
 
 
-def run():
+def start():
     # Explicitly kick off the background thread
     try:
         cron.start()
@@ -141,3 +141,10 @@ def run():
 
     # Shutdown your cron thread if the web process is stopped
     atexit.register(lambda: cron.shutdown(wait=False))
+
+
+def run():
+    start()
+
+    while True:
+        pass
