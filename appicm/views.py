@@ -487,9 +487,6 @@ def module_ui(request):
         retval["menuopen"] = menuopen
         retval["tenant"] = tenant
         # print(retval)
-        logging.error(request)
-        logging.error(templ)
-        logging.error(retval)
         return render(request, templ, retval)
     else:
         return HttpResponse("Error: Connection Not Defined in Plugin Modules.")
