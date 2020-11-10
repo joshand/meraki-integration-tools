@@ -34,7 +34,7 @@
                                         </label>
                                     </div>
 
-                                    {% for t in tenants %}
+                                    {% for t in global.tenants %}
                                         <div class="md-input-container md-radio">
                                             {% if t.id|makestring == tenant_id|makestring %}
                                                 <input name="tenant" id="tenant-{{ t.id }}" value="{{ t.id }}" type="radio" class="md-input md-radio__input" checked>
