@@ -114,10 +114,16 @@ def start():
                 continue
             job = eval(jobname)
             # print(pmn, job, pm.sync_interval)
-            if mode == "tenant":
-                cron.add_job(job, 'interval', kwargs={"tenant_list": [str(pm.tenant.id)]}, seconds=pm.sync_interval)
+            if pm.sync_interval == 0:
+                if mode == "tenant":
+                    cron.add_job(job, kwargs={"tenant_list": [str(pm.tenant.id)]})
+                else:
+                    cron.add_job(job)
             else:
-                cron.add_job(job, 'interval', seconds=pm.sync_interval)
+                if mode == "tenant":
+                    cron.add_job(job, 'interval', kwargs={"tenant_list": [str(pm.tenant.id)]}, seconds=pm.sync_interval)
+                else:
+                    cron.add_job(job, 'interval', seconds=pm.sync_interval)
 
     # ims = IntegrationModule.objects.all()
     # for im in ims:
