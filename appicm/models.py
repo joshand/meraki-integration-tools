@@ -624,19 +624,6 @@ class PluginModule(models.Model):
         return self.name
 
 
-class Construct(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
-    constructId = models.CharField(max_length=50, default=None, null=True)
-    type = models.CharField(max_length=50, default=None, null=True)
-    name = models.CharField(max_length=50, default=None, null=True)
-    rawdata = models.JSONField(editable=False)
-    controller = models.ForeignKey(Controller, on_delete=models.CASCADE, blank=False, null=True)
-
-    def __str__(self):
-        return self.type + ":" + self.name
-
-
 class Tunnel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
@@ -871,3 +858,17 @@ class CustomTemplate(models.Model):
 
     def __str__(self):
         return self.custommenu.name
+
+
+class Construct(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
+    constructId = models.CharField(max_length=50, default=None, null=True)
+    type = models.CharField(max_length=50, default=None, null=True)
+    name = models.CharField(max_length=50, default=None, null=True)
+    rawdata = models.JSONField(editable=False)
+    controller = models.ForeignKey(Controller, on_delete=models.CASCADE, blank=True, null=True)
+    integrationconfiguration = models.ForeignKey(IntegrationConfiguration, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return self.type + ":" + self.name
