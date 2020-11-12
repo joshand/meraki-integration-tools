@@ -19,6 +19,7 @@ from .forms import UploadForm
 from scripts.common import get_script, get_template, get_menu
 from rest_framework import status
 import logging
+from django.forms import model_to_dict
 
 
 @xframe_options_exempt
@@ -452,7 +453,7 @@ def module_ui(request):
     if not tenant:
         return redirect('/tenant')
 
-    url = request.META['PATH_INFO']         # /exec/meraki/getorgs
+    url = request.META['PATH_INFO']
     url_list = url.split("/")
     get_mod_name = url_list[-2:][0]
     get_func_name = url_list[-1:][0]
