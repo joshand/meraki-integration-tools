@@ -105,7 +105,7 @@ def get_globals(request, tenant):
 
 
 def get_menus(tenant):
-    cm = CustomMenu.objects.filter(tenant=tenant)
+    cm = CustomMenu.objects.filter(Q(tenant=tenant) | Q(tenant=get_default_tenant()))
     return cm
 
 
