@@ -261,8 +261,13 @@ def config_conn(request):
         int_desc = request.POST.get("objDesc")
         if int_id is None or int_id == "":
             cont = Controller.objects.create(name=int_desc, devicetype=pm[0].devicetype, authparm=authdata, tenant=tenant)
-            orgurl = eval(pmn).get_home_link(cont)
-            HomeLink.objects.create(name=int_desc, url=orgurl, controller=cont, icon_url=def_icon, tenant=tenant)
+            try:
+                orgurl = eval(pmn).get_home_link(cont)
+            except Exception:
+                orgurl = None
+
+            if orgurl:
+                HomeLink.objects.create(name=int_desc, url=orgurl, controller=cont, icon_url=def_icon, tenant=tenant)
         else:
             controllers = Controller.objects.filter(tenant=tenant).filter(id=int_id)
             if len(controllers) == 1:
