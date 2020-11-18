@@ -52,6 +52,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.MyLoginView.as_view(), name='login'),
     url(r'^home/$', views.home, name='home'),
+    url(r'^settings/$', views.settings, name='settings'),
     url(r'^tenant/$', views.tenant, name='tenant'),
     path('logout/', views.MyLogoutView.as_view(), name='logout'),
     url(r'^signup/$', views.signup, name='signup'),
