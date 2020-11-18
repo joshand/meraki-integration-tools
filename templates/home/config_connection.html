@@ -160,7 +160,14 @@
                                             </tr>
                                             {% for fv in mod.devicetype.parmdef %}
                                                 {% if fv.display != False %}
-                                                    {% if fv.style == "dropdown" %}
+                                                    {% if fv.style == "display_raw_json" %}
+                                                        <tr>
+                                                            <td>
+                                                                <p style="text-align: left">{{ fv.desc }}</p>
+                                                                <div>{{ fv.platform }}</div>
+                                                            </td>
+                                                        </tr>
+                                                    {% elif fv.style == "dropdown" %}
                                                         <tr>
                                                         <td>
                                                             <p style="text-align: left">{{ fv.desc }}</p>
