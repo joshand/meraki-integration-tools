@@ -182,10 +182,13 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
         else:
             open(fn, 'wb').write(unzipped.read(p_file))
 
-        i = Upload.objects.create(description=p_file, type=p_target, file=fn, uploadzip=instance,
-                                  tenant=instance.tenant)
-        i.save()
-        logdata += "upload object=" + str(i) + "\n"
+        try:
+            i = Upload.objects.create(description=p_file, type=p_target, file=fn, uploadzip=instance,
+                                      tenant=instance.tenant)
+            i.save()
+            logdata += "upload object=" + str(i) + "\n"
+        except Exception as e:
+            logdata += "exception uploading object=" + str(e) + "\n"
 
         if p_target == "database":
             management.call_command('loaddata', fn)
