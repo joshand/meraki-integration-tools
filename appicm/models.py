@@ -76,11 +76,25 @@ def get_default_tenant(obj=False):
         else:
             return deften[0].id
     else:
-        deften = Tenant.objects.create(name="Default")
+        deften = Tenant.objects.create(id="00000000-0000-0000-0000-000000000000", name="Default")
         if obj:
             return deften
         else:
             return deften.id
+
+
+class TaskResult(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, null=True)
+    taskname = models.CharField(max_length=30)
+    runtime = models.DateTimeField(auto_now_add=True)
+    result = models.TextField(null=True)
+
+    class Meta:
+        ordering = ['-runtime']
+
+    def __str__(self):
+        return str(self.runtime) + " -- " + str(self.taskname)
 
 
 def get_file_path(instance, filename):
@@ -129,20 +143,27 @@ def string_generator(size):
 
 @receiver(post_save, sender=UploadZip)
 def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
+    logdata = ""
     post_save.disconnect(post_save_uploadzip, sender=UploadZip)
     unzipped = zipfile.ZipFile(BytesIO(instance.file.read()))
     pkg = unzipped.read("package.json")
     pkg_json = json.loads(pkg.decode("utf-8"))
-    instance.description = str(pkg_json.get("name", str(instance.file.name)))
-    instance.pkg_ver = float(pkg_json.get("version", 0.0))
+    desc = str(pkg_json.get("name", str(instance.file.name)))
+    logdata += "description=" + str(desc) + "\n"
+    instance.description = desc
+    pkg_ver = float(pkg_json.get("version", 0.0))
+    logdata += "version=" + str(pkg_ver) + "\n"
+    instance.pkg_ver = pkg_ver
     if not instance.tenant:
         instance.tenant = get_default_tenant(obj=True)
+    logdata += "tenant=" + str(instance.tenant) + "\n"
     instance.save()
     for p in pkg_json.get("files", []):
-        print(p)
+        logdata += "processing entry=" + str(p) + "\n"
         p_target = p.get("target", "")
         p_file = p.get("file", "")
-        print(p_target, p_file)
+        logdata += "target=" + str(p_target) + "\n"
+        logdata += "file=" + str(p_file) + "\n"
         fp = "upload"
         ext = ".json"
         if p_target == "scripts":
@@ -154,6 +175,7 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
 
         fp = os.path.join(settings.BASE_DIR, fp)
         fn = fp + "/f" + string_generator(8) + ext
+        logdata += "new filename=" + str(fn) + "\n"
         if p_target == "database":
             bfd = unzipped.read(p_file).decode("utf-8").replace("{{tenant}}", str(instance.tenant.id))
             open(fn, 'wb').write(bfd.encode("utf-8"))
@@ -163,9 +185,12 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
         i = Upload.objects.create(description=p_file, type=p_target, file=fn, uploadzip=instance,
                                   tenant=instance.tenant)
         i.save()
+        logdata += "upload object=" + str(i) + "\n"
 
         if p_target == "database":
             management.call_command('loaddata', fn)
+
+        TaskResult.objects.create(tenant=instance.tenant, taskname="Package Upload", result=logdata)
 
         # call_command('makemigrations')
         # call_command('migrate')
@@ -180,7 +205,6 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
         #     i.save()
 
     set_operation_dirty()
-
     post_save.connect(post_save_uploadzip, sender=UploadZip)
 
 
@@ -580,20 +604,6 @@ class ElementConnection(models.Model):
             return str(self.device)
         else:
             return str(self.module)
-
-
-class TaskResult(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, null=True)
-    taskname = models.CharField(max_length=30)
-    runtime = models.DateTimeField(auto_now_add=True)
-    result = models.TextField(null=True)
-
-    class Meta:
-        ordering = ['-runtime']
-
-    def __str__(self):
-        return str(self.runtime) + " -- " + str(self.taskname)
 
 
 class HomeLink(models.Model):
