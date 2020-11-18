@@ -190,7 +190,6 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
         if p_target == "database":
             management.call_command('loaddata', fn)
 
-        TaskResult.objects.create(tenant=instance.tenant, taskname="Package Upload", result=logdata)
 
         # call_command('makemigrations')
         # call_command('migrate')
@@ -205,6 +204,7 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
         #     i.save()
 
     set_operation_dirty()
+    TaskResult.objects.create(tenant=instance.tenant, taskname="Package Upload", result=logdata)
     post_save.connect(post_save_uploadzip, sender=UploadZip)
 
 
