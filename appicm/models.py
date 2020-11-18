@@ -870,7 +870,7 @@ class CustomTemplate(models.Model):
     integrationmodule = models.ForeignKey(IntegrationModule, on_delete=models.SET_NULL, null=True, blank=True, default=None)
 
     def __str__(self):
-        return self.custommenu.name
+        return self.custommenu.name + "--" + self.name
 
 
 class Construct(models.Model):
