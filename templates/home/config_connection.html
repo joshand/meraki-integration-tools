@@ -105,10 +105,9 @@
             function updatefuncdata(inp_name) {
                 let fd = document.getElementById("funcdata");
                 let oid = document.getElementById("objId").value;
-                console.log(fd);
-                console.log(oid);
                 if (fd) {
                     let fd_data = JSON.parse(fd.value);
+                    console.log(fd_data);
                     fd_data[inp_name] = document.getElementById(inp_name).value;
                     fd.value = JSON.stringify(fd_data);
                     let mod_text = document.getElementById("modaldata-" + oid).value;
