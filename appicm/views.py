@@ -286,7 +286,7 @@ def config_conn(request):
                 HomeLink.objects.update_or_create(controller=cont, tenant=tenant,
                                                   defaults={"name": int_desc, "url": orgurl, "icon_url": def_icon})
 
-    if request.GET.get("action") == "delorg":
+    if request.GET.get("action") == "delobj":
         mer_id = request.GET.get("id")
         Controller.objects.filter(tenant=tenant).filter(id=mer_id).delete()
 
