@@ -473,6 +473,9 @@ def module_ui(request):
     get_func_name = url_list[-1:][0]
     # print(get_mod_name, get_func_name)
     item_type = None
+    if not get_func_name or get_func_name == "":
+        return JsonResponse({"error": "Unable to load Plugin Module."})
+
     if get_mod_name == "plugin":
         pm = PluginModule.objects.filter(tenant=tenant).filter(id=get_func_name)
     else:
