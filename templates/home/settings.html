@@ -1,0 +1,34 @@
+{% extends 'home/base.html' %}
+{% load extras %}
+
+{% block content %}
+    <form class="md-panel__form" method="POST" action="/settings">
+        {% csrf_token %}
+        <tbody class="md-input-group">
+            <tr class="md-input__icon-container">
+                <table class="testTableClass">
+                    <tbody class="md-data-table__tbody">
+                        <tr>
+                            <td>
+                                <p style="text-align: left">Tenant Name</p>
+                                <div class="md-input__wrapper">
+                                    <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="tName" name="tName" placeholder="Tenant Name" value="{{ tenant.name }}">
+                                    <span class="md-input__after">
+                                        <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('tName')">
+                                            <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="md-modal__footer">
+                    <button class="md-button md-button--36 md-button--blue" alt="Submit Form" type="submit" aria-label="Submit Form">
+                        <span class="md-button__children" onclick="document.getElementById('orgmodal').style = 'display:none;'">OK</span>
+                    </button>
+                </div>
+            </tr>
+        </tbody>
+    </form>
+{% endblock %}
