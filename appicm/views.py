@@ -308,6 +308,8 @@ def show_int(request):
         # pm2_dts = intopt.pm2.devicetype.all()
         # pm1_cont = Controller.objects.filter(devicetype__in=pm1_dts)
         # pm2_cont = Controller.objects.filter(devicetype__in=pm2_dts)
+        if not intopt.pm1 or not intopt.pm2:
+            continue
         pm1_cont = Controller.objects.filter(tenant=tenant).filter(devicetype=intopt.pm1.devicetype)
         pm2_cont = Controller.objects.filter(tenant=tenant).filter(devicetype=intopt.pm2.devicetype)
         if len(pm1_cont) > 0 and len(pm2_cont) > 0:
