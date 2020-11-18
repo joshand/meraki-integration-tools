@@ -128,6 +128,18 @@ def home(request):
     return response
 
 
+def settings(request):
+    tenant = get_tenant(request)
+    if not tenant:
+        return redirect('/tenant')
+
+    crumbs = '<li class="current">Settings</li>'
+    response = render(request, 'home/settings.html', {"baseurl": "http://" + request.get_host() + "/settings", "crumbs": crumbs,
+                                                      "tenant": tenant, "global": get_globals(request, tenant)})
+
+    return response
+
+
 def signup(request):
     # print("signup", request)
     if request.method == 'POST':
