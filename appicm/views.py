@@ -43,10 +43,10 @@ def make_tunnel_request(inportnum, body, headers, method):
     try:
         url = "http://127.0.0.1:" + str(inportnum)
         r = requests.request(method, url, json=body, headers=headers, timeout=30)
-        return r
+        return True, r
     except Exception as e:
         print("exception", e)
-        return False
+        return False, e
 
 
 def tenant(request):
@@ -650,17 +650,17 @@ def client_tunnel(request):
                 #     f += 1
                 #     if f > fmax:
                 #         break
-                t = make_tunnel_request(tc.get_internal_port(), request.POST, request.headers, request.method)
+                t_result, t_response = make_tunnel_request(tc.get_internal_port(), request.POST, request.headers, request.method)
 
-                if t is not False:
-                    resp = t.content.decode("UTF-8")
+                if t_result is not False:
+                    resp = t_response.content.decode("UTF-8")
                     if request.headers.get("X-Return-Raw", "false").lower() == "false":
                         outjson = {"state": "success", "response": resp}
                         return JsonResponse(outjson)
                     else:
                         return JsonResponse({"error": str(resp)})
                 else:
-                    outjson = {"state": "fail", "error": str(t)}
+                    outjson = {"state": "fail", "error": str(t_response)}
                     return JsonResponse(outjson)
 
     return JsonResponse(outjson)
