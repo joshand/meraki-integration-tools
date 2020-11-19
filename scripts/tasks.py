@@ -55,10 +55,14 @@ def tunnel_health_check():
     for tc in tcs:
         state, result = health_check(tc.get_internal_port())
         if not state:
-            TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_health_check", result="failed; restarting tunnel:" + str(result))
+            TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_health_check",
+                                      result="failed; restarting tunnel:" + str(result))
             stop_tunnel(tc.pid)
             time.sleep(5)
             start_tunnel(tc)
+        else:
+            TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_health_check",
+                                      result="success:" + str(result))
 
 
 def start():
@@ -70,7 +74,7 @@ def start():
         pass
     cron.remove_all_jobs()
     cron.add_job(check_operation, 'interval', seconds=60)
-    cron.add_job(tunnel_health_check, 'interval', seconds=60*5)
+    cron.add_job(tunnel_health_check, 'interval', seconds=60)
 
     tcs = TunnelClient.objects.all()
     for tc in tcs:
