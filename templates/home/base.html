@@ -228,6 +228,8 @@
                                             listclick(selectedval, selectedname, outputlabel, hiddenid, hiddenname, enablebtn);
                                         }
                                     }
+                                } else if (outtype === 2) {
+                                    document.getElementById(outputlabel).value = data;
                                 } else {
                                     out_data = data[elm];
                                 }
@@ -284,7 +286,7 @@
             {#            console.log(all[i].id);#}
             {#        }#}
             {#    }#}
-            {#}#}
+            {# }#}
 
             if (document.getElementById(menuid).classList.contains("md-sidebar-nav__group--collapsed")) {
                 document.getElementById(menuid).classList.remove("md-sidebar-nav__group--collapsed");
