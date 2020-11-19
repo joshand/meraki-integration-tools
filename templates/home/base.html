@@ -216,9 +216,11 @@
                         {#out.innerHTML = "<font color='red'>Error Issuing Request</font>";#}
                         let out_data = "";
                         if (outtype === 2) {
-                            document.getElementById(outputlabel).innerHTML = JSON.stringify(data);
+                            let olbl = document.getElementById(outputlabel);
+                            olbl.innerHTML = JSON.stringify(data);
                             document.getElementById('preloader').style = "display: none;";
-                            document.getElementById(outputlabel).onchange();
+                            let event = new Event('change');
+                            olbl.dispatchEvent(event);
                         } else if ((outtype === 1) && (data.length > 0)) {
                             for (let elm in data) {
                                 if (outtype === 1) {
