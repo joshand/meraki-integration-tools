@@ -16,12 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls import url
-from rest_framework import routers
+# from rest_framework import routers
+from rest_framework_nested import routers
 from appicm import views
 from rest_framework.schemas import get_schema_view
 from rest_framework.renderers import JSONOpenAPIRenderer
 
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'tenants', views.TenantViewSet)
 router.register(r'controllers', views.ControllerViewSet)
 router.register(r'devicemodeltypes', views.DeviceModelTypeViewSet)
@@ -44,8 +45,7 @@ router.register(r'integrationconfigurations', views.IntegrationConfigurationView
 router.register(r'integrationmodules', views.IntegrationModuleViewSet)
 router.register(r'pluginmodules', views.PluginModuleViewSet)
 
-
-schema_view = get_schema_view(title="Adaptive Policy Sync API", renderer_classes=[JSONOpenAPIRenderer])
+schema_view = get_schema_view(title="Meraki Integration Tools API", renderer_classes=[JSONOpenAPIRenderer])
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='root'),
@@ -56,6 +56,7 @@ urlpatterns = [
     url(r'^tenant/$', views.tenant, name='tenant'),
     path('logout/', views.MyLogoutView.as_view(), name='logout'),
     url(r'^signup/$', views.signup, name='signup'),
+    url(r'^api/v0/tunnel', views.client_tunnel, name='client_tunnel'),
     path(r'api/v0/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^home/config-conn', views.config_conn, name='config_conn'),
