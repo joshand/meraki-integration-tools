@@ -888,3 +888,9 @@ class UploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Upload
         fields = ('id', 'url', 'description', 'file', 'filename', 'tenant', 'uploaded_at')
+
+
+class TunnelClientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TunnelClient
+        fields = ('id', 'tunnelport', 'clientid', 'appdesc', 'appver')
