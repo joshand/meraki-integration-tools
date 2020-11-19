@@ -64,7 +64,7 @@ def start():
     for tc in tcs:
         ext_portnum = tc.tunnelport.portnumber
         int_portnum = ext_portnum - 10000
-        job = cron.add_job(start_tunnel, args=[str(int_portnum), str(ext_portnum)])
+        job = cron.add_job(start_tunnel, args=[str(int_portnum), str(ext_portnum), tc])
 
     tenant_list = []
     tenants = Tenant.objects.exclude(id=get_default_tenant())
