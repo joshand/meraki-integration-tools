@@ -7,6 +7,8 @@ import json
 import requests
 import os
 import signal
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 app = Flask(__name__)
@@ -50,6 +52,7 @@ def health_check():
     global pproxy_pid
     req = requests.get(controller + "/api/v0/tunnels/" + myuuid + "/health")
     rjson = req.json()
+    print("health check=", str(rjson))
     if rjson.get("status") != "ok":
         if pproxy_pid != 0:
             os.kill(pproxy_pid, signal.SIGTERM)  # or signal.SIGKILL
@@ -133,7 +136,7 @@ def do_register():
 
 def run():
     if do_register():
-        job = cron.add_job(health_check, 'interval', seconds=60*5)
+        job = cron.add_job(health_check, 'interval', seconds=60)
         app.run(host="0.0.0.0", port=8000, debug=False)
     else:
         print("Error; no port returned")
