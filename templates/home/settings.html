@@ -2,15 +2,17 @@
 {% load extras %}
 
 {% block content %}
-    <form class="md-panel__form" method="POST" action="/settings">
+    <form class="md-panel__form" method="POST" action="/settings/">
         {% csrf_token %}
-        <tbody class="md-input-group">
-            <tr class="md-input__icon-container">
+
+        <div class="md-data-table" style="width: 100%;">
+            <div class="md-data-table__wrapper">
+                Tenant Configuration
                 <table class="testTableClass">
                     <tbody class="md-data-table__tbody">
                         <tr>
-                            <td>
-                                <p style="text-align: left">Tenant Name</p>
+                            <td style="width: 4rem">Name</td>
+                            <td style="width: 24rem">
                                 <div class="md-input__wrapper">
                                     <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="tName" name="tName" placeholder="Tenant Name" value="{{ tenant.name }}">
                                     <span class="md-input__after">
@@ -23,12 +25,98 @@
                         </tr>
                     </tbody>
                 </table>
-                <div class="md-modal__footer">
-                    <button class="md-button md-button--36 md-button--blue" alt="Submit Form" type="submit" aria-label="Submit Form">
-                        <span class="md-button__children" onclick="document.getElementById('orgmodal').style = 'display:none;'">OK</span>
-                    </button>
+            </div>
+            <div id="bottom_save">
+                <div class="md-panel md-panel__form" style="width:100%;padding:0px">
+                    {% csrf_token %}
+                    <div class="md-input-group" style="width:100%;padding:20px;background-color:#FFF5E0;border-color:#cbb013;border-width:1px;border-style:solid">
+                        <div class="md-input__icon-container">
+                            <div class="row" style="align-content:center; display:flex">
+                                <div class="md-input-container columns medium-6">
+                                    <div class="md-input__wrapper">
+                                        <button class="md-button md-button--blue" tabindex="50">Save Changes</button> or <a href="/home">cancel</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </tr>
-        </tbody>
+            </div>
+            <div class="row">&nbsp;</div>
+            <div class="md-data-table__wrapper">
+                Tenant Administrators <a title="Add Administrator" onclick="loadModal('adminmodal')"><span class="icon icon-document-create_16"></span></a>
+                <table class="testTableClass">
+                    <thead class="md-data-table__thead">
+                        <tr>
+                            <th style="width: 12rem">Name</th>
+                            <th style="width: 16rem">Email</th>
+                            <th style="width: 4rem">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="md-data-table__tbody">
+                        {% for admin in admins %}
+                        <tr>
+                            <td>{{ admin.user.first_name }} {{ admin.user.last_name }}</td>
+                            <td>{{ admin.user.email }}</td>
+                            <td>
+                                {% if admin.hometenant.id == tenant.id %}
+                                    &nbsp;
+                                {% else %}
+                                    <a href="/settings?id={{ admin.id }}&action=remadmin"><span class="icon icon-delete_24"></span></a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+
+    <script>
+    function loadModal(om_id) {
+        document.getElementById(om_id).style = "display:inline;";
+    }
+    </script>
+
+    <form method="POST" action="/settings/?action=addadmin" style="width:100%;padding:0px">
+        {% csrf_token %}
+        <div id="adminmodal" class="md-modal__backdrop fade in" style="display:none; width: 100px;height: 50px;position:fixed; top: calc(50% - 25px);left: calc(50% - 50px);">
+            <div role="dialog" id="react-aria-modal-dialog" class="md-modal md-modal--default in" aria-labelledby="modal1">
+                <div class="md-modal__content">
+                    <div class="md-modal__flex-container">
+                        <div class="md-modal__header">
+                            <span class="md-modal__title">Grant Administrator Access</span>
+                            <button type="button" class="md-close md-modal__close" onclick="document.getElementById('adminmodal').style = 'display:none;'"></button>
+                            <span class="md-modal__message">
+                                <table class="testTableClass" style="width:100%">
+                                    <thead class="md-data-table__thead">
+                                        <tr>
+                                            <td>
+                                                <p style="text-align: left">Administrator Email</p>
+                                                <div class="md-input__wrapper">
+                                                    <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="adminEmail" name="adminEmail" placeholder="Administrator Email">
+                                                    <span class="md-input__after">
+                                                        <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('adminEmail')">
+                                                            <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </span>
+                        </div>
+                        <div class="md-modal__body"></div>
+                        <div class="md-modal__footer">
+                            <button class="md-button md-button--36 md-button--blue" alt="Submit Form" type="submit" aria-label="Submit Form">
+                                <span class="md-button__children" onclick="document.getElementById('adminmodal').style = 'display:none;'">OK</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
 {% endblock %}
