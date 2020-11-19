@@ -19,16 +19,19 @@ def start_tunnel(tunnel_client):
 
         cmd = "pproxy -l tunnel://:" + inportnum + " -r tunnel+in://:" + outportnum + " -v"
         # print(cmd)
-        sp = subprocess.Popen(cmd.split(" "), stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        sp = subprocess.Popen(cmd.split(" "))
         # s = subprocess.check_output([cmd], stderr=subprocess.STDOUT)
         # print(p)
         tunnel_client.pid = sp.pid
         tunnel_client.log = ""
         tunnel_client.save()
 
-        out, err = sp.communicate()
-        out_txt = str(out.decode("utf-8"))
-        err_txt = str(err.decode("utf-8"))
+        out_txt = str(sp.stdout)
+        err_txt = str(sp.stderr)
+
+        # out, err = sp.communicate()
+        # out_txt = str(out.decode("utf-8"))
+        # err_txt = str(err.decode("utf-8"))
         if "address already in use" in out_txt or "address already in use" in err_txt:
             tunnel_client.log = cmd + "\nPort in use... relaunching..."
             tunnel_client.tunnelport = tunnel_client.find_open_port()
@@ -48,11 +51,11 @@ def stop_tunnel(pid):
         print("Exception attempting to end process", pid)
 
 
-def health_check(port_num):
+def health_check(port_num, timeout=30):
     req = ""
     try:
         url = "http://127.0.0.1:" + str(port_num)
-        req = requests.get(url, timeout=30)
+        req = requests.get(url, timeout=timeout)
         rjson = req.json()
         if rjson.get("status") != "ok":
             return False, rjson
