@@ -20,6 +20,7 @@ from scripts.common import get_script, get_template, get_menu
 from rest_framework import status
 import logging
 from django.forms import model_to_dict
+from django.shortcuts import get_object_or_404
 
 
 @xframe_options_exempt
@@ -604,6 +605,26 @@ def module_ui(request):
 #         return render(request, templ, retval)
 #     else:
 #         return HttpResponse("Error: Connection Not Defined in Plugin Modules.")
+
+
+def client_tunnel(request):
+    outjson = {}
+    path = request.META['PATH_INFO'].split("/")[-2:]
+    if len(path) == 2:
+        app_str = request.POST.get("app")
+        app_ver = request.POST.get("ver")
+        client_id = path[0]
+        operation = path[1]
+
+        if operation == "register":
+            tcs = TunnelClient.objects.filter(clientid=client_id)
+            if len(tcs) == 1:
+                tcs[0].appdesc = str(app_str)
+                tcs[0].appver = str(app_ver)
+                tcs[0].save()
+                outjson["portnum"] = tcs[0].tunnelport.portnumber
+
+    return JsonResponse(outjson)
 
 
 class TenantViewSet(viewsets.ModelViewSet):
