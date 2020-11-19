@@ -9,4 +9,5 @@ def start_tunnel(inportnum, portnum, tunnel_client):
     # print(p)
     tunnel_client.pid = p.pid
     tunnel_client.log = cmd + "\n" + str(p)
+    tunnel_client.save()
     return p
