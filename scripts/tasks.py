@@ -84,9 +84,9 @@ def start():
     cron.add_job(tunnel_health_check, 'interval', seconds=60)
 
     tcs = TunnelClient.objects.all()
-    for tc in tcs:
-        if tc.pid:
-            stop_tunnel(tc.pid)
+    # for tc in tcs:
+    #     if tc.pid:
+    #         stop_tunnel(tc.pid)
     #         tc.pid = 0
     #         tc.save()
     # time.sleep(1)
