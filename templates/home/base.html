@@ -434,7 +434,13 @@
 {#                                        <div class="md-list-item__center">Egress Policies</div>#}
 {#                                    </a>#}
                                 </div>
-                                <div class="md-list-item" id="md-sidebar__nav-item-3-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-3-0" data-md-keyboard-key="configuration" onclick="toggleMenu('configmenu');">
+                                <a href="/home/tunnel" class="md-list-item" role="listitem" id="md-sidebar__nav-item-3" data-md-event-key="md-sidebar__nav-item-4">
+                                    <div class="md-list-item__left">
+                                        <i class="md-icon icon icon-condition_16" style="font-size: 20px;"></i>
+                                    </div>
+                                    <div class="md-list-item__center">Tunnel</div>
+                                </a>
+                                <div class="md-list-item" id="md-sidebar__nav-item-3-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-4-0" data-md-keyboard-key="configuration" onclick="toggleMenu('configmenu');">
                                     <div class="md-list-item__left">
                                         <i class="md-icon icon icon-area-selector_20" style="font-size: 20px;"></i>
                                     </div>
@@ -453,18 +459,18 @@
                                 <div id="configmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--collapsed">
                                 {% endif %}
                                     {% for connection in global.connections %}
-                                    <a class="md-list-item" id="md-sidebar__nav-item-3-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-3-1" data-md-keyboard-key="config-conn" href="/home/config-conn/{{ connection.name }}">
+                                    <a class="md-list-item" id="md-sidebar__nav-item-3-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-4-1" data-md-keyboard-key="config-conn" href="/home/config-conn/{{ connection.name }}">
                                         <div class="md-list-item__center">{{ connection.description }}</div>
                                     </a>
                                     {% endfor %}
                                 </div>
-                                <a href="/home/integrate" class="md-list-item" role="listitem" id="md-sidebar__nav-item-4" data-md-event-key="md-sidebar__nav-item-4">
+                                <a href="/home/integrate" class="md-list-item" role="listitem" id="md-sidebar__nav-item-4" data-md-event-key="md-sidebar__nav-item-5">
                                     <div class="md-list-item__left">
                                         <i class="md-icon icon icon-accessories_20" style="font-size: 20px;"></i>
                                     </div>
                                     <div class="md-list-item__center">Integrate</div>
                                 </a>
-                                <a href="/home/config-package" class="md-list-item" role="listitem" id="md-sidebar__nav-item-5" data-md-event-key="md-sidebar__nav-item-5">
+                                <a href="/home/config-package" class="md-list-item" role="listitem" id="md-sidebar__nav-item-5" data-md-event-key="md-sidebar__nav-item-6">
                                     <div class="md-list-item__left">
                                         <i class="md-icon icon icon-cloud-upload_20" style="font-size: 20px;"></i>
                                     </div>
@@ -472,7 +478,7 @@
                                 </a>
                                 {% if global.menus|length > 0 %}
                                     {% for menu in global.menus %}
-                                        <div class="md-list-item" id="md-sidebar__nav-item-6-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-6-0" data-md-keyboard-key="{{ menu.name }}" onclick="toggleMenu('{{ menu.name }}menu');">
+                                        <div class="md-list-item" id="md-sidebar__nav-item-6-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-7-0" data-md-keyboard-key="{{ menu.name }}" onclick="toggleMenu('{{ menu.name }}menu');">
                                             <div class="md-list-item__left">
                                                 <i class="md-icon icon {{ menu.icon }}" style="font-size: 20px;"></i>
                                             </div>
@@ -492,11 +498,11 @@
                                         {% endif %}
                                             {% for submenu in menu.customtemplate_set.all %}
                                                 {% if submenu.pluginmodule %}
-                                                    <a class="md-list-item" id="md-sidebar__nav-item-6-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-6-1" data-md-keyboard-key="config-conn" href="/module/plugin/{{ submenu.pluginmodule.id }}">
+                                                    <a class="md-list-item" id="md-sidebar__nav-item-7-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-7-1" data-md-keyboard-key="config-conn" href="/module/plugin/{{ submenu.pluginmodule.id }}">
                                                         <div class="md-list-item__center">{{ submenu.name }}</div>
                                                     </a>
                                                 {% else %}
-                                                    <a class="md-list-item" id="md-sidebar__nav-item-6-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-6-1" data-md-keyboard-key="config-conn" href="/module/integration/{{ submenu.integrationmodule.id }}">
+                                                    <a class="md-list-item" id="md-sidebar__nav-item-7-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-7-1" data-md-keyboard-key="config-conn" href="/module/integration/{{ submenu.integrationmodule.id }}">
                                                         <div class="md-list-item__center">{{ submenu.name }}</div>
                                                     </a>
                                                 {% endif %}
