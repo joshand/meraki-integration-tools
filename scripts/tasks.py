@@ -116,10 +116,10 @@ def start():
             jobname = pmn + ".do_sync"
             try:
                 globals()[pmn] = __import__(pmn)
+                job = eval(jobname)
             except Exception:
                 print("Exception loading module", pm)
                 continue
-            job = eval(jobname)
             # print(pmn, job, pm.sync_interval)
             if pm.sync_interval == 0:
                 if mode == "tenant":
