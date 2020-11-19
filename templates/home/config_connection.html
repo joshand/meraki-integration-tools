@@ -98,7 +98,8 @@
                         }
                         if (mod_json[i].requires_ok === true) {
                             let btn = document.getElementById("okbutton");
-                            btn.setAttribute("disabled", "disabled");
+                            {#btn.setAttribute("disabled", "disabled");#}
+                            btn.innerHTML = '<button type="submit" class="md-button md-button--36 md-button--blue" alt="Submit Form" type="button" aria-label="Submit Form" disabled="disabled"><span class="md-button__children">OK</span></button>'
                         }
                     }
                     fd.value = JSON.stringify(fd_data);
