@@ -60,6 +60,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^home/config-conn', views.config_conn, name='config_conn'),
     url(r'^exec', views.exec_func, name='exec_func'),
+    url(r'^home/tunnel$', views.show_tunnel, name='show_tunnel'),
     url(r'^home/integrate$', views.show_int, name='show_int'),
     url(r'^home/config-int$', views.config_int, name='config_int'),
     url(r'^home/status-task$', views.status_task, name='status_task'),
