@@ -93,10 +93,10 @@
                             }
                             mdl.value = elm.value;
                             fd_data[mod_json[i].name] = elm.value;
-                            console.log(mod_json[i]);
                         } else {
                             fd_data[mod_json[i].name] = mod_json[i].default;
                         }
+                        console.log(mod_json[i]);
                     }
                     fd.value = JSON.stringify(fd_data);
                 }
