@@ -908,6 +908,7 @@ class TunnelClient(models.Model):
     appdesc = models.CharField(max_length=50, default=None, null=True)
     appver = models.CharField(max_length=10, default=None, null=True)
     previous_port = models.IntegerField(default=0, blank=True)
+    manual_internal_port = models.IntegerField(default=None, null=True, blank=True)
 
     class Meta:
         ordering = ['tunnelport__portnumber', ]
@@ -916,6 +917,8 @@ class TunnelClient(models.Model):
         return str(self.tunnelport.portnumber) + " -- " + self.clientid
 
     def get_internal_port(self):
+        if self.manual_internal_port and self.manual_internal_port != 0:
+            return self.manual_internal_port
         if self.tunnelport:
             return self.tunnelport.portnumber - 10000
 
