@@ -914,6 +914,19 @@ class TunnelClient(models.Model):
     def __str__(self):
         return str(self.tunnelport.portnumber) + " -- " + self.clientid
 
+    def get_internal_port(self):
+        if self.tunnelport:
+            return self.tunnelport.portnumber - 10000
+
+        return None
+
+    def find_open_port(self):
+        ports = TunnelPort.objects.filter(tunnelclient=None)
+        if len(ports) > 0:
+            return random.choice(ports)
+
+        return None
+
 
 @receiver(post_save, sender=TunnelClient)
 def post_save_tunnelclient(sender, instance=None, created=False, **kwargs):
