@@ -656,11 +656,14 @@ def client_tunnel(request):
 
                 if t_result is not False:
                     resp = t_response.content.decode("UTF-8")
-                    if request.headers.get("X-Return-Raw", "false").lower() == "false":
-                        outjson = {"state": "success", "response": resp}
+                    xrt = request.headers.get("X-Return-Type", "raw").lower()
+                    if xrt == "json":
+                        outjson = {"state": "success", "response": json.loads(resp)}
                         return JsonResponse(outjson)
                     else:
-                        return JsonResponse({"error": str(resp)})
+                        outjson = {"state": "success", "response": resp}
+                        return JsonResponse(outjson)
+                        # return JsonResponse({"error": str(resp)})
                 else:
                     outjson = {"state": "fail", "error": str(t_response)}
                     return JsonResponse(outjson)
