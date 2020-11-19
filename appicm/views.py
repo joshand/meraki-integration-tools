@@ -133,9 +133,37 @@ def settings(request):
     if not tenant:
         return redirect('/tenant')
 
+    action = request.GET.get("action")
+    id = request.GET.get("id")
+    if request.method == 'POST':
+        if action == "addadmin":
+            admin_email = request.POST.get("adminEmail")
+            aus = AppUser.objects.filter(user__email=admin_email)
+            for au in aus:
+                au.tenant.add(tenant)
+        else:
+            ten_name = request.POST.get("tName")
+            if ten_name != "":
+                tenant.name = ten_name
+                tenant.save()
+    elif action == "remadmin":
+        remadm = AppUser.objects.filter(id=id)
+        if len(remadm) == 1:
+            if remadm[0].hometenant.id == tenant.id:
+                # can't remove admin from their home tenant
+                pass
+            else:
+                remadm[0].tenant.remove(tenant)
+                # for remten in remadm[0].tenant.all():
+                #     if remten.id == tenant.id:
+                #         print(remten)
+
+    admins = tenant.appuser_set.all()
+
     crumbs = '<li class="current">Settings</li>'
     response = render(request, 'home/settings.html', {"baseurl": "http://" + request.get_host() + "/settings", "crumbs": crumbs,
-                                                      "tenant": tenant, "global": get_globals(request, tenant)})
+                                                      "tenant": tenant, "global": get_globals(request, tenant),
+                                                      "admins": admins})
 
     return response
 
