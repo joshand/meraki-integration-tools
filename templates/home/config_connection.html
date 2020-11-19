@@ -98,7 +98,7 @@
                         }
                         if (mod_json[i].requires_ok === true) {
                             let btn = document.getElementById("okbutton");
-                            btn.disabled = true;
+                            btn.setAttribute("disabled", "disabled");
                         }
                     }
                     fd.value = JSON.stringify(fd_data);
