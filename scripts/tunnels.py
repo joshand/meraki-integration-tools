@@ -1,6 +1,7 @@
 import subprocess
 import os
 import signal
+import requests
 
 
 def start_tunnel(tunnel_client):
@@ -45,3 +46,16 @@ def stop_tunnel(pid):
         os.kill(pid, signal.SIGTERM)  # or signal.SIGKILL
     except Exception:
         print("Exception attempting to end process", pid)
+
+
+def health_check(port_num):
+    req = ""
+    try:
+        url = "http://127.0.0.1:" + str(port_num)
+        req = requests.get(url, timeout=30)
+        rjson = req.json()
+        if rjson.get("status") != "ok":
+            return False, req.content.decode("utf-8")
+        return True
+    except Exception:
+        return False, req
