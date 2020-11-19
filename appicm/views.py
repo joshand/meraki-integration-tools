@@ -13,6 +13,7 @@ from appicm.forms import *
 from django.db.models import F, Q
 import scripts
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.csrf import csrf_exempt
 from datetime import timedelta
 from django.utils import timezone
 from .forms import UploadForm
@@ -607,6 +608,7 @@ def module_ui(request):
 #         return HttpResponse("Error: Connection Not Defined in Plugin Modules.")
 
 
+@csrf_exempt
 def client_tunnel(request):
     outjson = {}
     path = request.META['PATH_INFO'].split("/")[-2:]
@@ -619,8 +621,10 @@ def client_tunnel(request):
         if operation == "register":
             tcs = TunnelClient.objects.filter(clientid=client_id)
             if len(tcs) == 1:
-                tcs[0].appdesc = str(app_str)
-                tcs[0].appver = str(app_ver)
+                if app_str and app_str != "":
+                    tcs[0].appdesc = str(app_str)
+                if app_ver and app_ver != "":
+                    tcs[0].appver = str(app_ver)
                 tcs[0].save()
                 outjson["portnum"] = tcs[0].tunnelport.portnumber
 
