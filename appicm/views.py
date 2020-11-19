@@ -660,7 +660,7 @@ def client_tunnel(request):
                     else:
                         return JsonResponse({"error": str(resp)})
                 else:
-                    outjson = {"state": "fail", "error": "Timeout"}
+                    outjson = {"state": "fail", "error": str(t)}
                     return JsonResponse(outjson)
 
     return JsonResponse(outjson)
