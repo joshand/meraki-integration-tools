@@ -34,6 +34,7 @@ import scripts
 from appicm.models import *
 from scripts.common import get_script
 from scripts.tunnels import start_tunnel, stop_tunnel, health_check
+from datetime import datetime, timedelta
 
 cron = BackgroundScheduler()
 
@@ -65,6 +66,11 @@ def tunnel_health_check():
                                       result="success:" + str(result))
 
 
+def log_cleanup():
+    time_threshold = datetime.now() - timedelta(hours=4)
+    TaskResult.objects.filter(runtime__lt=time_threshold).delete()
+
+
 def start():
     # Explicitly kick off the background thread
     try:
@@ -73,6 +79,7 @@ def start():
         # scheduler may already be running
         pass
     cron.remove_all_jobs()
+    cron.add_job(log_cleanup, 'interval', hours=1)
     cron.add_job(check_operation, 'interval', seconds=60)
     cron.add_job(tunnel_health_check, 'interval', seconds=60)
 
