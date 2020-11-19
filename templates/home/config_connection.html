@@ -112,19 +112,19 @@
                     let mod_text = document.getElementById("modaldata-" + oid).value;
                     if (mod_text !== "") {
                         let mod_json = JSON.parse(mod_text);
-                        console.log(mod_json);
+                        {#console.log(mod_json);#}
                         for (let i in mod_json) {
-                            console.log(i);
+                            {#console.log(i);#}
                             let elm = document.getElementById("modaldata-" + oid + "-" + mod_json[i].name);
                             if (!elm) {
                                 elm = document.getElementById("modaldata-blank");
                             }
                             let mdl = document.getElementById(mod_json[i].name);
-                            console.log(mdl);
-                            console.log(elm);
+                            {#console.log(mdl);#}
+                            {#console.log(elm);#}
                             if (elm && mdl) {
-                                console.log(mod_json[i]);
-                                console.log(mod_json[i].style);
+                                {#console.log(mod_json[i]);#}
+                                {#console.log(mod_json[i].style);#}
                                 if (mod_json[i].style === "dropdown") {
                                     postdata('/exec/{{ mod.name }}/' + mod_json[i].source, elm.value, 1, 'funcdata', mod_json[i].name + '-container', mod_json[i].name + '-content', mod_json[i].name + '-label', mod_json[i].name, mod_json[i].name + '-name', null);
                                 } else if (mod_json[i].style === "display_raw_json") {
