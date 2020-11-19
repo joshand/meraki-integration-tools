@@ -6,6 +6,13 @@ import signal
 def start_tunnel(tunnel_client):
     sp = None
     while True:
+        if not tunnel_client.tunnelport:
+            tunnel_client.tunnelport = tunnel_client.find_open_port()
+            tunnel_client.save()
+            if not tunnel_client.tunnelport:
+                print("unable to find a tunnel port")
+                break
+
         inportnum = str(tunnel_client.get_internal_port())
         outportnum = str(tunnel_client.tunnelport.portnumber)
 
