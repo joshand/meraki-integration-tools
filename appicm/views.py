@@ -330,6 +330,22 @@ def config_conn(request):
     return response
 
 
+def show_tunnel(request):
+    tenant = get_tenant(request)
+    if not tenant:
+        return redirect('/tenant')
+
+    tunnels = []
+
+    crumbs = '<li class="current">Tunnel</li>'
+    response = render(request, "home/list_tunnel.html", {"crumbs": crumbs, "tunnels": tunnels,
+                                                         "tenant": tenant,
+                                                         "global": get_globals(request, tenant)})
+
+    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    return response
+
+
 def show_int(request):
     tenant = get_tenant(request)
     if not tenant:
