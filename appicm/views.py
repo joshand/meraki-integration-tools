@@ -640,16 +640,17 @@ def client_tunnel(request):
                 tc.save()
                 outjson["portnum"] = tc.tunnelport.portnumber
             else:
-                t = False
-                fmax = 5
-                f = 0
-                while t is False:
-                    # t = make_tunnel_request(inportnum, request.get_json(force=True))
-                    t = make_tunnel_request(tc.get_internal_port(), request.POST, request.headers, request.method)
-                    time.sleep(1)
-                    f += 1
-                    if f > fmax:
-                        break
+                # t = False
+                # fmax = 5
+                # f = 0
+                # while t is False:
+                #     # t = make_tunnel_request(inportnum, request.get_json(force=True))
+                #     t = make_tunnel_request(tc.get_internal_port(), request.POST, request.headers, request.method)
+                #     time.sleep(1)
+                #     f += 1
+                #     if f > fmax:
+                #         break
+                t = make_tunnel_request(tc.get_internal_port(), request.POST, request.headers, request.method)
 
                 if t is not False:
                     resp = t.content.decode("UTF-8")
