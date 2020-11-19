@@ -146,10 +146,15 @@
 
             function checkok(inp_id) {
                 let ta = document.getElementById(inp_id).value;
-                let j_ta = JSON.parse(ta);
-                if (j_ta.status === "ok") {
-                    let btn = document.getElementById("okbutton");
-                    btn.innerHTML = '<button type="submit" class="md-button md-button--36 md-button--blue" alt="Submit Form" type="button" aria-label="Submit Form"><span class="md-button__children">OK</span></button>'
+                try {
+                    let j_ta = JSON.parse(ta);
+                    if (j_ta.status === "ok") {
+                        let btn = document.getElementById("okbutton");
+                        btn.innerHTML = '<button type="submit" class="md-button md-button--36 md-button--blue" alt="Submit Form" type="button" aria-label="Submit Form"><span class="md-button__children">OK</span></button>'
+                    }
+                }
+                catch(err) {
+                    console.log("exception...no json to parse?");
                 }
             }
         </script>
