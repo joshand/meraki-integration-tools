@@ -93,6 +93,7 @@
                             }
                             mdl.value = elm.value;
                             fd_data[mod_json[i].name] = elm.value;
+                            console.log(mod_json[i]);
                         } else {
                             fd_data[mod_json[i].name] = mod_json[i].default;
                         }
@@ -275,7 +276,8 @@
                                 <button class="md-button md-button--36 md-button--default" alt="Close Modal" type="button" aria-label="Close Modal">
                                     <span class="md-button__children" onclick="document.getElementById('editmodal').style = 'display:none;'">Cancel</span>
                                 </button>
-                                <div id="submitbutton">
+                                &nbsp;
+                                <div id="okbutton">
                                     <button type="submit" class="md-button md-button--36 md-button--blue" alt="Submit Form" type="button" aria-label="Submit Form">
                                         <span class="md-button__children">OK</span>
                                     </button>
