@@ -639,6 +639,8 @@ def client_tunnel(request):
                     tc.appver = str(app_ver)
                 tc.save()
                 outjson["portnum"] = tc.tunnelport.portnumber
+            elif operation == "health":
+                return JsonResponse({"status": "ok"})
             else:
                 # t = False
                 # fmax = 5
