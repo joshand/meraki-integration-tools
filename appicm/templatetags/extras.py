@@ -81,18 +81,24 @@ def display(value, filt):
         if filt_list[0] == "slice":
             sl1 = filt_list[1]
             sl2 = filt_list[2]
+            lpad = ""
+            rpad = ""
             if sl1 == "":
                 sl1 = 0
+                lpad = ""
             else:
                 sl1 = int(sl1)
+                lpad = "..."
             if sl2 == "":
                 sl2 = len(value)
+                rpad = "..."
             else:
                 sl2 = int(sl2)
+                rpad = "..."
             newval = value[sl1:sl2]
             if newval == value:
                 return "<span title='" + value + "'>" + newval + "</span>"
             else:
-                return "<span title='" + value + "'>..." + newval + "</span>"
+                return "<span title='" + value + "'>" + lpad + newval + rpad + "</span>"
 
     return value
