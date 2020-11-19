@@ -89,6 +89,10 @@ def display(value, filt):
                 sl2 = len(value)
             else:
                 sl2 = int(sl2)
-            return "<span title='" + value + "'>..." + value[sl1:sl2] + "</span>"
+            newval = value[sl1:sl2]
+            if newval == value:
+                return "<span title='" + value + "'>" + newval + "</span>"
+            else:
+                return "<span title='" + value + "'>..." + newval + "</span>"
 
     return value
