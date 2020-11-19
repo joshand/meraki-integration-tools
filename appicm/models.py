@@ -885,3 +885,23 @@ class Construct(models.Model):
 
     def __str__(self):
         return self.type + ":" + self.name
+
+
+class TunnelPort(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    portnumber = models.IntegerField(default=0)
+
+    def __str__(self):
+        return str(self.portnumber)
+
+
+class TunnelClient(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
+    tunnelport = models.ForeignKey(TunnelPort, on_delete=models.SET_NULL, blank=True, null=True)
+    clientid = models.CharField(max_length=50, default=None, null=True)
+    appdesc = models.CharField(max_length=50, default=None, null=True)
+    appver = models.CharField(max_length=10, default=None, null=True)
+
+    def __str__(self):
+        return str(self.tunnelport.portnumber) + " -- " + self.clientid
