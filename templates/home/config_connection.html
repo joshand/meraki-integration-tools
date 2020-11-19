@@ -114,6 +114,7 @@
                         let mod_json = JSON.parse(mod_text);
                         console.log(mod_json);
                         for (let i in mod_json) {
+                            console.log(i);
                             let elm = document.getElementById("modaldata-" + oid + "-" + mod_json[i].name);
                             if (!elm) {
                                 elm = document.getElementById("modaldata-blank");
