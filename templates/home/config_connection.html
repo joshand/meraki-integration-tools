@@ -97,7 +97,8 @@
                             fd_data[mod_json[i].name] = mod_json[i].default;
                         }
                         if (mod_json[i].requires_ok === true) {
-                            console.log("disable ok button");
+                            let btn = document.getElementById("okbutton");
+                            btn.disabled = true;
                         }
                     }
                     fd.value = JSON.stringify(fd_data);
