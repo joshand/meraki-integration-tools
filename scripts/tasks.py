@@ -68,8 +68,6 @@ def start():
     #         tc.save()
     # time.sleep(1)
     for tc in tcs:
-        ext_portnum = tc.tunnelport.portnumber
-        int_portnum = tc.get_internal_port()
         job = cron.add_job(start_tunnel, args=[tc])
 
     tenant_list = []
