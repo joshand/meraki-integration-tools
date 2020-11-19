@@ -80,8 +80,8 @@ def default_route():
             else:
                 r = requests.request(method, url, headers=headers, auth=(auth_un, auth_pw), verify=https_verify, timeout=5)
             resp = str(r.content.decode("UTF-8"))
-        except:
-            resp = "error"
+        except Exception as e:
+            resp = "error:" + str(e)
     else:
         print("doing request with no auth")
         try:
