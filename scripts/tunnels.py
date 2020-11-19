@@ -17,4 +17,7 @@ def start_tunnel(inportnum, portnum, tunnel_client):
 
 
 def stop_tunnel(pid):
-    os.kill(pid, signal.SIGTERM)  # or signal.SIGKILL
+    try:
+        os.kill(pid, signal.SIGTERM)  # or signal.SIGKILL
+    except Exception:
+        print("Exception attempting to end process", pid)
