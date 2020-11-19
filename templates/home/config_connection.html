@@ -112,13 +112,13 @@
                     let mod_text = document.getElementById("modaldata-" + oid).value;
                     if (mod_text !== "") {
                         let mod_json = JSON.parse(mod_text);
-                        console.log(mod_json);
                         for (let i in mod_json) {
                             let elm = document.getElementById("modaldata-" + oid + "-" + mod_json[i].name);
                             if (!elm) {
                                 elm = document.getElementById("modaldata-blank");
                             }
                             let mdl = document.getElementById(mod_json[i].name);
+                            console.log(mdl);
                             if (elm && mdl) {
                                 console.log(mod_json[i].style);
                                 if (mod_json[i].style === "dropdown") {
