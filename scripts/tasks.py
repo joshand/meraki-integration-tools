@@ -66,6 +66,8 @@ def start():
             stop_tunnel(tc.pid)
             tc.pid = 0
             tc.save()
+    time.sleep(1)
+    for tc in tcs:
         ext_portnum = tc.tunnelport.portnumber
         int_portnum = ext_portnum - 10000
         job = cron.add_job(start_tunnel, args=[str(int_portnum), str(ext_portnum), tc])
