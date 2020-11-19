@@ -165,6 +165,7 @@ def settings(request):
                                                       "tenant": tenant, "global": get_globals(request, tenant),
                                                       "admins": admins})
 
+    response.set_cookie(key='tenant_id', value=str(tenant.id))
     return response
 
 
@@ -321,10 +322,12 @@ def config_conn(request):
     dashboards = Controller.objects.filter(tenant=tenant).filter(devicetype=pm[0].devicetype)
 
     crumbs = '<li class="current">Connect</li><li class="current">' + pm[0].description + '</li>'
-    return render(request, "home/config_connection.html", {"crumbs": crumbs, "menuopen": "connect",
-                                                           "tenant": tenant,
-                                                           "mod": pm[0], "data": dashboards,
-                                                           "global": get_globals(request, tenant)})
+    response = render(request, "home/config_connection.html", {"crumbs": crumbs, "menuopen": "connect",
+                                                               "tenant": tenant,
+                                                               "mod": pm[0], "data": dashboards,
+                                                               "global": get_globals(request, tenant)})
+    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    return response
 
 
 def show_int(request):
@@ -351,10 +354,13 @@ def show_int(request):
             unavail_opts.append(intopt)
 
     crumbs = '<li class="current">Integrate</li>'
-    return render(request, "home/list_integration.html", {"crumbs": crumbs, "integrations": intconfigs,
-                                                          "tenant": tenant,
-                                                          "avail": avail_opts, "unavail": unavail_opts,
-                                                          "global": get_globals(request, tenant)})
+    response = render(request, "home/list_integration.html", {"crumbs": crumbs, "integrations": intconfigs,
+                                                              "tenant": tenant,
+                                                              "avail": avail_opts, "unavail": unavail_opts,
+                                                              "global": get_globals(request, tenant)})
+
+    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    return response
 
 
 def config_int(request):
@@ -424,11 +430,13 @@ def config_int(request):
         pm2_controllers = Controller.objects.filter(tenant=tenant).filter(devicetype=intopt.pm2.devicetype)
 
         crumbs = '<li><a href="/home/integrate">Integrate</a></li><li class="current">' + intopt.description + '</li>'
-        return render(request, "home/config_integration.html", {"crumbs": crumbs,
-                                                                "tenant": tenant,
-                                                                "m1": pm1_controllers, "m2": pm2_controllers,
-                                                                "intmod": intopt, "intconfig": ic,
-                                                                "global": get_globals(request, tenant)})
+        response = render(request, "home/config_integration.html", {"crumbs": crumbs,
+                                                                    "tenant": tenant,
+                                                                    "m1": pm1_controllers, "m2": pm2_controllers,
+                                                                    "intmod": intopt, "intconfig": ic,
+                                                                    "global": get_globals(request, tenant)})
+        response.set_cookie(key='tenant_id', value=str(tenant.id))
+        return response
 
 
 def status_task(request):
@@ -440,10 +448,12 @@ def status_task(request):
 
     trs = TaskResult.objects.filter(tenant=tenant).filter(runtime__gt=time_threshold)
     crumbs = '<li>Status</li><li class="current">Task Results</li>'
-    return render(request, "home/status_task.html", {"crumbs": crumbs, "menuopen": "status",
-                                                     "tenant": tenant,
-                                                     "data": trs,
-                                                     "global": get_globals(request, tenant)})
+    response = render(request, "home/status_task.html", {"crumbs": crumbs, "menuopen": "status",
+                                                         "tenant": tenant,
+                                                         "data": trs,
+                                                         "global": get_globals(request, tenant)})
+    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    return response
 
 
 def config_package(request):
@@ -463,9 +473,11 @@ def config_package(request):
     uplzip_global = UploadZip.objects.filter(tenant=get_default_tenant(obj=True))
 
     crumbs = '<li class="current">Configuration</li><li class="current">Packages</li>'
-    return render(request, 'home/packages.html', {"crumbs": crumbs, "tenant": tenant,
-                                                  "data": {"zip": uploadzip, "global_zip": uplzip_global},
-                                                  "global": get_globals(request, tenant)})
+    response = render(request, 'home/packages.html', {"crumbs": crumbs, "tenant": tenant,
+                                                      "data": {"zip": uploadzip, "global_zip": uplzip_global},
+                                                      "global": get_globals(request, tenant)})
+    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    return response
 
 
 def upload_package(request):
@@ -491,8 +503,10 @@ def upload_package(request):
 
     form = UploadForm()
     crumbs = '<li class="current">Configuration</li><li><a href="/home/config-package">Packages</a></li><li class="current">Upload</li>'
-    return render(request, 'home/upload_package.html', {"crumbs": crumbs, "tenant": tenant,
-                                                        "form": form, "global": get_globals(request, tenant)})
+    response = render(request, 'home/upload_package.html', {"crumbs": crumbs, "tenant": tenant,
+                                                            "form": form, "global": get_globals(request, tenant)})
+    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    return response
 
 
 def module_ui(request):
@@ -538,7 +552,9 @@ def module_ui(request):
         retval["menuopen"] = menuopen
         retval["tenant"] = tenant
         # print(retval)
-        return render(request, templ, retval)
+        response = render(request, templ, retval)
+        response.set_cookie(key='tenant_id', value=str(tenant.id))
+        return response
     else:
         return HttpResponse("Error: Connection Not Defined in Plugin Modules.")
 
