@@ -188,7 +188,7 @@
                                                             <td>
                                                                 <p style="text-align: left">{{ fv.desc }}</p>
                                                                 <textarea readonly style="width:100%" id="{{ fv.name }}-label" onchange="checkok('{{ fv.name }}-label')">{{ fv.platform }}</textarea>
-                                                                <input type="hidden" id="{{ fv.name }}" name="{{ fv.name }}" value="" />
+                                                                <input type="hidden" id="{{ fv.name }}" name="{{ fv.name }}" value="" onchange="checkok('{{ fv.name }}-label')" />
                                                             </td>
                                                         </tr>
                                                     {% elif fv.style == "dropdown" %}
