@@ -58,7 +58,7 @@ def health_check(port_num, timeout=30):
         req = requests.get(url, timeout=timeout)
         rjson = req.json()
         if rjson.get("status") != "ok":
-            return False, req
-        return True, req
+            return False, str(rjson)
+        return True, str(rjson)
     except Exception:
         return False, req

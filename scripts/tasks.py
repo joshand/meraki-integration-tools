@@ -57,13 +57,13 @@ def tunnel_health_check():
         state, result = health_check(tc.get_internal_port())
         if not state:
             TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_health_check",
-                                      result="failed; restarting tunnel:" + str(result.content.decode("utf-8")))
+                                      result="failed; restarting tunnel:" + str(result))
             stop_tunnel(tc.pid)
             time.sleep(5)
             start_tunnel(tc)
         else:
             TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_health_check",
-                                      result="success:" + str(result.content.decode("utf-8")))
+                                      result="success:" + str(result))
 
 
 def log_cleanup():
