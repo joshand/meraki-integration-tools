@@ -56,13 +56,13 @@ def tunnel_health_check():
     for tc in tcs:
         state, result = health_check(tc.get_internal_port())
         if not state:
-            TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_health_check",
+            TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_health_bad",
                                       result="failed; restarting tunnel:" + str(result))
             stop_tunnel(tc.pid)
             time.sleep(5)
             start_tunnel(tc)
         else:
-            TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_health_check",
+            TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_health_good",
                                       result="success:" + str(result))
 
 
