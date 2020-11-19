@@ -33,7 +33,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import scripts
 from appicm.models import *
 from scripts.common import get_script
-from scripts.tunnels import start_tunnel
+from scripts.tunnels import start_tunnel, stop_tunnel
 
 cron = BackgroundScheduler()
 
@@ -62,6 +62,10 @@ def start():
 
     tcs = TunnelClient.objects.all()
     for tc in tcs:
+        if tc.pid:
+            stop_tunnel(tc.pid)
+            tc.pid = 0
+            tc.save()
         ext_portnum = tc.tunnelport.portnumber
         int_portnum = ext_portnum - 10000
         job = cron.add_job(start_tunnel, args=[str(int_portnum), str(ext_portnum), tc])
