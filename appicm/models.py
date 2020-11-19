@@ -907,6 +907,7 @@ class TunnelClient(models.Model):
     clientid = models.CharField(max_length=50, default=None, null=True)
     appdesc = models.CharField(max_length=50, default=None, null=True)
     appver = models.CharField(max_length=10, default=None, null=True)
+    previous_port = models.IntegerField(default=0, blank=True)
 
     class Meta:
         ordering = ['tunnelport__portnumber', ]
@@ -930,4 +931,9 @@ class TunnelClient(models.Model):
 
 @receiver(post_save, sender=TunnelClient)
 def post_save_tunnelclient(sender, instance=None, created=False, **kwargs):
-    set_operation_dirty()
+    if instance.tunnelport and instance.tunnelport.portnumber != instance.previous_port:
+        set_operation_dirty()
+        instance.previous_port = instance.tunnelport.portnumber
+        instance.save()
+    if created:
+        set_operation_dirty()
