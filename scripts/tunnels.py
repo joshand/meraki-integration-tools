@@ -54,7 +54,7 @@ def stop_tunnel(pid):
 def health_check(port_num, timeout=30):
     req = ""
     try:
-        url = "http://127.0.0.1:" + str(port_num)
+        url = "http://127.0.0.1:" + str(port_num) + "/health"
         req = requests.get(url, timeout=timeout)
         rjson = req.json()
         if rjson.get("status") != "ok":
