@@ -5,6 +5,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 import json
 import requests
+import os
+import signal
 
 
 app = Flask(__name__)
@@ -27,18 +29,38 @@ gateway = "demo.sigraki.com"
 controller = "http://" + gateway
 internal_port = "8000"
 HTTP_METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH']
+pproxy_pid = 0
 
 
 def job_function(portnum):
+    global pproxy_pid
     cmd = "pproxy -l tunnel+in://" + gateway + ":" + str(portnum) + " -r tunnel://127.0.0.1:" + internal_port
     print(cmd)
     p = subprocess.Popen(cmd.split(" "))
+    pproxy_pid = p.pid
     return p
 
 
 def start_tunnel(portnum):
     job = cron.add_job(job_function, args=[str(portnum)])
     return job
+
+
+def health_check():
+    global pproxy_pid
+    req = requests.get(controller + "/api/v0/tunnels/" + myuuid + "/health")
+    rjson = req.json()
+    if rjson.get("status") != "ok":
+        if pproxy_pid != 0:
+            os.kill(pproxy_pid, signal.SIGTERM)  # or signal.SIGKILL
+            cron.remove_all_jobs()
+            do_register()
+
+
+# handled incoming requests over tunnel
+@app.route('/health', methods=HTTP_METHODS)
+def health():
+    return jsonify({"status": "ok"})
 
 
 # handled incoming requests over tunnel
@@ -96,7 +118,7 @@ def default_route():
     return resp
 
 
-def run():
+def do_register():
     reg_url = controller + "/api/v0/tunnels/" + myuuid + "/register"
     data = {"app": app_name, "ver": app_version}
     r = requests.post(reg_url, json=data)
@@ -104,6 +126,14 @@ def run():
     rj = r.json()
     if "portnum" in rj:
         start_tunnel(rj["portnum"])
+        return True
+    else:
+        return False
+
+
+def run():
+    if do_register():
+        job = cron.add_job(health_check, 'interval', seconds=60*5)
         app.run(host="0.0.0.0", port=8000, debug=False)
     else:
-        print("Error; no port returned", str(rj))
+        print("Error; no port returned")
