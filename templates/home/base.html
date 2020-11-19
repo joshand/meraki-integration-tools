@@ -216,7 +216,7 @@
                         {#out.innerHTML = "<font color='red'>Error Issuing Request</font>";#}
                         let out_data = "";
                         if (outtype === 2) {
-                            document.getElementById(outputlabel).innerHTML = data;
+                            document.getElementById(outputlabel).innerHTML = JSON.stringify(data);
                             document.getElementById('preloader').style = "display: none;";
                         } else if ((outtype === 1) && (data.length > 0)) {
                             for (let elm in data) {
