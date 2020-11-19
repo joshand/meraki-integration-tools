@@ -42,7 +42,7 @@ def status_task_result(request):
 def make_tunnel_request(inportnum, body, headers, method):
     try:
         url = "http://127.0.0.1:" + str(inportnum)
-        r = requests.request(method, url, data=body, headers=headers)
+        r = requests.request(method, url, json=body, headers=headers, timeout=30)
         return r
     except Exception as e:
         print("exception", e)
