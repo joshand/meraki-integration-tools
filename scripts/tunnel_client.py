@@ -98,10 +98,12 @@ def default_route():
 
 def run():
     reg_url = controller + "/api/v0/tunnels/" + myuuid + "/register"
-    print(reg_url)
     data = {"app": app_name, "ver": app_version}
     r = requests.post(reg_url, json=data)
     # print(r.content.decode("utf-8"))
     rj = r.json()
-    start_tunnel(rj["portnum"])
-    app.run(host="0.0.0.0", port=8000, debug=False)
+    if "portnum" in rj:
+        start_tunnel(rj["portnum"])
+        app.run(host="0.0.0.0", port=8000, debug=False)
+    else:
+        print("Error; no port returned", str(rj))
