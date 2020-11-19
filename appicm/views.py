@@ -22,6 +22,7 @@ from rest_framework import status
 import logging
 from django.forms import model_to_dict
 from django.shortcuts import get_object_or_404
+import requests
 
 
 @xframe_options_exempt
@@ -36,6 +37,16 @@ def status_task_result(request):
         return JsonResponse({"data": trs[0].result.replace("\n", "<br>")})
     else:
         return JsonResponse({"data": "Error loading results."})
+
+
+def make_tunnel_request(inportnum, body, headers, method):
+    try:
+        url = "http://127.0.0.1:" + str(inportnum)
+        r = requests.request(method, url, data=body, headers=headers)
+        return r
+    except Exception as e:
+        print("exception", e)
+        return False
 
 
 def tenant(request):
@@ -618,15 +629,38 @@ def client_tunnel(request):
         client_id = path[0]
         operation = path[1]
 
-        if operation == "register":
-            tcs = TunnelClient.objects.filter(clientid=client_id)
-            if len(tcs) == 1:
+        tcs = TunnelClient.objects.filter(clientid=client_id)
+        if len(tcs) == 1:
+            tc = tcs[0]
+            if operation == "register":
                 if app_str and app_str != "":
-                    tcs[0].appdesc = str(app_str)
+                    tc.appdesc = str(app_str)
                 if app_ver and app_ver != "":
-                    tcs[0].appver = str(app_ver)
-                tcs[0].save()
-                outjson["portnum"] = tcs[0].tunnelport.portnumber
+                    tc.appver = str(app_ver)
+                tc.save()
+                outjson["portnum"] = tc.tunnelport.portnumber
+            else:
+                t = False
+                fmax = 5
+                f = 0
+                while t is False:
+                    # t = make_tunnel_request(inportnum, request.get_json(force=True))
+                    t = make_tunnel_request(tc.get_internal_port(), request.POST, request.headers, request.method)
+                    time.sleep(1)
+                    f += 1
+                    if f > fmax:
+                        break
+
+                if t is not False:
+                    resp = t.content.decode("UTF-8")
+                    if request.headers.get("X-Return-Raw", "false").lower() == "false":
+                        outjson = {"state": "success", "response": resp}
+                        return JsonResponse(outjson)
+                    else:
+                        return JsonResponse({"error": str(resp)})
+                else:
+                    outjson = {"state": "fail", "error": "Timeout"}
+                    return JsonResponse(outjson)
 
     return JsonResponse(outjson)
 
