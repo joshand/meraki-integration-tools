@@ -891,6 +891,9 @@ class TunnelPort(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     portnumber = models.IntegerField(default=0)
 
+    class Meta:
+        ordering = ['portnumber', ]
+
     def __str__(self):
         return str(self.portnumber)
 
@@ -902,6 +905,9 @@ class TunnelClient(models.Model):
     clientid = models.CharField(max_length=50, default=None, null=True)
     appdesc = models.CharField(max_length=50, default=None, null=True)
     appver = models.CharField(max_length=10, default=None, null=True)
+
+    class Meta:
+        ordering = ['tunnelport__portnumber', ]
 
     def __str__(self):
         return str(self.tunnelport.portnumber) + " -- " + self.clientid
