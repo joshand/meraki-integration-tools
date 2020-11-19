@@ -902,6 +902,8 @@ class TunnelClient(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
     tunnelport = models.ForeignKey(TunnelPort, on_delete=models.SET_NULL, blank=True, null=True)
+    pid = models.IntegerField(default=0, blank=True)
+    log = models.TextField(null=True, blank=True, default=None)
     clientid = models.CharField(max_length=50, default=None, null=True)
     appdesc = models.CharField(max_length=50, default=None, null=True)
     appver = models.CharField(max_length=10, default=None, null=True)
@@ -911,3 +913,8 @@ class TunnelClient(models.Model):
 
     def __str__(self):
         return str(self.tunnelport.portnumber) + " -- " + self.clientid
+
+
+@receiver(post_save, sender=TunnelClient)
+def post_save_tunnelclient(sender, instance=None, created=False, **kwargs):
+    set_operation_dirty()
