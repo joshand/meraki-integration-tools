@@ -33,7 +33,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import scripts
 from appicm.models import *
 from scripts.common import get_script
-from scripts.tunnels import start_tunnel, stop_tunnel
+from scripts.tunnels import start_tunnel, stop_tunnel, health_check
 
 cron = BackgroundScheduler()
 
@@ -50,6 +50,17 @@ def check_operation():
             start()
 
 
+def tunnel_health_check():
+    tcs = TunnelClient.objects.all()
+    for tc in tcs:
+        state, result = health_check(tc.get_internal_port())
+        if not state:
+            TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_health_check", result="failed; restarting tunnel:" + str(result))
+            stop_tunnel(tc.pid)
+            time.sleep(5)
+            start_tunnel(tc)
+
+
 def start():
     # Explicitly kick off the background thread
     try:
@@ -59,6 +70,7 @@ def start():
         pass
     cron.remove_all_jobs()
     cron.add_job(check_operation, 'interval', seconds=60)
+    cron.add_job(tunnel_health_check, 'interval', seconds=60*5)
 
     tcs = TunnelClient.objects.all()
     for tc in tcs:
