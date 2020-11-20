@@ -91,7 +91,7 @@ def display(value, filt):
                 lpad = "..."
             if sl2 == "":
                 sl2 = len(value)
-                rpad = "..."
+                rpad = ""
             else:
                 sl2 = int(sl2)
                 rpad = "..."
