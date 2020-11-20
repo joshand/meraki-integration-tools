@@ -86,10 +86,10 @@
                     for (let i in mod_json) {
                         let elm = document.getElementById("modaldata-" + inp_id + "-" + mod_json[i].name);
                         let mdl = document.getElementById(mod_json[i].name);
-                        console.log(elm);
-                        console.log(mdl);
-                        console.log(mod_json[i].default_load);
-                        if (elm && mdl) {
+                        {#console.log(elm);#}
+                        {#console.log(mdl);#}
+                        {#console.log(mod_json[i].default_load);#}
+                        if ((elm && mdl) || (mod_json[i].default_load)) {
                             if (mod_json[i].style === "dropdown") {
                                 fd.value = JSON.stringify(fd_data);
                                 postdata('/exec/{{ mod.name }}/' + mod_json[i].source, elm.value, 1, 'funcdata', mod_json[i].name + '-container', mod_json[i].name + '-content', mod_json[i].name + '-label', mod_json[i].name, mod_json[i].name + '-name', null);
