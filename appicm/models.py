@@ -15,6 +15,7 @@ import string
 import random
 import time
 from django.core import management
+import logging
 
 
 class BearerAuthentication(authentication.TokenAuthentication):
@@ -150,20 +151,26 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
     pkg_json = json.loads(pkg.decode("utf-8"))
     desc = str(pkg_json.get("name", str(instance.file.name)))
     logdata += "description=" + str(desc) + "\n"
+    logging.error("description=" + str(desc))
     instance.description = desc
     pkg_ver = float(pkg_json.get("version", 0.0))
     logdata += "version=" + str(pkg_ver) + "\n"
+    logging.error("version=" + str(pkg_ver))
     instance.pkg_ver = pkg_ver
     if not instance.tenant:
         instance.tenant = get_default_tenant(obj=True)
     logdata += "tenant=" + str(instance.tenant) + "\n"
+    logging.error("tenant=" + str(instance.tenant))
     instance.save()
     for p in pkg_json.get("files", []):
         logdata += "processing entry=" + str(p) + "\n"
+        logging.error("processing entry=" + str(p))
         p_target = p.get("target", "")
         p_file = p.get("file", "")
         logdata += "target=" + str(p_target) + "\n"
+        logging.error("target=" + str(p_target))
         logdata += "file=" + str(p_file) + "\n"
+        logging.error("file=" + str(p_file))
         fp = "upload"
         ext = ".json"
         if p_target == "scripts":
@@ -176,6 +183,7 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
         fp = os.path.join(settings.BASE_DIR, fp)
         fn = fp + "/f" + string_generator(8) + ext
         logdata += "new filename=" + str(fn) + "\n"
+        logging.error("new filename=" + str(fn))
         if p_target == "database":
             bfd = unzipped.read(p_file).decode("utf-8").replace("{{tenant}}", str(instance.tenant.id))
             open(fn, 'wb').write(bfd.encode("utf-8"))
@@ -187,8 +195,10 @@ def post_save_uploadzip(sender, instance=None, created=False, **kwargs):
                                       tenant=instance.tenant)
             i.save()
             logdata += "upload object=" + str(i) + "\n"
+            logging.error("upload object=" + str(i))
         except Exception as e:
             logdata += "exception uploading object=" + str(e) + "\n"
+            logging.error("exception uploading object=" + str(e))
 
         if p_target == "database":
             management.call_command('loaddata', fn)
