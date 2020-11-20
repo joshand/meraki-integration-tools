@@ -346,6 +346,7 @@ class DeviceModelType(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
+    named_id = models.CharField(max_length=100, default=None, null=True)
     device_type = models.CharField(max_length=50, null=True, blank=True, default=None)
     portcount = models.IntegerField(null=True, blank=True, default=None)
     portlist = models.TextField(blank=True, null=True, default=None)
