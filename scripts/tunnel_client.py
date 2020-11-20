@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect, session, url_for, render_template, jsonify
 import sys
+import paramiko
 import subprocess
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
@@ -21,6 +22,8 @@ cron.start()
 
 # Shutdown your cron thread if the web process is stopped
 atexit.register(lambda: cron.shutdown(wait=False))
+
+ssh = paramiko.SSHClient()
 
 
 app_version = "0.0.1"
@@ -78,45 +81,64 @@ def default_route():
     # auth_pw = injson.get("auth_password", "")
     # https_verify = injson.get("https_verify", "")
     # body = injson.get("body", "")
-    url = request.headers.get("X-Local-URL")
-    headers = json.loads(request.headers.get("X-Local-Headers", "{}"))
-    insecure = request.headers.get("X-Local-Allow-Insecure", "false").lower()
-    if insecure == "true":
-        https_verify = False
-    else:
-        https_verify = True
-    auth = request.headers.get("X-Local-Auth-Basic", None)
-    method = request.method
-    if method.upper() == "GET" or method.upper() == "DELETE":
-        body = None
-    else:
-        body = request.get_data()
+    access_method = request.headers.get("X-Local-Access-Method", "api")
+    if access_method == "api":
+        url = request.headers.get("X-Local-URL")
+        headers = json.loads(request.headers.get("X-Local-Headers", "{}"))
+        insecure = request.headers.get("X-Local-Allow-Insecure", "false").lower()
+        if insecure == "true":
+            https_verify = False
+        else:
+            https_verify = True
+        no_body = request.headers.get("X-Empty-Body", "false").lower()
+        auth = request.headers.get("X-Local-Auth-Basic", None)
+        method = request.method
+        if method.upper() == "GET" or method.upper() == "DELETE" or no_body == "true":
+            body = None
+        else:
+            body = request.get_data()
 
-    if not url:
-        return "You must specifiy at a minimum the X-Local-URL with the local URL to call."
+        if not url:
+            return "You must specifiy at a minimum the X-Local-URL with the local URL to call."
 
-    if auth:
+        if auth:
+            auth_un, auth_pw = auth.split(":")
+            print("doing request with basic auth")
+            try:
+                if body:
+                    r = requests.request(method, url, headers=headers, auth=(auth_un, auth_pw), verify=https_verify,
+                                         timeout=5, body=body)
+                else:
+                    r = requests.request(method, url, headers=headers, auth=(auth_un, auth_pw), verify=https_verify, timeout=5)
+                resp = str(r.content.decode("UTF-8"))
+            except Exception as e:
+                resp = "error:" + str(e)
+        else:
+            print("doing request with no auth")
+            try:
+                if body:
+                    r = requests.request(method, url, headers=headers, verify=https_verify, timeout=5, body=body)
+                else:
+                    r = requests.request(method, url, headers=headers, verify=https_verify, timeout=5)
+                resp = str(r.content.decode("UTF-8"))
+            except:
+                resp = "error"
+    elif access_method == "ssh":
+        out_data = {}
+        ip = request.headers.get("X-Local-IP", None)
+        port = int(request.headers.get("X-Local-Port", "22"))
+        auth = request.headers.get("X-Local-Auth-Basic", None)
         auth_un, auth_pw = auth.split(":")
-        print("doing request with basic auth")
-        try:
-            if body:
-                r = requests.request(method, url, headers=headers, auth=(auth_un, auth_pw), verify=https_verify,
-                                     timeout=5, body=body)
-            else:
-                r = requests.request(method, url, headers=headers, auth=(auth_un, auth_pw), verify=https_verify, timeout=5)
-            resp = str(r.content.decode("UTF-8"))
-        except Exception as e:
-            resp = "error:" + str(e)
+        cmd = json.loads(request.headers.get("X-Local-Command", "[]"))
+
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(ip, port, auth_un, auth_pw)
+        stdin, stdout, stderr = ssh.exec_command(cmd, timeout=30)
+        out_data[cmd] = stdout.readlines()
+        resp = out_data
+        ssh.close()
     else:
-        print("doing request with no auth")
-        try:
-            if body:
-                r = requests.request(method, url, headers=headers, verify=https_verify, timeout=5, body=body)
-            else:
-                r = requests.request(method, url, headers=headers, verify=https_verify, timeout=5)
-            resp = str(r.content.decode("UTF-8"))
-        except:
-            resp = "error"
+        resp = ""
 
     return resp
 
