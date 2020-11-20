@@ -86,6 +86,8 @@
                     for (let i in mod_json) {
                         let elm = document.getElementById("modaldata-" + inp_id + "-" + mod_json[i].name);
                         let mdl = document.getElementById(mod_json[i].name);
+                        console.log(elm);
+                        console.log(mdl);
                         if (elm && mdl) {
                             if (mod_json[i].style === "dropdown") {
                                 fd.value = JSON.stringify(fd_data);
@@ -177,7 +179,7 @@
                                                 <td>
                                                     <p style="text-align: left">{{ mod.entity_name }} Description</p>
                                                     <div class="md-input__wrapper">
-                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="objDesc" name="objDesc" placeholder="{{ pm.entity_name }} Description" onchange="updatefuncdata('objDesc')">
+                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="objDesc" name="objDesc" placeholder="{{ pm.entity_name }} Description">
                                                         <span class="md-input__after">
                                                             <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('objDesc')">
                                                                 <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>
