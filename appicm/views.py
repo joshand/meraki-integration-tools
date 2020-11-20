@@ -137,7 +137,7 @@ def home(request):
                                                   "tenant": tenant, "global": get_globals(request, tenant),
                                                   "homelinks": homelinks})
 
-    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    response.set_cookie(key='tenant_id', value=str(tenant.id), samesite=None, secure=True)
     return response
 
 
@@ -178,7 +178,7 @@ def settings(request):
                                                       "tenant": tenant, "global": get_globals(request, tenant),
                                                       "admins": admins})
 
-    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    response.set_cookie(key='tenant_id', value=str(tenant.id), samesite=None, secure=True)
     return response
 
 
@@ -342,7 +342,7 @@ def config_conn(request):
                                                                "tenant": tenant,
                                                                "mod": pm[0], "data": dashboards,
                                                                "global": get_globals(request, tenant)})
-    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    response.set_cookie(key='tenant_id', value=str(tenant.id), samesite=None, secure=True)
     return response
 
 
@@ -358,7 +358,7 @@ def show_tunnel(request):
                                                          "tenant": tenant,
                                                          "global": get_globals(request, tenant)})
 
-    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    response.set_cookie(key='tenant_id', value=str(tenant.id), samesite=None, secure=True)
     return response
 
 
@@ -391,7 +391,7 @@ def show_int(request):
                                                               "avail": avail_opts, "unavail": unavail_opts,
                                                               "global": get_globals(request, tenant)})
 
-    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    response.set_cookie(key='tenant_id', value=str(tenant.id), samesite=None, secure=True)
     return response
 
 
@@ -467,7 +467,7 @@ def config_int(request):
                                                                     "m1": pm1_controllers, "m2": pm2_controllers,
                                                                     "intmod": intopt, "intconfig": ic,
                                                                     "global": get_globals(request, tenant)})
-        response.set_cookie(key='tenant_id', value=str(tenant.id))
+        response.set_cookie(key='tenant_id', value=str(tenant.id), samesite=None, secure=True)
         return response
 
 
@@ -484,7 +484,7 @@ def status_task(request):
                                                          "tenant": tenant,
                                                          "data": trs,
                                                          "global": get_globals(request, tenant)})
-    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    response.set_cookie(key='tenant_id', value=str(tenant.id), samesite=None, secure=True)
     return response
 
 
@@ -508,7 +508,7 @@ def config_package(request):
     response = render(request, 'home/packages.html', {"crumbs": crumbs, "tenant": tenant,
                                                       "data": {"zip": uploadzip, "global_zip": uplzip_global},
                                                       "global": get_globals(request, tenant)})
-    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    response.set_cookie(key='tenant_id', value=str(tenant.id), samesite=None, secure=True)
     return response
 
 
@@ -537,7 +537,7 @@ def upload_package(request):
     crumbs = '<li class="current">Configuration</li><li><a href="/home/config-package">Packages</a></li><li class="current">Upload</li>'
     response = render(request, 'home/upload_package.html', {"crumbs": crumbs, "tenant": tenant,
                                                             "form": form, "global": get_globals(request, tenant)})
-    response.set_cookie(key='tenant_id', value=str(tenant.id))
+    response.set_cookie(key='tenant_id', value=str(tenant.id), samesite=None, secure=True)
     return response
 
 
@@ -585,7 +585,7 @@ def module_ui(request):
         retval["tenant"] = tenant
         # print(retval)
         response = render(request, templ, retval)
-        response.set_cookie(key='tenant_id', value=str(tenant.id))
+        response.set_cookie(key='tenant_id', value=str(tenant.id), samesite=None, secure=True)
         return response
     else:
         return HttpResponse("Error: Connection Not Defined in Plugin Modules.")
