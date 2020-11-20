@@ -256,11 +256,14 @@ def exec_func(request):
             if pd.get("source", "null") == get_func_name:
                 pd_args = pd["args"]
                 for pd_a in pd_args:
-                    pdat = post_data.get(pd_a, "")
-                    if pdat.find("****") >= 0:
-                        arg_list.append(cont[0].authparm["api"][pd_a])
+                    if pd_a == "tenant":
+                        arg_list.append(tenant.id)
                     else:
-                        arg_list.append(pdat)
+                        pdat = post_data.get(pd_a, "")
+                        if pdat.find("****") >= 0:
+                            arg_list.append(cont[0].authparm["api"][pd_a])
+                        else:
+                            arg_list.append(pdat)
 
         retval = eval(pmn + "." + get_func_name)(arg_list)
         return JsonResponse(retval, safe=False)
