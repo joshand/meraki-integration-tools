@@ -90,9 +90,13 @@
                         {#console.log(mdl);#}
                         {#console.log(mod_json[i].default_load);#}
                         if ((elm && mdl) || (mod_json[i].default_load)) {
+                            let ev = "";
+                            if (elm && mdl) {
+                                ev = elm.value;
+                            }
                             if (mod_json[i].style === "dropdown") {
                                 fd.value = JSON.stringify(fd_data);
-                                postdata('/exec/{{ mod.name }}/' + mod_json[i].source, elm.value, 1, 'funcdata', mod_json[i].name + '-container', mod_json[i].name + '-content', mod_json[i].name + '-label', mod_json[i].name, mod_json[i].name + '-name', null);
+                                postdata('/exec/{{ mod.name }}/' + mod_json[i].source, ev, 1, 'funcdata', mod_json[i].name + '-container', mod_json[i].name + '-content', mod_json[i].name + '-label', mod_json[i].name, mod_json[i].name + '-name', null);
                             }
                             mdl.value = elm.value;
                             fd_data[mod_json[i].name] = elm.value;
