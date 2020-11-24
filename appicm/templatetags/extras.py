@@ -83,7 +83,7 @@ def display(value, filt):
             sl2 = filt_list[2]
             lpad = ""
             rpad = ""
-            if sl1 == "":
+            if sl1 == "" or sl1 == "0":
                 sl1 = 0
                 lpad = ""
             else:
