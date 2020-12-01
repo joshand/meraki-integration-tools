@@ -263,10 +263,12 @@ def exec_func(request):
                 logging.error("match=True")
                 pd_args = pd["args"]
                 for pd_a in pd_args:
+                    logging.error("arg=" + str(pd_a))
                     if pd_a == "tenant":
                         arg_list.append(tenant.id)
                     else:
                         pdat = post_data.get(pd_a, "")
+                        logging.error("data=" + str(pdat))
                         if pdat.find("****") >= 0:
                             arg_list.append(cont[0].authparm["api"][pd_a])
                         else:
