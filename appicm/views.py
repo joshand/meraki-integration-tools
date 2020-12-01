@@ -239,8 +239,7 @@ def exec_func(request):
         pm = PluginModule.objects.filter(tenant=get_default_tenant(obj=True)).filter(name=get_mod_name)
     if len(pm) == 1:
         post_data = json.loads(request.body)
-        logging.error("post_data")
-        logging.error(post_data)
+        logging.error("post_data=" + str(post_data))
         cont_id = post_data["id"]
         if cont_id == "blank":
             cont = None
@@ -254,12 +253,11 @@ def exec_func(request):
         globals()[pmn] = __import__(pmn)
         pds = pm[0].devicetype.parmdef
         arg_list = []
-        logging.error("pds")
-        logging.error(pds)
+        logging.error("pds=" + str(pds))
         for pd in pds:
-            logging.error(pd.get("source", "null"))
-            logging.error(get_func_name)
-            logging.error(pd.get("args"))
+            logging.error("pd=" + str(pd.get("source", "null")))
+            logging.error("func_name=" + str(get_func_name))
+            logging.error("args=" + str(pd.get("args")))
             if pd.get("source", "null") == get_func_name:
                 pd_args = pd["args"]
                 for pd_a in pd_args:
