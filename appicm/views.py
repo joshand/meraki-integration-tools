@@ -239,6 +239,8 @@ def exec_func(request):
         pm = PluginModule.objects.filter(tenant=get_default_tenant(obj=True)).filter(name=get_mod_name)
     if len(pm) == 1:
         post_data = json.loads(request.body)
+        logging.debug(post_data)
+        logging.error(post_data)
         cont_id = post_data["id"]
         if cont_id == "blank":
             cont = None
