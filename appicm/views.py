@@ -260,6 +260,7 @@ def exec_func(request):
             logging.error("func_name=" + str(get_func_name))
             logging.error("args=" + str(pd.get("args")))
             if pd.get("source", "null") == get_func_name:
+                logging.error("match=True")
                 pd_args = pd["args"]
                 for pd_a in pd_args:
                     if pd_a == "tenant":
