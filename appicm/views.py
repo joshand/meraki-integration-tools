@@ -234,6 +234,7 @@ def exec_func(request):
     url_list = url.split("/")
     get_mod_name = url_list[-2:][0]
     get_func_name = url_list[-1:][0]
+    logging.error("url_list=" + str(url_list))
     pm = PluginModule.objects.filter(tenant=tenant).filter(name=get_mod_name)
     if len(pm) == 0:
         pm = PluginModule.objects.filter(tenant=get_default_tenant(obj=True)).filter(name=get_mod_name)
