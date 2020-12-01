@@ -254,6 +254,8 @@ def exec_func(request):
         globals()[pmn] = __import__(pmn)
         pds = pm[0].devicetype.parmdef
         arg_list = []
+        logging.debug("pds")
+        logging.debug(pds)
         for pd in pds:
             logging.debug(pd.get("source", "null"))
             logging.debug(get_func_name)
