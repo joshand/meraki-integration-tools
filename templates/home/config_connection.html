@@ -208,7 +208,7 @@
                                                             <p style="text-align: left">{{ fv.desc }}</p>
                                                             <div class="md-input-container columns medium-12" id="{{ fv.name }}-container">
                                                                 <div class="md-input__wrapper md-select">
-                                                                    <button id="{{ fv.name }}-btn" class="ignore md-button md-button--36 active" alt="" type="button" aria-labelledby="{{ fv.name }}-label" tabindex="30" name="md-select-69" aria-haspopup="listbox" onclick="toggleList('{{ fv.name }}-btn', '{{ fv.name }}-dropdown', '{{ fv.name }}-list'); updatefuncdata('{{ fv.name }}')">
+                                                                    <button id="{{ fv.name }}-btn" class="ignore md-button md-button--36 active" alt="" type="button" aria-labelledby="{{ fv.name }}-label" tabindex="30" name="md-select-69" aria-haspopup="listbox" onclick="toggleList('{{ fv.name }}-btn', '{{ fv.name }}-dropdown', '{{ fv.name }}-list')">
                                                                         <span class="ignore md-button__children" style="opacity: 1;">
                                                                             <div style="font-size: small" class="ignore md-list-item__left" id="{{ fv.name }}-label">
                                                                                 N/A
@@ -224,7 +224,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <input type="hidden" id="{{ fv.name }}" name="{{ fv.name }}" value="" />
+                                                            <input type="hidden" id="{{ fv.name }}" name="{{ fv.name }}" value="" onchange="updatefuncdata('{{ fv.name }}') "/>
                                                             <input type="hidden" id="{{ fv.name }}-name" name="{{ fv.name }}-name" value="" />
                                                         </td>
                                                         </tr>
@@ -233,6 +233,20 @@
 {#                                                                <input name="test" type="button" onclick="postdata('/exec/{{ mod.name }}/{{ fv.source }}', null, null, 'funcdata', null, null, null, null, null, null)">#}
 {#                                                            </td>#}
 {#                                                        </tr>#}
+                                                    {% elif fv.style == "checkbox" %} {# untested #}
+                                                        <tr>
+                                                            <td>
+                                                                <p style="text-align: left">{{ fv.desc }}</p>
+                                                                <div class="md-input__wrapper">
+                                                                    <div class="md-input-container md-checkbox">
+                                                                        <input id="basic-checkbox" type="checkbox" class="md-input md-checkbox__input" id="{{ fv.name }}" name="{{ fv.name }}" onchange="updatefuncdata('{{ fv.name }}')">
+                                                                        <label class="md-checkbox__label" for="basic-checkbox">
+                                                                            <span>{{ fv.desc }}</span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
                                                     {% else %}
                                                         <tr>
                                                             <td>
