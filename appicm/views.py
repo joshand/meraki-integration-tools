@@ -348,7 +348,7 @@ def config_conn(request):
 
         # call run_on_save if available
         try:
-            ros = eval(pmn).run_on_save(cont)
+            ros = eval(pmn).run_on_save(request, cont)
         except Exception:
             ros = None
 
