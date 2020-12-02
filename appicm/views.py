@@ -234,13 +234,13 @@ def exec_func(request):
     url_list = url.split("/")
     get_mod_name = url_list[-2:][0]
     get_func_name = url_list[-1:][0]
-    logging.error("url_list=" + str(url_list))
+    # logging.error("url_list=" + str(url_list))
     pm = PluginModule.objects.filter(tenant=tenant).filter(name=get_mod_name)
     if len(pm) == 0:
         pm = PluginModule.objects.filter(tenant=get_default_tenant(obj=True)).filter(name=get_mod_name)
     if len(pm) == 1:
         post_data = json.loads(request.body)
-        logging.error("post_data=" + str(post_data))
+        # logging.error("post_data=" + str(post_data))
         cont_id = post_data["id"]
         if cont_id == "blank":
             cont = None
@@ -254,21 +254,21 @@ def exec_func(request):
         globals()[pmn] = __import__(pmn)
         pds = pm[0].devicetype.parmdef
         arg_list = []
-        logging.error("pds=" + str(pds))
+        # logging.error("pds=" + str(pds))
         for pd in pds:
-            logging.error("pd=" + str(pd.get("source", "null")))
-            logging.error("func_name=" + str(get_func_name))
-            logging.error("args=" + str(pd.get("args")))
+            # logging.error("pd=" + str(pd.get("source", "null")))
+            # logging.error("func_name=" + str(get_func_name))
+            # logging.error("args=" + str(pd.get("args")))
             if pd.get("source", "null") == get_func_name:
-                logging.error("match=True")
+                # logging.error("match=True")
                 pd_args = pd["args"]
                 for pd_a in pd_args:
-                    logging.error("arg=" + str(pd_a))
+                    # logging.error("arg=" + str(pd_a))
                     if pd_a == "tenant":
                         arg_list.append(tenant.id)
                     else:
                         pdat = post_data.get(pd_a, "")
-                        logging.error("data=" + str(pdat))
+                        # logging.error("data=" + str(pdat))
                         if pdat.find("****") >= 0:
                             arg_list.append(cont[0].authparm["api"][pd_a])
                         else:
@@ -313,6 +313,7 @@ def config_conn(request):
         if int_id == "blank":
             int_id = ""
         int_desc = request.POST.get("objDesc")
+        cont = None
         if int_id is None or int_id == "":
             cont = Controller.objects.create(name=int_desc, devicetype=pm[0].devicetype, authparm=authdata, tenant=tenant)
             try:
@@ -336,9 +337,21 @@ def config_conn(request):
                 cont.authparm = ap
 
                 cont.save()
-                orgurl = eval(pmn).get_home_link(cont)
-                HomeLink.objects.update_or_create(controller=cont, tenant=tenant,
-                                                  defaults={"name": int_desc, "url": orgurl, "icon_url": def_icon})
+                try:
+                    orgurl = eval(pmn).get_home_link(cont)
+                except Exception:
+                    orgurl = None
+
+                if orgurl:
+                    HomeLink.objects.update_or_create(controller=cont, tenant=tenant,
+                                                      defaults={"name": int_desc, "url": orgurl, "icon_url": def_icon})
+
+        # call run_on_save if available
+        try:
+            ros = eval(pmn).run_on_save(cont)
+        except Exception:
+            ros = None
+
 
     if request.GET.get("action") == "delobj":
         mer_id = request.GET.get("id")
