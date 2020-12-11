@@ -65,7 +65,7 @@
                             <td>
                                 <input type="hidden" name="modaldata-{{ d.id }}" id="modaldata-{{ d.id }}" value="{{ mod.devicetype.parmdef|dump }}">
                                 <a title="Edit {{ mod.entity_name }}" onclick="loadModal('{{ d.id }}', '{{ d.name }}')"><span class="icon icon-edit_24"></span></a>
-                                <a title="Delete {{ mod.entity_name }}" href="/home/config-conn/{{ mod.py_mod_name }}?id={{ d.id }}&action=delobj"><span class="icon icon-delete_24"></span></a>
+                                <a title="Delete {{ mod.entity_name }}" href="/home/config-conn/{{ mod.name }}?id={{ d.id }}&action=delobj"><span class="icon icon-delete_24"></span></a>
                             </td>
                         </tr>
                     {% endfor %}
