@@ -136,3 +136,4 @@ upload
 /templates/custom/*.html
 icm/settings.py
 /static
+/packages/old
