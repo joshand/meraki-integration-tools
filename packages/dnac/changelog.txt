@@ -1,0 +1,10 @@
+4/3/2024
+* Initial release. Included appliance models and RU for each, as well as VM types
+
+4/4/2024
+* Respect whether the controller is enabled or not when updating
+* Change timer from 600 to 60
+* Add Devices for Controllers and Managed Devices
+
+4/5/2024
+* Add unique_id to manifest package

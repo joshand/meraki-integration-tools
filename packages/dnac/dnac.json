@@ -1,0 +1,140 @@
+[{
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "DNAC-AWS",
+			"named_id": "dnac-vm-aws",
+			"size_rack_u": 0,
+			"device_type": "appliance"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "DNAC-ESX",
+			"named_id": "dnac-vm-esx",
+			"size_rack_u": 0,
+			"device_type": "appliance"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "DN1-HW-APL",
+			"named_id": "dnac-appliance-gen1",
+			"size_rack_u": 1,
+			"device_type": "appliance"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "DN2-HW-APL",
+			"named_id": "dnac-appliance-gen2",
+			"size_rack_u": 1,
+			"device_type": "appliance"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "DN2-HW-APL-L",
+			"named_id": "dnac-appliance-gen2-large",
+			"size_rack_u": 1,
+			"device_type": "appliance"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "DN2-HW-APL-XL",
+			"named_id": "dnac-appliance-gen2-extra-large",
+			"size_rack_u": 4,
+			"device_type": "appliance"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "DN2-HW-APL-U",
+			"named_id": "dnac-appliance-gen2-promo",
+			"size_rack_u": 1,
+			"device_type": "appliance"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "DN2-HW-APL-L-U",
+			"named_id": "dnac-appliance-gen2-large-promo",
+			"size_rack_u": 1,
+			"device_type": "appliance"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "DN2-HW-APL-XL-U",
+			"named_id": "dnac-appliance-gen2-extra-large-promo",
+			"size_rack_u": 4,
+			"device_type": "appliance"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "DN3-HW-APL",
+			"named_id": "dnac-appliance-gen2",
+			"size_rack_u": 1,
+			"device_type": "appliance"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "DN3-HW-APL-L",
+			"named_id": "dnac-appliance-gen2-large",
+			"size_rack_u": 1,
+			"device_type": "appliance"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "DN3-HW-APL-XL",
+			"named_id": "dnac-appliance-gen2-extra-large",
+			"size_rack_u": 2,
+			"device_type": "appliance"
+		}
+	},
+	{
+		"model": "appicm.devicetype",
+		"fields": {
+			"name": "dnac",
+			"supportscontroller": false,
+			"parmdef": [{
+				"name": "tunnel",
+				"desc": "Tunnel Client",
+				"style": "dropdown",
+				"source": "get_tunnel_clients",
+				"default_load": true,
+				"args": ["tenant"],
+				"display": "lookup|TunnelClient|description"
+			}, {
+				"name": "ip",
+				"desc": "Device IP"
+			}, {
+				"name": "port",
+				"desc": "Device Port (443)",
+				"default": "443"
+			}, {
+				"name": "username",
+				"desc": "Admin Username"
+			}, {
+				"name": "password",
+				"desc": "Admin Password",
+				"password": true,
+				"secret": true
+			}]
+		}
+	},
+	{
+		"model": "appicm.pluginmodule",
+		"fields": {
+			"name": "dnac",
+			"description": "Cataylst Center",
+			"entity_name": "Appliance",
+			"entity_name_plural": "Appliances",
+			"sync_interval": 60,
+			"default_icon": "https://www.cisco.com/c/dam/assets/support/product-images/model/servers-unified-computing-ucs-c220-m5-rack-server.jpg"
+		}
+	}
+]

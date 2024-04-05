@@ -1,0 +1,1022 @@
+[{
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX65W",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX85",
+		"size_rack_u": 1,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MV22",
+		"size_rack_u": 0,
+		"device_type": "security_camera"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX600",
+		"size_rack_u": 2,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS355-24X2",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MT12",
+		"size_rack_u": 0,
+		"device_type": "sensor"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX90",
+		"size_rack_u": 1,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS450-12",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX67C-WW",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX84",
+		"size_rack_u": 1,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS125-48LP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR45",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MV71",
+		"size_rack_u": 0,
+		"device_type": "security_camera"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MV72X",
+		"size_rack_u": 0,
+		"device_type": "security_camera"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS355-48X2",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS350-48LP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS250-24P",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS120-24",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS130-8X",
+		"size_rack_u": 0.5,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR46",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS410-16",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR72",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS220-24P",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS220-48",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "Z3C-NA",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MG51E",
+		"size_rack_u": 0,
+		"device_type": "cellular_gateway"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MG41",
+		"size_rack_u": 0,
+		"device_type": "cellular_gateway"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MG21-WW",
+		"size_rack_u": 0,
+		"device_type": "cellular_gateway"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MG21-NA",
+		"size_rack_u": 0,
+		"device_type": "cellular_gateway"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MG21",
+		"size_rack_u": 0,
+		"device_type": "cellular_gateway"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR74",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS120-8LP",
+		"size_rack_u": 0.5,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX68CW-NA",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "Z3C-WW",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS355-24X",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR18",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX68CW-WW",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX400",
+		"size_rack_u": 1,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR84",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX67C-NA",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MC74",
+		"size_rack_u": 0,
+		"device_type": "phone"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS390-24UX",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR55",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MV12N",
+		"size_rack_u": 0,
+		"device_type": "security_camera"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS220-48LP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR62",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR32",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX64W",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR20",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX67W",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS390-48P",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS120-24P",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MT11",
+		"size_rack_u": 0,
+		"device_type": "sensor"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS125-24P",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX80",
+		"size_rack_u": 1,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS220-48FP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR42E",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR24",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS120-8",
+		"size_rack_u": 0.5,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MV72",
+		"size_rack_u": 0,
+		"device_type": "security_camera"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR52",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX250",
+		"size_rack_u": 1,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS390-48UX2",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX65",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS250-48FP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS350-24",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS120-48LP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MG21E",
+		"size_rack_u": 0,
+		"device_type": "cellular_gateway"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS125-48FP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR26",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR33",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR16",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MV12W",
+		"size_rack_u": 0,
+		"device_type": "security_camera"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS250-24",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR36",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS210-24P",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS390-48U",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS120-8FP",
+		"size_rack_u": 0.5,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR56",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS220-8P",
+		"size_rack_u": 0.5,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MV32",
+		"size_rack_u": 0,
+		"device_type": "security_camera"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS120-48FP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX60",
+		"size_rack_u": 1,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS420-24",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR70",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS390-24",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS250-48LP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MV22X",
+		"size_rack_u": 0,
+		"device_type": "security_camera"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS355-48X",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS210-48LP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX68W",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS410-32",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR42",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS210-24",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR34",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX64",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX450",
+		"size_rack_u": 1,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS120-48",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS125-24",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS220-24",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS350-24X",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MV21",
+		"size_rack_u": 0,
+		"device_type": "camera"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS210-48FP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS225-48FP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MV12WE",
+		"size_rack_u": 0,
+		"device_type": "security_camera"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS390-24P",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS250-48",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX67",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS350-48FP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS225-24",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS210-48",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX60W",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "vMX100",
+		"size_rack_u": 0,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "VMX-S",
+		"size_rack_u": 0,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "VMX-M",
+		"size_rack_u": 0,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "VMX-L",
+		"size_rack_u": 0,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR12",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR66",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "Z3",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS125-48",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS225-48",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "Z1",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR30H",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR53",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS350-24P",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MT10",
+		"size_rack_u": 0,
+		"device_type": "sensor"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS420-48",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS390-48",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS390-24U",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX68",
+		"size_rack_u": 0.5,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS225-48LP",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS220-8",
+		"size_rack_u": 0.5,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS225-24P",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MX100",
+		"size_rack_u": 1,
+		"device_type": "security_appliance"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MR53E",
+		"size_rack_u": 0,
+		"device_type": "access_point"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS390-48UX",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MS350-48",
+		"size_rack_u": 1,
+		"device_type": "switch"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MT20",
+		"size_rack_u": 0,
+		"device_type": "sensor"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MT14",
+		"size_rack_u": 0,
+		"device_type": "sensor"
+	}
+}, {
+	"model": "appicm.devicemodeltype",
+	"fields": {
+		"name": "MT30",
+		"size_rack_u": 0,
+		"device_type": "sensor"
+	}
+}, {
+	"model": "appicm.devicetype",
+	"fields": {
+		"name": "Meraki",
+		"defaultmgmtaddress": "dashboard.meraki.com",
+		"supportscontroller": true,
+		"parmdef": [{
+			"name": "username",
+			"desc": "Dashboard username"
+		}, {
+			"name": "password",
+			"desc": "Dashboard password",
+			"password": true
+		}, {
+			"name": "baseurl",
+			"desc": "API Base URL",
+			"default": "https://api.meraki.com/api/v1",
+			"display": false
+		}, {
+			"name": "key",
+			"desc": "Meraki API Key",
+			"secret": true,
+			"display": "slice|-8|"
+		}, {
+			"name": "orgid",
+			"desc": "Organization ID",
+			"style": "dropdown",
+			"source": "getorgs",
+			"args": ["baseurl", "key"]
+		}]
+	}
+}, {
+	"model": "appicm.pluginmodule",
+	"fields": {
+		"name": "meraki",
+		"description": "Meraki Dashboard",
+		"entity_name": "Organization",
+		"entity_name_plural": "Organizations",
+		"sync_interval": 60,
+		"default_icon": "https://meraki.cisco.com/wp-content/uploads/2020/07/icon-solutions-digital-workplace-hover.svg"
+	}
+}]

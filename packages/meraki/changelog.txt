@@ -1,0 +1,15 @@
+9/16/2022
+* Added filter for device types to only retrieve those specific to the current plugins.
+  This is because there can be duplicate Device Types that exist across different plugins.
+* Added some missing devices
+
+4/3/2024
+* Add MS130-8X and C9500-24Y4C models so stuff in my lab can populate
+* Add RU for each device in the list
+
+4/4/2024
+* Respect whether the controller is enabled or not when updating
+
+4/5/2024
+* Add unique_id to manifest package
+* Remove catalyst devices from Meraki package since they live in a dedicated package now

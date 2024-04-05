@@ -1,0 +1,5 @@
+4/4/2024
+* Catalog of Catalyst switches, routers and access points (and legacy ISR and Aironet devices)
+
+4/5/2024
+* Add unique_id to manifest package

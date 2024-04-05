@@ -1,0 +1,24 @@
+{
+	"name": "meraki",
+	"version": "1.14",
+	"unique_id": "da6eb8c8-91d8-42f0-b83a-d328ffd21cfb",
+	"files": [{
+			"file": "meraki.py",
+			"target": "scripts"
+		},
+		{
+			"file": "meraki.json",
+			"target": "database",
+			"relationships": [
+				{
+					"source_table": "DeviceType",
+					"source_field_match": "name=\"Meraki\"",
+					"source_field_link": "id",
+					"destination_table": "PluginModule",
+					"destination_field_match": "name=\"meraki\"",
+					"destination_field_link": "devicetype_id"
+				}
+			]
+		}
+	]
+}

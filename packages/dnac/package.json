@@ -1,0 +1,24 @@
+{
+	"name": "dnac",
+	"version": 0.3,
+	"unique_id": "fd11494a-7cae-4475-8532-f6925a0354f6",
+	"files": [{
+			"file": "dnac.py",
+			"target": "scripts"
+		},
+		{
+			"file": "dnac.json",
+			"target": "database",
+			"relationships": [
+				{
+					"source_table": "DeviceType",
+					"source_field_match": "name=\"dnac\"",
+					"source_field_link": "id",
+					"destination_table": "PluginModule",
+					"destination_field_match": "name=\"dnac\"",
+					"destination_field_link": "devicetype_id"
+				}
+			]
+		}
+	]
+}
