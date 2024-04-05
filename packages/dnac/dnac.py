@@ -54,6 +54,22 @@ def get_dnac_cluster(ip, port, authtoken):
     return u_json["response"]
 
 
+def get_dnac_version(ip, port, authtoken):
+    url = "https://" + ip + ":" + port + "/dna/intent/api/v1/dnac-release"
+    headers = {
+        "X-Auth-Token": authtoken,
+        "Content-Type": "application/json"
+    }
+    # print(headers)
+    r = requests.get(url, headers=headers, verify=False)
+    if r.text.find("An invalid response was received from the upstream server") >= 0:
+        return "An error occurred: " + r.text
+    else:
+        u_json = json.loads(r.text)
+
+    return u_json["response"]
+
+
 def lookup_device_model(plugin_id, model_string):
     if model_string is None:
         return None, None
@@ -93,6 +109,7 @@ def process_dnac_inventory(tenant):
             continue
 
         cluster = get_dnac_cluster(pf_ip, pf_port, token)
+        ver = get_dnac_version(pf_ip, pf_port, token).get("displayVersion")
         for node in cluster.get("nodes", []):
             model = node.get("platform", {}).get("product", None)
             mdl, err = lookup_device_model(plugin_id, model)
@@ -107,7 +124,8 @@ def process_dnac_inventory(tenant):
                                                                          "rawconfig": node,
                                                                          "devicetype": my_device_type,
                                                                          "controller": c,
-                                                                         "devicemodeltype": mdl})
+                                                                         "devicemodeltype": mdl,
+                                                                         "current_version": ver})
                 if created:
                     retdata += " (Added)\n"
                 else:

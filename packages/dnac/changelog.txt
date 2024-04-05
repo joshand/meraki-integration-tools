@@ -8,3 +8,4 @@
 
 4/5/2024
 * Add unique_id to manifest package
+* Capture DNAC Software version
