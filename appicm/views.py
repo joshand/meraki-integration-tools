@@ -275,7 +275,7 @@ def show_layout(request):
 
     enc_data = base64.b64encode(json.dumps(data).encode("ascii")).decode("ascii")
 
-    crumbs = '<li class="current">Settings</li><li class="current">' + pm[0].description + '</li>'
+    crumbs = '<li class="current">Settings</li><li class="current">Sites</li>'
     return render(request, "home/rack_layout.html", {"crumbs": crumbs, "tenant": tenant,
                                                      "global": get_globals(request, tenant),
                                                      "rack": rackid, "data": enc_data, "size": size_ru})

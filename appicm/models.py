@@ -948,6 +948,8 @@ class Device(models.Model):
     mgmtaddress = models.CharField(max_length=100, default="", null=True, blank=True)
     devicemodeltype = models.ForeignKey(DeviceModelType, on_delete=models.CASCADE, default="4b64171e-63b9-43bb-ac17-47a3784c8167")
     rawconfig = models.JSONField(default=dict, editable=False)
+    current_version = models.CharField(max_length=50, blank=True, default=None, null=True)
+    other_data = models.JSONField(blank=True, null=False, default=dict)
 
     def __str__(self):
         return str(self.name) + " -- " + str(self.serial_number) + " (" + str(self.devicemodeltype) + ")"
