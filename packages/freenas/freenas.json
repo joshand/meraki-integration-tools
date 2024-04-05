@@ -1,0 +1,41 @@
+[
+	{
+		"model": "appicm.devicetype",
+		"fields": {
+			"name": "freenas",
+			"supportscontroller": false,
+			"parmdef": [{
+				"name": "tunnel",
+				"desc": "Tunnel Client",
+				"style": "dropdown",
+				"source": "get_tunnel_clients",
+				"default_load": true,
+				"args": ["tenant"],
+				"display": "lookup|TunnelClient|description"
+			}, {
+				"name": "ip",
+				"desc": "Device IP"
+			}, {
+				"name": "port",
+				"desc": "Device Port (443)"
+			}, {
+				"name": "apikey",
+				"desc": "API Key",
+				"password": true,
+				"secret": true,
+				"display": "slice|-8|"
+			}]
+		}
+	},
+	{
+		"model": "appicm.pluginmodule",
+		"fields": {
+			"name": "freenas",
+			"description": "FreeNAS",
+			"entity_name": "Device",
+			"entity_name_plural": "Devices",
+			"sync_interval": 60,
+			"default_icon": "https://i0.wp.com/www.42u.ca/wp-content/uploads/2016/11/FreeNAS-banner-1.png"
+		}
+	}
+]

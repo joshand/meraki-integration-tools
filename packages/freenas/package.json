@@ -1,0 +1,24 @@
+{
+	"name": "freenas",
+	"version": 0.1,
+	"unique_id": "bb6ffef9-db4d-45bb-b20f-cef9226ed4b0",
+	"files": [{
+			"file": "freenas.py",
+			"target": "scripts"
+		},
+		{
+			"file": "freenas.json",
+			"target": "database",
+			"relationships": [
+				{
+					"source_table": "DeviceType",
+					"source_field_match": "name=\"freenas\"",
+					"source_field_link": "id",
+					"destination_table": "PluginModule",
+					"destination_field_match": "name=\"freenas\"",
+					"destination_field_link": "devicetype_id"
+				}
+			]
+		}
+	]
+}
