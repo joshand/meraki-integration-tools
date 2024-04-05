@@ -1,0 +1,18 @@
+[{
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "BE7M-M5-K9",
+			"named_id": "ucs-be7m-m5-k9",
+			"size_rack_u": 2,
+			"device_type": "server"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "HX240C-M5SX",
+			"named_id": "ucs-hx240c-m5sx",
+			"size_rack_u": 2,
+			"device_type": "server"
+		}
+	}
+]

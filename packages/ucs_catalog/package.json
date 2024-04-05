@@ -1,0 +1,20 @@
+{
+	"name": "ucs_catalog",
+	"version": 0.1,
+	"unique_id": "fe572152-15c3-4bdd-8dee-e2802fdb9077",
+	"files": [{
+			"file": "ucs_catalog.json",
+			"target": "database",
+			"relationships": [
+				{
+					"source_table": "DeviceType",
+					"source_field_match": "name=\"ucs_catalog\"",
+					"source_field_link": "id",
+					"destination_table": "PluginModule",
+					"destination_field_match": "name=\"ucs_catalog\"",
+					"destination_field_link": "devicetype_id"
+				}
+			]
+		}
+	]
+}
