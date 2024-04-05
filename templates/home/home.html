@@ -3,6 +3,29 @@
 {% load static %}
 
 {% block content %}
+    <script>
+        map_sites = {{ sites|safe }}
+        // Initialize and add the map
+        function initMap() {
+            // The location of center of the map; arbitrary
+            const map_center = { lat: 39.233, lng: -94.725 };
+            // The map
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 17,
+                center: map_center,
+                {#mapTypeId: 'satellite'#}
+            });
+            // Map markers for all sites
+            map_sites.forEach(element => {
+                new google.maps.Marker({
+                    position: element,
+                    map: map,
+                });
+            });
+        }
+
+        window.initMap = initMap;
+    </script>
     <style>
     figure {
         display: inline-block;
@@ -19,6 +42,12 @@
     figure figcaption {
         {#border: 1px dotted blue;#}
         text-align: center;
+    }
+    #map {
+      height: 800px;
+      /* The height is 400 pixels */
+      width: 100%;
+      /* The width is the width of the web page */
     }
     </style>
     <div class="md-data-table" style="width: 100%;">
@@ -76,4 +105,17 @@
 {#            </table>#}
         </div>
     </div>
+
+    <div id="map"></div>
+
+    <!--
+     The `defer` attribute causes the callback to execute after the full HTML
+     document has been parsed. For non-blocking uses, avoiding race conditions,
+     and consistent behavior across browsers, consider loading using Promises
+     with https://www.npmjs.com/package/@googlemaps/js-api-loader.
+    -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&callback=initMap&v=weekly"
+      defer
+    ></script>
 {% endblock %}

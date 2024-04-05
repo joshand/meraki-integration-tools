@@ -14,14 +14,14 @@
                                 <th style="width: 12rem">{{ fn.desc }}</th>
                             {% endif %}
                         {% endfor %}
-                        <th style="width: 6rem">Actions</th>
+                        <th style="width: 8rem">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="md-data-table__tbody">
 {#                {% if data|length <= 0 %}#}
-{#                    {% for fv in mod.devicetype.parmdef %}#}
-{#                        <input type="hidden" name="modaldata-blank-{{ fv.name }}" id="modaldata-blank-{{ fv.name }}" value="{{ d.authparm|lookup:fv.default }}">#}
-{#                    {% endfor %}#}
+                    {% for fv in mod.devicetype.parmdef %}
+                        <input type="hidden" name="modaldata-blank-{{ fv.name }}" id="modaldata-blank-{{ fv.name }}" value="{{ fv|lookup:'default' }}">
+                    {% endfor %}
 {#                {% else %}#}
                     {% for d in data %}
                         <tr>
@@ -66,6 +66,12 @@
                                 <input type="hidden" name="modaldata-{{ d.id }}" id="modaldata-{{ d.id }}" value="{{ mod.devicetype.parmdef|dump }}">
                                 <a title="Edit {{ mod.entity_name }}" onclick="loadModal('{{ d.id }}', '{{ d.name }}')"><span class="icon icon-edit_24"></span></a>
                                 <a title="Delete {{ mod.entity_name }}" href="/home/config-conn/{{ mod.name }}?id={{ d.id }}&action=delobj"><span class="icon icon-delete_24"></span></a>
+
+                                {% if d.enabled %}
+                                <a title="Disable" href="/home/config-conn/{{ mod.name }}?id={{ d.id }}&action=disable"><span class="icon icon-microphone-muted_24"></span></a>
+                                {% else %}
+                                <a title="Enable" href="/home/config-conn/{{ mod.name }}?id={{ d.id }}&action=enable"><span class="icon icon-microphone_24"></span></a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -84,6 +90,7 @@
                     document.getElementById("objId").value = inp_id;
                     document.getElementById("objDesc").value = inp_name;
                     for (let i in mod_json) {
+                        {#console.log("modaldata-" + inp_id + "-" + mod_json[i].name);#}
                         let elm = document.getElementById("modaldata-" + inp_id + "-" + mod_json[i].name);
                         let mdl = document.getElementById(mod_json[i].name);
                         {#console.log(elm);#}
@@ -252,7 +259,7 @@
                                                             <td>
                                                                 <p style="text-align: left">{{ fv.desc }}</p>
                                                                 <div class="md-input__wrapper">
-                                                                    <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="{{ fv.name }}" name="{{ fv.name }}" placeholder="{{ fv.desc }}" onchange="updatefuncdata('{{ fv.name }}')">
+                                                                    <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="{{ fv.name }}" name="{{ fv.name }}" placeholder="{{ fv.desc }}" {% if fv.default %} value="{{ fv.default }}" {% endif %} onchange="updatefuncdata('{{ fv.name }}')">
                                                                     <span class="md-input__after">
                                                                         <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('{{ fv.name }}')">
                                                                             <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>

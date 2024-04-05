@@ -9,3 +9,4 @@ class AppicmConfig(AppConfig):
         if os.environ.get('RUN_MAIN', None):
             import scripts.tasks
             scripts.tasks.start()
+

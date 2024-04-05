@@ -1,17 +1,119 @@
 {% extends 'home/base.html' %}
 {% load extras %}
-{% load static %}
 
 {% block content %}
+    <h4 class="md-h4--bold md-font-color--alternate docs-section__title">Tunnels  <a title="Add Tunnel" onclick="loadModal('blank', '')"><span class="icon icon-document-create_16"></span></a></h4>
     <div class="md-data-table" style="width: 100%;">
         <div class="md-data-table__wrapper">
             <table class="testTableClass">
-                <tbody class="md-data-table__tbody">
+                <thead class="md-data-table__thead">
                     <tr>
-                        &nbsp;
+                        <th style="width: 12rem">Description</th>
+                        <th style="width: 16rem">Tunnel URL</th>
+                        <th style="width: 6rem">Enabled</th>
+                        <th style="width: 6rem">Actions</th>
                     </tr>
+                </thead>
+                <tbody class="md-data-table__tbody">
+                {% for d in tunnels %}
+                    <tr>
+                        <td>
+                            {{ d.description }}
+                        </td>
+                        <td>
+                            {{ d.tunnelUrl }}
+                        </td>
+                        <td>
+                            {{ d.enabled }}
+                        </td>
+                        <td>
+                            <a title="Edit Tenant" onclick="loadModal('{{ d.description }}', '{{ d.tunnelUrl }}')"><span class="icon icon-edit_24"></span></a>
+
+                            {% if d.enabled %}
+                            <a title="Disable" href="/home/tunnel?id={{ d.id }}&action=disable"><span class="icon icon-microphone-muted_24"></span></a>
+                            {% else %}
+                            <a title="Enable" href="/home/tunnel?id={{ d.id }}&action=enable"><span class="icon icon-microphone_24"></span></a>
+                            {% endif %}
+{#                            <a title="Edit Integration" href="/home/config-int?id={{ d.id }}&action=editint"><span class="icon icon-edit_24"></span></a>#}
+{#                            <a title="Delete Integration" href="/home/config-int?id={{ d.id }}&action=delint"><span class="icon icon-delete_24"></span></a>#}
+                        </td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+
+        <form method="POST" action="/home/tunnel" style="width:100%;padding:0px">
+            {% csrf_token %}
+            <div id="editmodal" class="md-modal__backdrop fade in" style="display:none; width: 100px;height: 50px;position:fixed; top: calc(50% - 25px);left: calc(50% - 50px);">
+                <div role="dialog" id="react-aria-modal-dialog" class="md-modal md-modal--default in" aria-labelledby="modal1">
+                    <div class="md-modal__content">
+                        <span class="md-modal__flex-container">
+                            <div class="md-modal__header">
+                                <span class="md-modal__title">Tunnel Configuration</span>
+                                <input type="hidden" name="objId" id="objId">
+                                <span class="md-modal__message">
+                                    <table class="testTableClass">
+                                        <thead class="md-data-table__thead">
+                                            <tr style="width:100%">
+                                                <td>
+                                                    <p style="text-align: left">Tunnel Description</p>
+                                                    <div class="md-input__wrapper">
+                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="objDesc" name="objDesc" placeholder="Tunnel Description">
+                                                        <span class="md-input__after">
+                                                            <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('objDesc')">
+                                                                <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <p style="text-align: left">Tunnel FQDN</p>
+                                                    <div class="md-input__wrapper">
+                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="objUrl" name="objUrl" placeholder="Tunnel FQDN">
+                                                        <span class="md-input__after">
+                                                            <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('objUrl')">
+                                                                <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </span>
+
+                                <button type="button" class="md-close md-modal__close" onclick="document.getElementById('editmodal').style = 'display:none;'"></button>
+                            </div>
+                            <div class="md-modal__body"></div>
+                            <div class="md-modal__footer">
+                                <button class="md-button md-button--36 md-button--default" alt="Close Modal" type="button" aria-label="Close Modal">
+                                    <span class="md-button__children" onclick="document.getElementById('editmodal').style = 'display:none;'">Cancel</span>
+                                </button>
+                                &nbsp;
+                                <div id="okbutton">
+                                    <button type="submit" class="md-button md-button--36 md-button--blue" alt="Submit Form" type="button" aria-label="Submit Form">
+                                        <span class="md-button__children">OK</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    <script>
+        function loadModal(inp_desc, inp_fqdn) {
+            let desc = document.getElementById("objDesc");
+            let fqdn = document.getElementById("objUrl");
+            desc.value = inp_desc;
+            fqdn.value = inp_fqdn;
+
+            document.getElementById("editmodal").style = "display:inline;";
+        }
+    </script>
 {% endblock %}

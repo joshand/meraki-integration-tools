@@ -1,0 +1,533 @@
+{% extends 'home/base.html' %}
+{% load extras %}
+
+{% block content %}
+    <div class="md-data-table" style="width: 100%;">
+        <div class="md-data-table__wrapper">
+            Tenant Location Hierarchy
+            <table class="testTableClass">
+                <thead class="md-data-table__thead">
+                    <tr>
+                        <th style="width: 16rem">Description</th>
+                        <th style="width: 16rem">Address</th>
+                        <th style="width: 16rem">Location Code</th>
+                        <th style="width: 6rem">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="md-data-table__tbody">
+                {% for location in data %}
+                <tr>
+                    <td>
+                        <span class="icon {{ location.parent.locationtype.iconname }}"></span>&nbsp;&nbsp;{{ location.parent.description }}
+                    </td>
+                    <td>
+                        {{ location.parent.address|default_if_none:"" }}
+                    </td>
+                    <td>
+                        {{ location.parent.get_clli|default_if_none:""|remove_dash }}
+                    </td>
+                    <td>
+                        {{ location.parent|get_action_icons|safe }}
+                    </td>
+
+                    {% for loc1 in location.parent.id|get_children %}
+                    <tr>
+                        <td>
+                            &nbsp;&nbsp;<span class="icon {{ loc1.object.locationtype.iconname }}"></span>&nbsp;&nbsp;{{ loc1.object.locationtype.description }}: {{ loc1.object.description }}
+                        </td>
+                        <td>
+                            {{ loc1.object.address|default_if_none:"" }}
+                        </td>
+                        <td>
+                            {{ loc1.object.get_clli|default_if_none:""|remove_dash }}
+                        </td>
+                        <td>
+                            {{ loc1.object|get_action_icons|safe }}
+                        </td>
+                        {% for loc2 in loc1.object.id|get_children %}
+                        <tr>
+                            <td>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="icon {{ loc2.object.locationtype.iconname }}"></span>&nbsp;&nbsp;{{ loc2.object.locationtype.description }}: {{ loc2.object.description }}
+                            </td>
+                            <td>
+                                {{ loc2.object.address|default_if_none:"" }}
+                            </td>
+                            <td>
+                                {{ loc2.object.get_clli|default_if_none:""|remove_dash }}
+                            </td>
+                            <td>
+                                {{ loc2.object|get_action_icons|safe }}
+                            </td>
+                            {% for loc3 in loc2.object.id|get_children %}
+                            <tr>
+                                <td>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="icon {{ loc3.object.locationtype.iconname }}"></span>&nbsp;&nbsp;{{ loc3.object.locationtype.description }}: {{ loc3.object.description }}
+                                </td>
+                                <td>
+                                    {{ loc3.object.address|default_if_none:"" }}
+                                </td>
+                                <td>
+                                    {{ loc3.object.get_clli|default_if_none:""|remove_dash }}
+                                </td>
+                                <td>
+                                    {{ loc3.object|get_action_icons|safe }}
+                                </td>
+                                {% for loc4 in loc3.object.id|get_children %}
+                                <tr>
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="icon {{ loc4.object.locationtype.iconname }}"></span>&nbsp;&nbsp;{{ loc4.object.locationtype.description }}: {{ loc4.object.description }}
+                                    </td>
+                                    <td>
+                                        {{ loc4.object.address|default_if_none:"" }}
+                                    </td>
+                                    <td>
+                                        {{ loc4.object.get_clli|default_if_none:""|remove_dash }}
+                                    </td>
+                                    <td>
+                                        {{ loc4.object|get_action_icons|safe }}
+                                    </td>
+                                    {% for loc5 in loc4.object.id|get_children %}
+                                    <tr>
+                                        <td>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="icon {{ loc5.object.locationtype.iconname }}"></span>&nbsp;&nbsp;{{ loc5.object.locationtype.description }}: {{ loc5.object.description }}
+                                        </td>
+                                        <td>
+                                            {{ loc5.object.address|default_if_none:"" }}
+                                        </td>
+                                        <td>
+                                            {{ loc5.object.get_clli|default_if_none:""|remove_dash }}
+                                        </td>
+                                        <td>
+                                            {{ loc5.object|get_action_icons|safe }}
+                                        </td>
+                                        {% for loc6 in loc5.object.id|get_children %}
+                                        <tr>
+                                            <td>
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="icon {{ loc6.object.locationtype.iconname }}"></span>&nbsp;&nbsp;{{ loc6.object.locationtype.description }}: {{ loc6.object.description }}
+                                            </td>
+                                            <td>
+                                                {{ loc6.object.address|default_if_none:"" }}
+                                            </td>
+                                            <td>
+                                                {{ loc6.object.get_clli|default_if_none:""|remove_dash }}
+                                            </td>
+                                            <td>
+                                                {{ loc6.object|get_action_icons|safe }}
+                                            </td>
+                                            {% for loc7 in loc6.object.id|get_children %}
+                                            <tr>
+                                                <td>
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="icon {{ loc7.object.locationtype.iconname }}"></span>&nbsp;&nbsp;{{ loc7.object.locationtype.description }}: {{ loc7.object.description }}
+                                                </td>
+                                                <td>
+                                                    {{ loc7.object.address|default_if_none:"" }}
+                                                </td>
+                                                <td>
+                                                    {{ loc7.object.get_clli|default_if_none:""|remove_dash }}
+                                                </td>
+                                                <td>
+                                                    {{ loc7.object|get_action_icons|safe }}
+                                                </td>
+                                                {% for loc8 in loc7.object.id|get_children %}
+                                                <tr>
+                                                    <td>
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="icon {{ loc8.object.locationtype.iconname }}"></span>&nbsp;&nbsp;{{ loc8.object.locationtype.description }}: {{ loc8.object.description }}
+                                                    </td>
+                                                    <td>
+                                                        {{ loc8.object.address|default_if_none:"" }}
+                                                    </td>
+                                                    <td>
+                                                        {{ loc8.object.get_clli|default_if_none:""|remove_dash }}
+                                                    </td>
+                                                    <td>
+                                                        {{ loc8.object|get_action_icons|safe }}
+                                                    </td>
+                                                    {% for loc9 in loc8.object.id|get_children %}
+                                                    <tr>
+                                                        <td>
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="icon {{ loc9.object.locationtype.iconname }}"></span>&nbsp;&nbsp;{{ loc9.object.locationtype.description }}: {{ loc9.object.description }}
+                                                        </td>
+                                                        <td>
+                                                            {{ loc9.object.address|default_if_none:"" }}
+                                                        </td>
+                                                        <td>
+                                                            {{ loc9.object.get_clli|default_if_none:""|remove_dash }}
+                                                        </td>
+                                                        <td>
+                                                            {{ loc9.object|get_action_icons|safe }}
+                                                        </td>
+                                                        {% for loc10 in loc9.object.id|get_children %}
+                                                        <tr>
+                                                            <td>
+                                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="icon {{ loc10.object.locationtype.iconname }}"></span>&nbsp;&nbsp;{{ loc10.object.locationtype.description }}: {{ loc10.object.description }}
+                                                            </td>
+                                                            <td>
+                                                                {{ loc10.object.address|default_if_none:"" }}
+                                                            </td>
+                                                            <td>
+                                                                {{ loc10.object.get_clli|default_if_none:""|remove_dash }}
+                                                            </td>
+                                                            <td>
+                                                                {{ loc10.object|get_action_icons|safe }}
+                                                            </td>
+                                                            {% for loc in loc10.object.id|get_children %}
+                                                            {% endfor %}
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tr>
+                                                {% endfor %}
+                                            </tr>
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+
+{#                    {% for d in city.site_set.all %}#}
+{#                        <tr>#}
+{#                            <td>#}
+{#                                <span class="icon icon-home_16"></span>&nbsp;&nbsp;{{ d.name }}#}
+{#                            </td>#}
+{#                            <td>#}
+{#                                {{ d.address }}#}
+{#                            </td>#}
+{#                            <td>#}
+{#                                {{ d.clli }}#}
+{#                            </td>#}
+{#                            <td>#}
+{#                                <a title="Edit Site" onclick="loadModal('{{ d.id }}', '{{ d.name }}', '{{ d.address }}', '')"><span class="icon icon-edit_24"></span></a>#}
+{#                                <a title="Delete Site" href="/home/settings-sites/site?id={{ d.id }}&action=delsite"><span class="icon icon-delete_24"></span></a>#}
+{#                                <a title="Select CLLI" onclick="loadCLLIModal('{{ d.id }}', `{{ d.calculate_distances }}`);"><span class="icon icon-view-list_24"></span></a>#}
+{#                                <a title="Add Floor" onclick="loadSimpleModal('Add Floor', '{{ d.id }}', '', 'floor', '', '', '');"><span class="icon icon-add_24"></span></a>#}
+{#                            </td>#}
+{#                            {% for fl in d.floor_set.all %}#}
+{#                                </tr><tr style="background-color:lightgray">#}
+{#                                <td colspan="3">#}
+{#                                    <span class="icon icon-arrow-right_12"></span>&nbsp;Floor: {{ fl.name }}&nbsp;&nbsp;<a title="Edit Floor" onclick="loadSimpleModal('Edit Floor', '{{ d.id }}', '{{ fl.id }}', 'floor', '{{ fl.name }}', '', '')"><span class="icon icon-edit_16"></span></a>#}
+{#                                </td><td>#}
+{#                                    <a title="Add Room" onclick="loadSimpleModal('Add Room', '{{ fl.id }}', '', 'room', '', '', '');"><span class="icon icon-add_24"></span></a>#}
+{#                                </td>#}
+{##}
+{#                                {% for rm in fl.room_set.all %}#}
+{#                                    </tr><tr style="background-color:lightgray">#}
+{#                                    <td colspan="3">#}
+{#                                    <span class="icon icon-arrow-right_12"></span><span class="icon icon-arrow-right_12"></span>&nbsp;Room: {{ rm.name }}&nbsp;&nbsp;<a title="Edit Room" onclick="loadSimpleModal('Edit Room', '{{ fl.id }}', '{{ rm.id }}', 'room', '{{ rm.name }}', '', '')"><span class="icon icon-edit_16"></span></a>#}
+{#                                    </td><td>#}
+{#                                        <a title="Add Row" onclick="loadSimpleModal('Add Row', '{{ rm.id }}', '', 'row', '', '', '');"><span class="icon icon-add_24"></span></a>#}
+{#                                    </td>#}
+{##}
+{#                                    {% for rw in rm.row_set.all %}#}
+{#                                        </tr><tr style="background-color:lightgray">#}
+{#                                        <td colspan="3">#}
+{#                                        <span class="icon icon-arrow-right_12"></span><span class="icon icon-arrow-right_12"></span><span class="icon icon-arrow-right_12"></span>&nbsp;Row: {{ rw.name }}&nbsp;&nbsp;<a title="Edit Row" onclick="loadSimpleModal('Edit Row', '{{ rm.id }}', '{{ rw.id }}', 'row', '{{ rw.name }}', '', '')"><span class="icon icon-edit_16"></span></a>#}
+{#                                        </td><td>#}
+{#                                            <a title="Add Rack" onclick="loadSimpleModal('Add Rack', '{{ rw.id }}', '', 'rack', '', 'RU', '');"><span class="icon icon-add_24"></span></a>#}
+{#                                        </td>#}
+{##}
+{#                                        {% for rk in rw.rack_set.all %}#}
+{#                                            </tr><tr style="background-color:lightgray">#}
+{#                                            <td colspan="3">#}
+{#                                            <span class="icon icon-arrow-right_12"></span><span class="icon icon-arrow-right_12"></span><span class="icon icon-arrow-right_12"></span><span class="icon icon-arrow-right_12"></span>&nbsp;Rack: {{ rk.name }} ({{ rk.height }} RU)&nbsp;&nbsp;<a title="Edit Rack" onclick="loadSimpleModal('Edit Rack', '{{ rw.id }}', '{{ rk.id }}', 'rack', '{{ rk.name }}', 'RU', '')"><span class="icon icon-edit_16"></span></a>#}
+{#                                            </td><td>#}
+    {#                                            <a title="Add Rack" onclick="loadSimpleModal('Add Rack', '{{ rw.id }}', '', 'rack', '', '', '');"><span class="icon icon-add_24"></span></a>#}
+{#                                                &nbsp;#}
+{#                                            </td>#}
+{#                                        {% endfor %}#}
+{##}
+{#                                    {% endfor %}#}
+{##}
+{#                                {% endfor %}#}
+{##}
+{#                            {% endfor %}#}
+{#                        </tr>#}
+{#                    {% endfor %}#}
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            function loadModalNew(modaltitle, itemid, itemname, itemaddr) {
+                document.getElementById("editmodaltitle").innerText = modaltitle;
+                document.getElementById("siteId").value = itemid;
+                document.getElementById("siteDesc").value = itemname;
+                document.getElementById("siteAddr").value = itemaddr;
+                {#document.getElementById("merOrg").value = itemorgid;#}
+                document.getElementById("editmodal").style = "display:inline;";
+            }
+
+            function loadModal(itemid, itemname, itemaddr) {
+                document.getElementById("siteId").value = itemid;
+                document.getElementById("siteDesc").value = itemname;
+                document.getElementById("siteAddr").value = itemaddr;
+                {#document.getElementById("merOrg").value = itemorgid;#}
+                document.getElementById("editmodal").style = "display:inline;";
+            }
+
+            function setCheck(elid) {
+                document.getElementById(elid).checked = true;
+            }
+
+            function loadCLLIModal(itemid, dist) {
+                let jdist = JSON.parse(atob(dist));
+                document.getElementById("clli_cityId").value = itemid;
+                let clli_cont = document.getElementById("clli_container");
+                clli_cont.innerHTML = "";
+                for(let x=0; x<10; x++) {
+                    clli_cont.innerHTML += `
+                    <div onclick="setCheck('` + jdist[x].clli.id + `');" class="md-input-container md-radio">
+                      <input type="radio" class="md-input md-radio__input" id="` + jdist[x].clli.id + `" name="selectedclli" value="` + jdist[x].clli.id + `">
+                      <label class="md-radio__label" for="selectedclli">
+                        <span>` + jdist[x].clli.clli + ` (` + jdist[x].clli.city + `, ` + jdist[x].clli.state + `)</span>
+                      </label>
+                    </div>`;
+                }
+                {#jdist.forEach(element => {#}
+                {#    clli_cont.innerHTML += `#}
+                {#    <div class="md-input-container md-radio">#}
+                {#      <input type="radio" class="md-input md-radio__input" id="basicRadio1" name="basicRadio" checked>#}
+                {#      <label class="md-radio__label" for="basicRadio1">#}
+                {#        <span>Basic Radio 1</span>#}
+                {#      </label>#}
+                {#    </div>`;#}
+                {# });#}
+                {#document.getElementById("siteDesc").value = itemname;#}
+                {#document.getElementById("siteAddr").value = itemaddr;#}
+                {#document.getElementById("merOrg").value = itemorgid;#}
+                document.getElementById("cllimodal").style = "display:inline;";
+            }
+
+            function loadSimpleModal(modaltitle, parentid, objid, itemtype, itemname, extrafld1, extraval1) {
+                document.getElementById("simpleeditmodaltitle").innerText = modaltitle;
+                document.getElementById("s_parentId").value = parentid;
+                document.getElementById("s_objId").value = objid;
+                document.getElementById("s_objType").value = itemtype;
+                document.getElementById("s_objDesc").value = itemname;
+                if (extrafld1 !== "") {
+                    document.getElementById("s_objFld1_desc").innerText = extrafld1;
+                    document.getElementById("s_objFld1").placeholder = extrafld1;
+                    document.getElementById("s_objFld1").value = extraval1;
+                    document.getElementById("xfld1").style.display = "";
+                } else {
+                    document.getElementById("xfld1").style = "display:none";
+                }
+
+                document.getElementById("simpleeditmodal").style = "display:inline;";
+            }
+
+        </script>
+
+        <form method="POST" action="/home/settings-sites/site" style="width:100%;padding:0px">
+            {% csrf_token %}
+            <div id="editmodal" class="md-modal__backdrop fade in" style="display:none; width: 100px;height: 50px;position:fixed; top: calc(50% - 25px);left: calc(50% - 50px);">
+                <div role="dialog" id="react-aria-modal-dialog" class="md-modal md-modal--default in" aria-labelledby="modal1">
+                    <div class="md-modal__content">
+                        <span class="md-modal__flex-container">
+                            <div class="md-modal__header">
+                                <span id="editmodaltitle" class="md-modal__title">Site Configuration</span>
+                                <input type="hidden" name="siteId" id="siteId">
+                                <input type="hidden" name="objType" id="objType" value="site">
+                                <span class="md-modal__message">
+                                    <table class="testTableClass">
+                                        <thead class="md-data-table__thead">
+                                            <tr>
+                                                <td>
+                                                    <p style="text-align: left">Location Description</p>
+                                                    <div class="md-input__wrapper">
+                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="siteDesc" name="siteDesc" placeholder="Site Description">
+                                                        <span class="md-input__after">
+                                                            <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('siteDesc')">
+                                                                <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <p style="text-align: left">Location Address</p>
+                                                    <div class="md-input__wrapper">
+                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="siteAddr" name="siteAddr" placeholder="Site Address">
+                                                        <span class="md-input__after">
+                                                            <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('siteAddr')">
+                                                                <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+{#                                                    <p style="text-align: left">Update Geolocation</p>#}
+                                                    <div class="md-input__wrapper">
+                                                        <div class="md-input-container md-checkbox">
+                                                            <input id="basic-checkbox" type="checkbox" class="md-input md-checkbox__input">
+                                                            <label class="md-checkbox__label" for="basic-checkbox">
+                                                                <span>Update Geolocation</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+{#                                            <tr>#}
+{#                                                <td>#}
+{#                                                    <p style="text-align: left">Organization ID</p>#}
+{#                                                    <div class="md-input__wrapper">#}
+{#                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="merOrg" name="merOrg" placeholder="Meraki Organization ID">#}
+{#                                                        <span class="md-input__after">#}
+{#                                                            <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('merOrg')">#}
+{#                                                                <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>#}
+{#                                                            </button>#}
+{#                                                        </span>#}
+{#                                                    </div>#}
+{#                                                </td>#}
+{#                                            </tr>#}
+                                        </thead>
+                                    </table>
+                                </span>
+
+                                <button type="button" class="md-close md-modal__close" onclick="document.getElementById('editmodal').style = 'display:none;'"></button>
+                            </div>
+                            <div class="md-modal__body"></div>
+                            <div class="md-modal__footer">
+                                <button class="md-button md-button--36 md-button--default" alt="Close Modal" type="button" aria-label="Close Modal">
+                                    <span class="md-button__children" onclick="document.getElementById('editmodal').style = 'display:none;'">Cancel</span>
+                                </button>
+                                <button type="submit" class="md-button md-button--36 md-button--blue" alt="Submit Form" type="button" aria-label="Submit Form">
+                                    <span class="md-button__children">OK</span>
+                                </button>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form method="POST" action="/home/settings-sites/clli" style="width:100%;padding:0px">
+            {% csrf_token %}
+            <div id="cllimodal" class="md-modal__backdrop fade in" style="display:none; width: 100px;height: 50px;position:fixed; top: calc(50% - 25px);left: calc(50% - 50px);">
+                <div role="dialog" id="react-aria-modal-dialog" class="md-modal md-modal--default in" aria-labelledby="modal1">
+                    <div class="md-modal__content">
+                        <span class="md-modal__flex-container">
+                            <div class="md-modal__header">
+                                <span class="md-modal__title">CLLI Configuration</span>
+                                <input type="hidden" name="cityId" id="clli_cityId">
+                                <input type="hidden" name="objType" id="objType" value="clli">
+                                <span class="md-modal__message">
+                                    <table class="testTableClass">
+                                        <thead class="md-data-table__thead">
+                                            <tr>
+                                                <td>
+                                                    <p style="text-align: left">Select Base CLLI Location</p>
+                                                    <div class="md-input__wrapper" id="clli_container">
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </span>
+
+                                <button type="button" class="md-close md-modal__close" onclick="document.getElementById('cllimodal').style = 'display:none;'"></button>
+                            </div>
+                            <div class="md-modal__body"></div>
+                            <div class="md-modal__footer">
+                                <button class="md-button md-button--36 md-button--default" alt="Close Modal" type="button" aria-label="Close Modal">
+                                    <span class="md-button__children" onclick="document.getElementById('cllimodal').style = 'display:none;'">Cancel</span>
+                                </button>
+                                <button type="submit" class="md-button md-button--36 md-button--blue" alt="Submit Form" type="button" aria-label="Submit Form">
+                                    <span class="md-button__children">OK</span>
+                                </button>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form method="POST" action="/home/settings-sites/site-object" style="width:100%;padding:0px">
+            {% csrf_token %}
+            <div id="simpleeditmodal" class="md-modal__backdrop fade in" style="display:none; width: 100px;height: 50px;position:fixed; top: calc(50% - 25px);left: calc(50% - 50px);">
+                <div role="dialog" id="react-aria-modal-dialog" class="md-modal md-modal--default in" aria-labelledby="modal1">
+                    <div class="md-modal__content">
+                        <span class="md-modal__flex-container">
+                            <div class="md-modal__header">
+                                <span id="simpleeditmodaltitle" class="md-modal__title">Site Configuration</span>
+                                <input type="hidden" name="parentId" id="s_parentId">
+                                <input type="hidden" name="objId" id="s_objId">
+                                <input type="hidden" name="objType" id="s_objType">
+                                <span class="md-modal__message">
+                                    <table class="testTableClass">
+                                        <thead class="md-data-table__thead">
+                                            <tr>
+                                                <td>
+                                                    <p style="text-align: left">Name</p>
+                                                    <div class="md-input__wrapper">
+                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="s_objDesc" name="objDesc" placeholder="Description">
+                                                        <span class="md-input__after">
+                                                            <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('objDesc')">
+                                                                <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr id="xfld1">
+                                                <td>
+                                                    <p id="s_objFld1_desc" style="text-align: left">Name</p>
+                                                    <div class="md-input__wrapper">
+                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="s_objFld1" name="s_objFld1" placeholder="Description">
+                                                        <span class="md-input__after">
+                                                            <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('s_objFld1')">
+                                                                <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+{#                                            <tr id="xfld2">#}
+{#                                                <td>#}
+{#                                                    <p id="s_objFld2_desc" style="text-align: left">Name</p>#}
+{#                                                    <div class="md-input__wrapper">#}
+{#                                                        <input style="font-size: small" class="md-input md-input--after md-dirty" type="text" id="s_objFld2" name="s_objFld2" placeholder="Description">#}
+{#                                                        <span class="md-input__after">#}
+{#                                                            <button class="md-button md-button--36 md-button--icon md-input__icon-clear" id="md-button-50" data-md-event-key="md-button-50" alt="clear input" type="button" aria-label="clear input" aria-pressed="" onclick="clearinput('s_objFld2')">#}
+{#                                                                <span class="md-button__children" style="opacity: 1;"><i class="md-icon icon icon-clear-active_16" style="font-size: 16px;"></i></span>#}
+{#                                                            </button>#}
+{#                                                        </span>#}
+{#                                                    </div>#}
+{#                                                </td>#}
+{#                                            </tr>#}
+                                        </thead>
+                                    </table>
+                                </span>
+
+                                <button type="button" class="md-close md-modal__close" onclick="document.getElementById('simpleeditmodal').style = 'display:none;'"></button>
+                            </div>
+                            <div class="md-modal__body"></div>
+                            <div class="md-modal__footer">
+                                <button class="md-button md-button--36 md-button--default" alt="Close Modal" type="button" aria-label="Close Modal">
+                                    <span class="md-button__children" onclick="document.getElementById('simpleeditmodal').style = 'display:none;'">Cancel</span>
+                                </button>
+                                <button type="submit" class="md-button md-button--36 md-button--blue" alt="Submit Form" type="button" aria-label="Submit Form">
+                                    <span class="md-button__children">OK</span>
+                                </button>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

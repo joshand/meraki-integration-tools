@@ -7,6 +7,8 @@ import requests
 def start_tunnel(tunnel_client):
     sp = None
     while True:
+        if not tunnel_client.enabled:
+            return None
         if not tunnel_client.tunnelport:
             tunnel_client.tunnelport = tunnel_client.find_open_port()
             tunnel_client.save()
@@ -44,11 +46,15 @@ def start_tunnel(tunnel_client):
     return sp
 
 
-def stop_tunnel(pid):
+def stop_tunnel(tunnel_client):
+    if tunnel_client.pid == 0:
+        return None
     try:
-        os.kill(pid, signal.SIGTERM)  # or signal.SIGKILL
+        os.kill(tunnel_client.pid, signal.SIGTERM)  # or signal.SIGKILL
     except Exception:
-        print("Exception attempting to end process", pid)
+        tunnel_client.pid = 0
+        tunnel_client.save()
+        print("Exception attempting to end process", tunnel_client.pid)
 
 
 def health_check(port_num, timeout=30):

@@ -9,6 +9,12 @@ class ShowTenantSerializer(serializers.ModelSerializer):
         fields = ('id', 'url', 'name')
 
 
+class TunnelClientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TunnelClient
+        fields = ('id', 'description', 'tunnelUrl', 'tenant', 'enabled')
+
+
 class ShowDeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
@@ -889,8 +895,8 @@ class UploadSerializer(serializers.ModelSerializer):
         model = Upload
         fields = ('id', 'url', 'description', 'file', 'filename', 'tenant', 'uploaded_at')
 
-
-class TunnelClientSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TunnelClient
-        fields = ('id', 'tunnelport', 'clientid', 'appdesc', 'appver')
+#
+# class TunnelClientSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = TunnelClient
+#         fields = ('id', 'tunnelport', 'clientid', 'appdesc', 'appver')

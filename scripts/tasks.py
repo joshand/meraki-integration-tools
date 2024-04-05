@@ -33,10 +33,13 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import scripts
 from appicm.models import *
 from scripts.common import get_script
-from scripts.tunnels import start_tunnel, stop_tunnel, health_check
+# from scripts.tunnels import start_tunnel, stop_tunnel, health_check
 from datetime import datetime, timedelta
+from . import ws_server
+from . import ws_api_gw
 
 cron = BackgroundScheduler()
+# ws = ws_server.WebsocketServer
 
 
 def check_operation():
@@ -51,20 +54,27 @@ def check_operation():
             start()
 
 
-def tunnel_health_check():
-    tcs = TunnelClient.objects.all()
-    for tc in tcs:
-        state, result = health_check(tc.get_internal_port())
-        if not state:
-            TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_health_bad",
-                                      result="failed; restarting tunnel:" + str(result))
-            stop_tunnel(tc.pid)
-            time.sleep(5)
-            start_tunnel(tc)
-        else:
-            TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_health_good",
-                                      result="success:" + str(result))
-
+# def tunnel_health_check():
+#     tcs = TunnelClient.objects.all()
+#     for tc in tcs:
+#         if not tc.enabled:
+#             TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_manager",
+#                                       result="tunnel is disabled:" + str(tc))
+#             if tc.pid != 0:
+#                 stop_tunnel(tc)
+#             continue
+#
+#         state, result = health_check(tc.get_internal_port())
+#         if not state:
+#             TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_manager",
+#                                       result="failed;" + str(state) + ";" + str(result) + ";restarting tunnel:" + str(tc))
+#             stop_tunnel(tc)
+#             time.sleep(5)
+#             start_tunnel(tc)
+#         else:
+#             TaskResult.objects.create(tenant=tc.tenant, taskname="tunnel_manager",
+#                                       result="success" + str(state) + ";" + str(result) + ";tunnel:" + str(tc))
+#
 
 def log_cleanup():
     time_threshold = datetime.now() - timedelta(hours=4)
@@ -75,23 +85,25 @@ def start():
     # Explicitly kick off the background thread
     try:
         cron.start()
+        # ws_server.go()
+        # ws_api_gw.go()
     except Exception:
         # scheduler may already be running
         pass
     cron.remove_all_jobs()
     cron.add_job(log_cleanup, 'interval', hours=1)
     cron.add_job(check_operation, 'interval', seconds=60)
-    cron.add_job(tunnel_health_check, 'interval', seconds=60)
-
-    tcs = TunnelClient.objects.all()
-    for tc in tcs:
-        if tc.pid:
-            stop_tunnel(tc.pid)
-    #         tc.pid = 0
-    #         tc.save()
-    # time.sleep(1)
-    for tc in tcs:
-        job = cron.add_job(start_tunnel, args=[tc])
+    # cron.add_job(tunnel_health_check, 'interval', seconds=60)
+    #
+    # tcs = TunnelClient.objects.all()
+    # for tc in tcs:
+    #     if tc.pid:
+    #         stop_tunnel(tc)
+    # #         tc.pid = 0
+    # #         tc.save()
+    # # time.sleep(1)
+    # for tc in tcs:
+    #     job = cron.add_job(start_tunnel, args=[tc])
 
     tenant_list = []
     tenants = Tenant.objects.exclude(id=get_default_tenant())
@@ -104,26 +116,29 @@ def start():
         pms = []
         if x == 0:
             # Run plugin modules for any tenant that has them installed; each job will be unique to a single tenant
-            pms = PluginModule.objects.exclude(tenant_id=get_default_tenant())
+            pms = PluginModule.objects.exclude(tenant_id=get_default_tenant()).exclude(plugin_id__isnull=True).exclude(plugin_id__exact='')
             mode = "tenant"
         elif x == 1:
             # Run integration modules for any tenant that has them installed; each job will be unique to a single tenant
-            pms = IntegrationModule.objects.exclude(tenant_id=get_default_tenant())
+            pms = IntegrationModule.objects.exclude(tenant_id=get_default_tenant()).exclude(plugin_id__isnull=True).exclude(plugin_id__exact='')
             mode = "tenant"
         elif x == 2:
             # Run global plugin modules for remaining tenants
-            pms = PluginModule.objects.filter(tenant_id=get_default_tenant())
+            pms = PluginModule.objects.filter(tenant_id=get_default_tenant()).exclude(plugin_id__isnull=True).exclude(plugin_id__exact='')
             mode = "global"
         elif x == 3:
             # Run global integration modules for remaining tenants
-            pms = IntegrationModule.objects.filter(tenant_id=get_default_tenant())
+            pms = IntegrationModule.objects.filter(tenant_id=get_default_tenant()).exclude(plugin_id__isnull=True).exclude(plugin_id__exact='')
             mode = "global"
 
         # print(x, mode, pms)
         for pm in pms:
             if mode == "tenant":
                 if pm.name in tenant_map:
-                    tenant_map[pm.name].remove(str(pm.tenant.id))
+                    try:
+                        tenant_map[pm.name].remove(str(pm.tenant.id))
+                    except Exception:
+                        print("Unable to remove", str(pm.tenant.id))
                 else:
                     tenant_map[pm.name] = tenant_list
                     if str(pm.tenant.id) in tenant_map[pm.name]:
@@ -137,7 +152,7 @@ def start():
                     continue
 
             pmn = get_script(pm)
-            # print(pm, pmn)
+            # print(pm, pmn, tenant_map)
             if not pmn:
                 continue
             jobname = pmn + ".do_sync"

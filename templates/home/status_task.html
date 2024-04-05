@@ -14,6 +14,7 @@
                 <thead class="md-data-table__thead">
                     <tr>
                         <th style="width: 16rem">Time</th>
+                        <th style="width: 10rem">Tenant</th>
                         <th style="width: 10rem">Name</th>
                         <th style="width: 6rem">Actions</th>
                     </tr>
@@ -23,6 +24,9 @@
                     <tr>
                         <td>
                             {{ d.runtime|localtime:request.user }}
+                        </td>
+                        <td>
+                            {{ d.tenant.name }}
                         </td>
                         <td>
                             {{ d.taskname }}

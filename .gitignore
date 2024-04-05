@@ -135,3 +135,4 @@ upload
 .idea
 /templates/custom/*.html
 icm/settings.py
+/static

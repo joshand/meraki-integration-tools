@@ -1,3 +1,5 @@
+import base64
+
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -23,6 +25,8 @@ import logging
 from django.forms import model_to_dict
 from django.shortcuts import get_object_or_404
 import requests
+import googlemaps
+from rest_framework.permissions import IsAuthenticated
 
 
 @xframe_options_exempt
@@ -32,7 +36,10 @@ def status_task_result(request):
         return redirect('/tenant')
 
     taskid = request.META['PATH_INFO'].split("/")[-1:][0]
-    trs = TaskResult.objects.filter(tenant=tenant).filter(id=taskid)
+    if request.user.is_superuser:
+        trs = TaskResult.objects.filter(Q(tenant=tenant) | Q(tenant=get_default_tenant(obj=True))).filter(id=taskid)
+    else:
+        trs = TaskResult.objects.filter(tenant=tenant).filter(id=taskid)
     if len(trs) == 1:
         return JsonResponse({"data": trs[0].result.replace("\n", "<br>")})
     else:
@@ -131,17 +138,181 @@ def home(request):
         return redirect('/tenant')
 
     homelinks = HomeLink.objects.filter(tenant=tenant)
+    sites = Site.objects.filter(tenant=tenant)
+    site_list = []
+    for site in sites:
+        site_list.append({"lat": site.geolocation.lat, "lng": site.geolocation.lon})
 
     crumbs = '<li class="current">Home</li>'
     response = render(request, 'home/home.html', {"baseurl": "http://" + request.get_host() + "/home", "crumbs": crumbs,
                                                   "tenant": tenant, "global": get_globals(request, tenant),
-                                                  "homelinks": homelinks})
+                                                  "homelinks": homelinks, "sites": site_list,
+                                                  "google_api_key": settings.GOOGLE_MAPS_API_KEY
+                                                  })
 
     response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
     return response
 
 
-def settings(request):
+def show_config(request):
+    tenant = get_tenant(request)
+    if not tenant:
+        return redirect('/tenant')
+
+    if request.method == 'POST':
+        print(request.POST)
+        objType = request.POST.get("objType")
+        if objType == "site":
+            siteid = request.POST.get("siteId")
+            sitedesc = request.POST.get("siteDesc")
+            siteaddr = request.POST.get("siteAddr")
+            gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+            geocode_result = gmaps.geocode(siteaddr)
+            if len(geocode_result) > 0:
+                loc_raw = geocode_result[0].get("geometry", {}).get("location", None)
+                # loc = "lat=" + str(loc_raw.get("lat")) + ",long=" + str(loc_raw.get("lng"))
+                loc = str(loc_raw.get("lat")) + "," + str(loc_raw.get("lng"))
+            else:
+                loc = None
+
+            if siteid == "":
+                Site.objects.create(tenant=tenant, name=sitedesc, address=siteaddr, geolocation=loc)
+            else:
+                Site.objects.filter(id=siteid).update(name=sitedesc, address=siteaddr, geolocation=loc)
+        elif objType == "floor":
+            parentid = request.POST.get("parentId")
+            objId = request.POST.get("objId")
+            objName = request.POST.get("objDesc")
+
+            if objId == "":
+                Floor.objects.create(tenant=tenant, site_id=parentid, name=objName)
+            else:
+                Floor.objects.filter(id=objId).update(name=objName)
+        elif objType == "room":
+            parentid = request.POST.get("parentId")
+            objId = request.POST.get("objId")
+            objName = request.POST.get("objDesc")
+
+            if objId == "":
+                Room.objects.create(tenant=tenant, floor_id=parentid, name=objName)
+            else:
+                Room.objects.filter(id=objId).update(name=objName)
+        elif objType == "row":
+            parentid = request.POST.get("parentId")
+            objId = request.POST.get("objId")
+            objName = request.POST.get("objDesc")
+
+            if objId == "":
+                Row.objects.create(tenant=tenant, room_id=parentid, name=objName)
+            else:
+                Row.objects.filter(id=objId).update(name=objName)
+        elif objType == "rack":
+            parentid = request.POST.get("parentId")
+            objId = request.POST.get("objId")
+            objName = request.POST.get("objDesc")
+            objRU = request.POST.get("s_objFld1")
+
+            if objId == "":
+                Rack.objects.create(tenant=tenant, row_id=parentid, name=objName, height=objRU)
+            else:
+                Rack.objects.filter(id=objId).update(name=objName, height=objRU)
+        elif objType == "clli":
+            cityid = request.POST.get("cityId")
+            selected_clli = request.POST.get("selectedclli")
+
+            if cityid == "":
+                pass
+            else:
+                CityState.objects.filter(id=cityid).update(clli_id=selected_clli)
+
+    # intopts = IntegrationModule.objects.filter(Q(tenant__name="Default") | Q(tenant_id=tenant_id))
+    # intconfigs = IntegrationConfiguration.objects.filter(tenant_id=tenant_id)
+    # avail_opts = []
+    # unavail_opts = []
+    # for intopt in intopts:
+    #     pm1_dts = intopt.pm1.devicetype.all()
+    #     pm2_dts = intopt.pm2.devicetype.all()
+    #     pm1_cont = Controller.objects.filter(devicetype__in=pm1_dts)
+    #     pm2_cont = Controller.objects.filter(devicetype__in=pm2_dts)
+    #     if len(pm1_cont) > 0 and len(pm2_cont) > 0:
+    #         avail_opts.append(intopt)
+    #     else:
+    #         unavail_opts.append(intopt)
+    # sites = Site.objects.filter(tenant=tenant)
+    # cities = CityState.objects.filter(tenant=tenant)
+    hierarchy_locations = LocationHierarchy.objects.filter(tenant=tenant).filter(parent__locationtype__tier=0)
+
+    crumbs = '<li class="current">Settings</li>'
+    return render(request, "home/tenant_settings.html", {"crumbs": crumbs, "tenant": tenant,
+                                                         "global": get_globals(request, tenant),
+                                                         "data": hierarchy_locations})
+
+
+def show_layout(request):
+    tenant = get_tenant(request)
+    if not tenant:
+        return redirect('/tenant')
+
+    rackid = request.GET.get("rack")
+
+    if request.method == 'POST':
+        # print(request.POST)
+        chg = base64.b64decode(request.POST.get("changes", "").encode("ascii")).decode("ascii")
+
+        # rackid = request.POST.get("rack")
+        lo = LocationObject.objects.filter(id=rackid)
+        ed = lo.first().custom_data
+        ed["data"] = json.loads(chg)
+        lo.update(custom_data=ed)
+
+    thislo = LocationObject.objects.filter(id=rackid).first()
+    if thislo:
+        size_ru = thislo.custom_data.get("RU", 42)
+        data = thislo.custom_data.get("data", [])
+    else:
+        size_ru = 42
+        data = []
+
+    enc_data = base64.b64encode(json.dumps(data).encode("ascii")).decode("ascii")
+
+    crumbs = '<li class="current">Settings</li><li class="current">' + pm[0].description + '</li>'
+    return render(request, "home/rack_layout.html", {"crumbs": crumbs, "tenant": tenant,
+                                                     "global": get_globals(request, tenant),
+                                                     "rack": rackid, "data": enc_data, "size": size_ru})
+
+
+def api_get_devices(request):
+    tenant = get_tenant(request)
+    if not tenant:
+        return JsonResponse([], safe=False)
+
+    devices = {"data": []}
+    devs = Device.objects.filter(tenant=tenant)
+    for dev in devs:
+        dev_icon = """
+            <div id='""" + str(dev.id) + """' class="text-center text-white grid-stack-item newWidget ui-draggable" gs-x="0" gs-y="2" gs-w="11" gs-h="1" gs-id='""" + str(dev.id) + """'>
+                <div class="grid-stack-item-content">
+                    <div style="padding-top:7px">
+                        <span class="icon icon-generic-device_24"></span>
+                    </div>
+                </div>
+            </div>
+        """
+        devices["data"].append({"id": str(dev.id),
+                                "visible": True,
+                                "name": str(dev.name),
+                                "basemac": str(dev.basemac),
+                                "devicetype": str(dev.devicetype.name),
+                                "serial_number": str(dev.serial_number),
+                                "devicemodeltype": str(dev.devicemodeltype.name),
+                                "icon": dev_icon,
+                                "DT_RowId": "row_" + str(dev.id)
+                                })
+
+    return JsonResponse(devices, safe=False)
+
+
+def my_settings(request):
     tenant = get_tenant(request)
     if not tenant:
         return redirect('/tenant')
@@ -222,7 +393,21 @@ class MyLogoutView(auth_views.LogoutView):
 
 
 def get_connections(tenant):
-    return PluginModule.objects.filter(Q(tenant=get_default_tenant(obj=True)) | Q(tenant=tenant))
+    # return PluginModule.objects.filter(Q(tenant=get_default_tenant(obj=True)) | Q(tenant=tenant))
+    pm_names = []
+    pms = []
+    pmlist = PluginModule.objects.filter(tenant=tenant)
+    for pm in pmlist:
+        pm_names.append(pm.name)
+        pms.append(pm)
+
+    pmlist = PluginModule.objects.filter(tenant=get_default_tenant(obj=True))
+    for pm in pmlist:
+        if pm.name not in pm_names:
+            pm_names.append(pm.name)
+            pms.append(pm)
+
+    return pms
 
 
 def exec_func(request):
@@ -235,7 +420,7 @@ def exec_func(request):
     get_mod_name = url_list[-2:][0]
     get_func_name = url_list[-1:][0]
     # logging.error("url_list=" + str(url_list))
-    pm = PluginModule.objects.filter(tenant=tenant).filter(name=get_mod_name)
+    pm = PluginModule.objects.filter(tenant=tenant).filter(name=get_mod_name).exclude(plugin_id__isnull=True).exclude(plugin_id__exact='')
     if len(pm) == 0:
         pm = PluginModule.objects.filter(tenant=get_default_tenant(obj=True)).filter(name=get_mod_name)
     if len(pm) == 1:
@@ -288,11 +473,14 @@ def config_conn(request):
     url = request.META['PATH_INFO']         # /home/config-int/meraki
     url_list = url.split("/")
     get_mod_name = url_list[-1:][0]
-    pm = PluginModule.objects.filter(tenant=tenant).filter(name=get_mod_name)
+    plugin_id = None
+    pm = PluginModule.objects.filter(tenant=tenant).filter(name=get_mod_name).exclude(plugin_id__isnull=True).exclude(plugin_id__exact='')
     if len(pm) == 0:
         pm = PluginModule.objects.filter(tenant=get_default_tenant(obj=True)).filter(name=get_mod_name)
     if len(pm) == 1:
+        plugin_id = pm[0].plugin_id
         pmn = get_script(pm[0])
+        # print(plugin_id, pmn)
         if not pmn:
             return HttpResponse("Error: Unable to load Plugin Module.")
         # globals()[pmn] = __import__(pmn)
@@ -332,7 +520,7 @@ def config_conn(request):
                 ap = cont.authparm
                 for fld in pm[0].devicetype.parmdef:
                     fldval = authdata[pm[0].devicetype.authtype.name][fld["name"]]
-                    if fldval.find("****") < 0:
+                    if fldval and fldval.find("****") < 0:
                         ap["api"][fld["name"]] = fldval
                 cont.authparm = ap
 
@@ -356,13 +544,22 @@ def config_conn(request):
     if request.GET.get("action") == "delobj":
         mer_id = request.GET.get("id")
         Controller.objects.filter(tenant=tenant).filter(id=mer_id).delete()
+    elif request.GET.get("action") == "enable":
+        mer_id = request.GET.get("id")
+        Controller.objects.filter(tenant=tenant).filter(id=mer_id).update(enabled=True)
+    elif request.GET.get("action") == "disable":
+        mer_id = request.GET.get("id")
+        Controller.objects.filter(tenant=tenant).filter(id=mer_id).update(enabled=False)
 
     dashboards = Controller.objects.filter(tenant=tenant).filter(devicetype=pm[0].devicetype)
+    # print(Controller.objects.filter(tenant=tenant))
+    print(pm, pm[0].devicetype, Controller.objects.filter(devicetype=pm[0].devicetype))
 
     crumbs = '<li class="current">Connect</li><li class="current">' + pm[0].description + '</li>'
     response = render(request, "home/config_connection.html", {"crumbs": crumbs, "menuopen": "connect",
                                                                "tenant": tenant,
                                                                "mod": pm[0], "data": dashboards,
+                                                               "plugin_id": plugin_id,
                                                                "global": get_globals(request, tenant)})
     response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
     return response
@@ -373,7 +570,21 @@ def show_tunnel(request):
     if not tenant:
         return redirect('/tenant')
 
-    tunnels = []
+    if request.method == "POST":
+        thisid = request.POST.get("objId", None)
+        if thisid == "": thisid = None
+        desc = request.POST.get("objDesc")
+        fqdn = request.POST.get("objUrl")
+        TunnelClient.objects.update_or_create(id=thisid, description=desc, tunnelUrl=fqdn, enabled=True, tenant=tenant)
+
+    id = request.GET.get("id")
+    action = request.GET.get("action")
+    if action == "enable":
+        TunnelClient.objects.filter(tenant=tenant).filter(id=id).update(enabled=True)
+    elif action == "disable":
+        TunnelClient.objects.filter(tenant=tenant).filter(id=id).update(enabled=False)
+
+    tunnels = TunnelClient.objects.filter(tenant=tenant)
 
     crumbs = '<li class="current">Tunnel</li>'
     response = render(request, "home/list_tunnel.html", {"crumbs": crumbs, "tunnels": tunnels,
@@ -500,7 +711,11 @@ def status_task(request):
 
     time_threshold = timezone.now().replace(hour=0, minute=0, second=0) + timedelta(hours=4)
 
-    trs = TaskResult.objects.filter(tenant=tenant).filter(runtime__gt=time_threshold)
+    if request.user.is_superuser:
+        trs = TaskResult.objects.filter(Q(tenant=tenant) | Q(tenant=get_default_tenant(obj=True))).filter(runtime__gt=time_threshold)
+    else:
+        trs = TaskResult.objects.filter(tenant=tenant).filter(runtime__gt=time_threshold)
+
     crumbs = '<li>Status</li><li class="current">Task Results</li>'
     response = render(request, "home/status_task.html", {"crumbs": crumbs, "menuopen": "status",
                                                          "tenant": tenant,
@@ -536,6 +751,7 @@ def config_package(request):
 
 def upload_package(request):
     tenant = get_tenant(request)
+    error_text = None
     if not tenant:
         return redirect('/tenant')
 
@@ -546,18 +762,28 @@ def upload_package(request):
 
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
+            print("form valid")
             obj = form.save(commit=False)
             obj.tenant_id = ten_id
-            obj.save()
-            uplfiles = obj.upload_set.all()
-            for upl in uplfiles:
-                upl.tenant_id = ten_id
-                upl.save()
-            return redirect(reverse("config_package"))
+            had_error = False
+            try:
+                obj.save()
+            except FileExistsError:
+                had_error = True
+                error_text = "Error: This package already exists for this Tenant. Please delete the existing package first."
+
+            if not had_error:
+                uplfiles = obj.upload_set.all()
+                for upl in uplfiles:
+                    upl.tenant_id = ten_id
+                    upl.save()
+                return redirect(reverse("config_package"))
+        else:
+            print("form invalid")
 
     form = UploadForm()
     crumbs = '<li class="current">Configuration</li><li><a href="/home/config-package">Packages</a></li><li class="current">Upload</li>'
-    response = render(request, 'home/upload_package.html', {"crumbs": crumbs, "tenant": tenant,
+    response = render(request, 'home/upload_package.html', {"crumbs": crumbs, "tenant": tenant, "error": error_text,
                                                             "form": form, "global": get_globals(request, tenant)})
     response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
     return response
@@ -644,56 +870,57 @@ def module_ui(request):
 #         return HttpResponse("Error: Connection Not Defined in Plugin Modules.")
 
 
-@csrf_exempt
-def client_tunnel(request):
-    outjson = {}
-    path = request.META['PATH_INFO'].split("/")[-2:]
-    if len(path) == 2:
-        app_str = request.POST.get("app")
-        app_ver = request.POST.get("ver")
-        client_id = path[0]
-        operation = path[1]
-
-        tcs = TunnelClient.objects.filter(clientid=client_id)
-        if len(tcs) == 1:
-            tc = tcs[0]
-            if operation == "register":
-                if app_str and app_str != "":
-                    tc.appdesc = str(app_str)
-                if app_ver and app_ver != "":
-                    tc.appver = str(app_ver)
-                tc.save()
-                outjson["portnum"] = tc.tunnelport.portnumber
-            elif operation == "health":
-                return JsonResponse({"status": "ok"})
-            else:
-                # t = False
-                # fmax = 5
-                # f = 0
-                # while t is False:
-                #     # t = make_tunnel_request(inportnum, request.get_json(force=True))
-                #     t = make_tunnel_request(tc.get_internal_port(), request.POST, request.headers, request.method)
-                #     time.sleep(1)
-                #     f += 1
-                #     if f > fmax:
-                #         break
-                t_result, t_response = make_tunnel_request(tc.get_internal_port(), request.POST, request.headers, request.method)
-
-                if t_result is not False:
-                    resp = t_response.content.decode("UTF-8")
-                    xrt = request.headers.get("X-Return-Type", "raw").lower()
-                    if xrt == "json":
-                        outjson = {"state": "success", "response": json.loads(resp)}
-                        return JsonResponse(outjson)
-                    else:
-                        outjson = {"state": "success", "response": resp}
-                        return JsonResponse(outjson)
-                        # return JsonResponse({"error": str(resp)})
-                else:
-                    outjson = {"state": "fail", "error": str(t_response)}
-                    return JsonResponse(outjson)
-
-    return JsonResponse(outjson)
+# @csrf_exempt
+# def client_tunnel(request):
+#     outjson = {}
+#     path = request.META['PATH_INFO'].split("/")[-2:]
+#     if len(path) == 2:
+#         app_str = request.POST.get("app")
+#         app_ver = request.POST.get("ver")
+#         client_id = path[0]
+#         operation = path[1]
+#
+#         tcs = TunnelClient.objects.filter(clientid=client_id)
+#         print(client_id, tcs)
+#         if len(tcs) == 1:
+#             tc = tcs[0]
+#             if operation == "register":
+#                 if app_str and app_str != "":
+#                     tc.appdesc = str(app_str)
+#                 if app_ver and app_ver != "":
+#                     tc.appver = str(app_ver)
+#                 tc.save()
+#                 outjson["portnum"] = tc.tunnelport.portnumber
+#             elif operation == "health":
+#                 return JsonResponse({"status": "ok"})
+#             else:
+#                 # t = False
+#                 # fmax = 5
+#                 # f = 0
+#                 # while t is False:
+#                 #     # t = make_tunnel_request(inportnum, request.get_json(force=True))
+#                 #     t = make_tunnel_request(tc.get_internal_port(), request.POST, request.headers, request.method)
+#                 #     time.sleep(1)
+#                 #     f += 1
+#                 #     if f > fmax:
+#                 #         break
+#                 t_result, t_response = make_tunnel_request(tc.get_internal_port(), request.POST, request.headers, request.method)
+#
+#                 if t_result is not False:
+#                     resp = t_response.content.decode("UTF-8")
+#                     xrt = request.headers.get("X-Return-Type", "raw").lower()
+#                     if xrt == "json":
+#                         outjson = {"state": "success", "response": json.loads(resp)}
+#                         return JsonResponse(outjson)
+#                     else:
+#                         outjson = {"state": "success", "response": resp}
+#                         return JsonResponse(outjson)
+#                         # return JsonResponse({"error": str(resp)})
+#                 else:
+#                     outjson = {"state": "fail", "error": str(t_response)}
+#                     return JsonResponse(outjson)
+#
+#     return JsonResponse(outjson)
 
 
 class TenantViewSet(viewsets.ModelViewSet):
@@ -868,6 +1095,32 @@ class L3DomainViewSet(viewsets.ModelViewSet):
     """
     queryset = L3Domain.objects.all()
     serializer_class = L3DomainSerializer
+
+
+class TunnelClientViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows tunnel clients to be viewed or edited.
+    """
+    queryset = TunnelClient.objects.all()
+    serializer_class = TunnelClientSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self):
+        item_id = self.kwargs['pk']
+        appuser = AppUser.objects.filter(user=self.request.user).first()
+        tenants = Tenant.objects.filter(appuser=appuser)
+        # print(tenants)
+        return TunnelClient.objects.filter(tenant__in=tenants).filter(id=item_id).first()
+
+    def get_queryset(self):
+        appuser = AppUser.objects.filter(user=self.request.user).first()
+        tenants = Tenant.objects.filter(appuser=appuser)
+        queryset = TunnelClient.objects.filter(tenant__in=tenants)
+        parm = self.request.query_params.get('clientid', None)
+        if parm is not None:
+            queryset = queryset.filter(clientid__iexact=parm)
+
+        return queryset
 
 
 class TenantAPIView(APIView):

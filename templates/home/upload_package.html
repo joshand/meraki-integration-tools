@@ -2,6 +2,14 @@
 {% load extras %}
 
 {% block content %}
+    {% if error %}
+        <div class="md-alert-banner md-alert-banner--error">
+            <div class="md-alert-banner__text">{{ error }}</div>
+{#                <div class="md-alert-banner__close" tabindex="0" role="button" aria-label="Close">#}
+{#                <i class="icon icon-cancel_16"></i>#}
+{#            </div>#}
+        </div>
+    {% endif %}
     <form class="md-panel__form" enctype="multipart/form-data" method="POST" action="/home/upload-package">
         {% csrf_token %}
         <tbody class="md-input-group">

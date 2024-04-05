@@ -4,9 +4,9 @@ from django.db.models import Q
 
 
 def get_script(pm):
-    uz = Upload.objects.filter(tenant_id=pm.tenant.id).filter(description=pm.py_mod_name + ".py")
+    uz = Upload.objects.filter(tenant_id=pm.tenant.id).filter(plugin_id=pm.plugin_id).filter(description=pm.name + ".py")
     if len(uz) == 0:
-        uz = Upload.objects.filter(tenant_id=get_default_tenant()).filter(description=pm.py_mod_name + ".py")
+        uz = Upload.objects.filter(tenant_id=get_default_tenant()).filter(plugin_id=pm.plugin_id).filter(description=pm.name + ".py")
     if len(uz) > 0:
         pmn = "scripts." + str(uz[0].filename()).replace(".py", "")
         return pmn
@@ -15,7 +15,7 @@ def get_script(pm):
 
 
 def get_template(pm):
-    uz = Upload.objects.filter(Q(tenant_id=pm.tenant.id) | Q(tenant_id=get_default_tenant())).filter(uploadzip__description=pm.py_mod_name)
+    uz = Upload.objects.filter(Q(tenant_id=pm.tenant.id) | Q(tenant_id=get_default_tenant())).filter(uploadzip__description=pm.name)
 
     for upl in uz:
         if ".html" in upl.file.name:

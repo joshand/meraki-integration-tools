@@ -8,6 +8,7 @@ import json
 import requests
 import os
 import signal
+import time
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -30,7 +31,8 @@ app_version = "0.0.1"
 sver = sys.version_info
 app_name = "Python" + str(sver[0]) + "." + str(sver[1]) + ":tunnel_client.py"
 myuuid = "74886f7a-8247-4cc5-9e46-9cebf3fec1e4"
-gateway = "demo.sigraki.com"
+# gateway = "demo.sigraki.com"
+gateway = "127.0.0.1:8001"
 controller = "http://" + gateway
 internal_port = "8000"
 HTTP_METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH']
@@ -53,14 +55,17 @@ def start_tunnel(portnum):
 
 def health_check():
     global pproxy_pid
-    req = requests.get(controller + "/api/v0/tunnels/" + myuuid + "/health")
-    rjson = req.json()
-    print("health check=", str(rjson))
-    if rjson.get("status") != "ok":
-        if pproxy_pid != 0:
-            os.kill(pproxy_pid, signal.SIGTERM)  # or signal.SIGKILL
-            cron.remove_all_jobs()
-            do_register()
+    try:
+        req = requests.get(controller + "/api/v0/tunnels/" + myuuid + "/health")
+        rjson = req.json()
+        print("health check=", str(rjson))
+        if rjson.get("status") != "ok":
+            if pproxy_pid != 0:
+                os.kill(pproxy_pid, signal.SIGTERM)  # or signal.SIGKILL
+                cron.remove_all_jobs()
+                do_register()
+    except Exception as e:
+        print("health_check Error:", e)
 
 
 # handled incoming requests over tunnel
@@ -146,19 +151,35 @@ def default_route():
 def do_register():
     reg_url = controller + "/api/v0/tunnels/" + myuuid + "/register"
     data = {"app": app_name, "ver": app_version}
-    r = requests.post(reg_url, json=data)
-    # print(r.content.decode("utf-8"))
-    rj = r.json()
-    if "portnum" in rj:
-        start_tunnel(rj["portnum"])
-        return True
-    else:
+    try:
+        r = requests.post(reg_url, json=data)
+        # print(r.content.decode("utf-8"))
+        rj = r.json()
+        # print(rj)
+        if "portnum" in rj:
+            start_tunnel(rj["portnum"])
+            return True
+        else:
+            return False
+    except Exception as e:
+        print("do_register Error:", e)
         return False
 
 
 def run():
-    if do_register():
-        job = cron.add_job(health_check, 'interval', seconds=60)
-        app.run(host="0.0.0.0", port=8000, debug=False)
-    else:
-        print("Error; no port returned")
+    is_registered = False
+    while True:
+        if not is_registered:
+            is_registered = do_register()
+
+        if is_registered:
+            job = cron.add_job(health_check, 'interval', seconds=60)
+            app.run(host="0.0.0.0", port=8000, debug=False)
+        else:
+            print("Error; no port returned")
+
+        time.sleep(60)
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8888, debug=False)

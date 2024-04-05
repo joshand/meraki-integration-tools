@@ -1,3 +1,5 @@
+{% load static %}
+
 <!doctype html>
 <html lang="en">
 
@@ -6,8 +8,17 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://downloads.momentum-ui.com/@momentum-ui/core/css/momentum-ui.min.css" rel="stylesheet">
-    <title>Meraki Integration Tools</title>
+    <link href="https://downloads.momentum-ui.com/@momentum-ui/icons/css/momentum-ui-icons.css" rel="stylesheet">
+{#    <link href="{% static "magnetic.css" %}" rel="stylesheet">#}
+    <link href="{% static "ps_styles.css" %}" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/phosphor-icons"></script>
+    <title>Cisco Lab Tools</title>
     <style>
+        a {
+          text-decoration: none !important;
+        }
+
         @media only screen and (min-width: 64.0625em) {
             .md-top-bar {
                 grid-area: topbar;
@@ -222,6 +233,12 @@
                             let event = new Event('change');
                             olbl.dispatchEvent(event);
                         } else if ((outtype === 1) && (data.length > 0)) {
+                            if (outtype === 1) {
+                                out_data += '<div aria-current="true" class="md-list-item" id="md-list-73__so-item" role="option" value="-1" tabindex="0" title="N/A">';
+                                out_data += '  <div class="md-list-item__center" onclick="listclick(\'-1\', \'N/A\', \'' + outputlabel + '\', \'' + hiddenid + '\', \'' + hiddenname + '\', \'' + enablebtn + '\')")>N/A</div>';
+                                out_data += '  <div class="md-list-item__right"></div>';
+                                out_data += '</div>';
+                            }
                             for (let elm in data) {
                                 if (outtype === 1) {
                                     out_data += '<div aria-current="true" class="md-list-item" id="md-list-73__so-item" role="option" value="' + data[elm].id + '" tabindex="0" title="' + data[elm].name + '">';
@@ -260,6 +277,7 @@
         }
 
         function listclick(elemid, elemname, divsel, divid, divname, enablebtn) {
+            {#console.log("listclick");#}
             document.getElementById(divsel).innerHTML = elemname + '\n<i class="ignore icon icon-arrow-down_16"></i>';
             document.getElementById(divid).value = elemid;
             document.getElementById(divname).value = elemname;
@@ -268,6 +286,7 @@
                 ena.classList.remove("md-button--disabled");
                 ena.classList.add("md-button--blue");
             }
+            {#console.log("listclick: done");#}
             {#document.getElementById(divid).onchange();#}
         }
 
@@ -334,16 +353,16 @@
                         <span class="md-brand" href="/home">
                             <div class="md-brand__logo md-brand__logo--pad">
                                 <!-- Note: use either image or icon, but not both -->
-                                <!-- img src="/assets/spark-logo.svg" alt="Momentum UI" -->
-                                <i class="icon icon-cisco-logo" style="z-index:99999"></i>
+                                <img src="{% static 'cisco-logo-transparent.png' %}" alt="Cisco" style="z-index:99999">
+{#                                <i class="icon icon-cisco-logo_16" style="z-index:99999"></i>#}
                             </div>
-                            <div class="md-brand__title" style="z-index:99999">Meraki Integration Tools</div>
+                            <div class="md-brand__title" style="z-index:99999">Lab Tools</div>
                         </span>
                     </div>
                     <div class="md-top-bar__right ">
                         <div class="md-top-bar__user">
                             <span>{{ user.get_username }}</span>
-                            <a onclick="toggleUser('userIcon', 'dropdownUserMenu', 'userMenuContainer', 'userMenuContent')"><i id="userIcon" class="icon icon-activities_24 ignore"></i></a>
+                            <a onclick="toggleUser('userIcon', 'dropdownUserMenu', 'userMenuContainer', 'userMenuContent')"><i id="userIcon" class="icon icon-user_24 ignore"></i></a>
                         </div>
                     </div>
 
@@ -359,6 +378,11 @@
                                 <a href="/logout" aria-current="false" class="md-list-item" id="md-list-item-2-2" role="listitem" tabindex="-1" data-md-event-key="md-list-item-2-2">
                                     <span>Log out</span>
                                 </a>
+                                {% if plugin_id %}
+                                <a href="#" aria-current="false" class="md-list-item" id="md-list-item-2-3" role="listitem" tabindex="-1" data-md-event-key="md-list-item-2-3">
+                                    <span style="font-size: small; color: gray"><i>Package ID: {{ plugin_id }}</i></span>
+                                </a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -511,6 +535,31 @@
                                         </div>
                                     {% endfor %}
                                 {% endif %}
+
+                                <div class="md-list-item" id="md-sidebar__nav-item-99-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-99-0" data-md-keyboard-key="configuration" onclick="toggleMenu('settingsmenu');">
+                                    <div class="md-list-item__left">
+                                        <i class="md-icon icon icon-settings_20" style="font-size: 20px;"></i>
+                                    </div>
+                                    <div class="md-list-item__center">Settings</div>
+                                    <div class="md-list-item__right">
+                                        {% if menuopen == "tenantsettings" %}
+                                        <i class="md-icon icon icon-arrow-up_12" style="font-size: 12px;"></i>
+                                        {% else %}
+                                        <i class="md-icon icon icon-arrow-down_12" style="font-size: 12px;"></i>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% if menuopen == "tenantsettings" %}
+                                <div id="settingsmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--expanded">
+                                {% else %}
+                                <div id="settingsmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--collapsed">
+                                {% endif %}
+                                    <a class="md-list-item" id="md-sidebar__nav-item-99-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-99-1" data-md-keyboard-key="config-sites" href="/home/settings-sites">
+                                        <div class="md-list-item__center">Configure Sites</div>
+                                    </a>
+                                </div>
+
+
 {#                                <div class="md-list-item" id="md-sidebar__nav-item-4-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-4-0" data-md-keyboard-key="integration" onclick="toggleMenu('intmenu');">#}
 {#                                    <div class="md-list-item__left">#}
 {#                                        <i class="md-icon icon icon-accessories_20" style="font-size: 20px;"></i>#}
@@ -564,7 +613,8 @@
                 </div>
                 <div class="md-panel__footer">
                     <div class="footer__logo">
-                        <i class="icon icon-cisco-logo"></i>
+{#                        <i class="icon icon-cisco-logo-16"></i>#}
+{#                            <img src="https://video.cisco.com/img/cisco.png" alt="Cisco" style="width:50px">#}
                     </div>
                 </div>
             </div>
@@ -579,25 +629,27 @@
 {#    <div class="row">&nbsp;</div>#}
 
         <script>
-{#            let observer = new IntersectionObserver(function(entries) {#}
-{#                // isIntersecting is true when element and viewport are overlapping#}
-{#                // isIntersecting is false when element and viewport don't overlap#}
-{#                let add = document.getElementById('addlist');#}
-{#                let sub = document.getElementById('sublist');#}
-{#                let cnr = document.getElementById('corner_save');#}
-{#                if(entries[0].isIntersecting === true) {#}
-                    {#console.log('Element has just become visible in screen');#}
-{#                    cnr.style.display = "none";#}
-{#                } else {#}
-                    {#console.log('Element has just left screen');#}
-{#                    if ((add.value !== "") || (sub.value !== "")) {#}
-{#                        cnr.style.display = "inline";#}
-{#                    }#}
-{#                }#}
-{#            }, { threshold: [0] });#}
-{##}
-{#            observer.observe(document.querySelector("#bottom_save"));#}
-{##}
+            let observer = new IntersectionObserver(function(entries) {
+                // isIntersecting is true when element and viewport are overlapping
+                // isIntersecting is false when element and viewport don't overlap
+                let chg = document.getElementById('changes');
+                let cnr = document.getElementById('corner_save');
+                if(entries[0].isIntersecting === true) {
+                    console.log('Element has just become visible in screen');
+                    cnr.style.display = "none";
+                } else {
+                    console.log('Element has just left screen');
+                    if (chg.value !== "") {
+                        cnr.style.display = "inline";
+                    }
+                }
+            }, { threshold: [0] });
+
+            let bs = document.querySelector("#bottom_save");
+            if (bs) {
+                observer.observe(bs);
+            }
+
             document.body.addEventListener("click", function (evt) {
                 if (evt.target) {
                     if (evt.target.className.split(' ').indexOf("ignore") >= 0) {
