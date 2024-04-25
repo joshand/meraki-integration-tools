@@ -1,0 +1,24 @@
+{
+	"name": "aci",
+	"version": 0.1,
+	"unique_id": "0fd8ed96-4de0-4838-9375-b2c1e69e3230",
+	"files": [{
+			"file": "aci.py",
+			"target": "scripts"
+		},
+		{
+			"file": "aci.json",
+			"target": "database",
+			"relationships": [
+				{
+					"source_table": "DeviceType",
+					"source_field_match": "name=\"aci\"",
+					"source_field_link": "id",
+					"destination_table": "PluginModule",
+					"destination_field_match": "name=\"aci\"",
+					"destination_field_link": "devicetype_id"
+				}
+			]
+		}
+	]
+}

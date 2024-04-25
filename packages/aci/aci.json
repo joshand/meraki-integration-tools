@@ -1,0 +1,71 @@
+[{
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "APIC-SERVER-M3",
+			"named_id": "ucs-apic-m3",
+			"device_type": "server"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "APIC-SERVER-L3",
+			"named_id": "ucs-apic-l3",
+			"device_type": "server"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "APIC-SERVER-M4",
+			"named_id": "ucs-apic-m4",
+			"device_type": "server"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "APIC-SERVER-L4",
+			"named_id": "ucs-apic-l4",
+			"device_type": "server"
+		}
+	},
+	{
+		"model": "appicm.devicetype",
+		"fields": {
+			"name": "aci",
+			"supportscontroller": false,
+			"parmdef": [{
+				"name": "tunnel",
+				"desc": "Tunnel Client",
+				"style": "dropdown",
+				"source": "get_tunnel_clients",
+				"default_load": true,
+				"args": ["tenant"],
+				"display": "slice|-8|"
+			}, {
+				"name": "ip",
+				"desc": "Device IP"
+			}, {
+				"name": "port",
+				"desc": "Device Port (443)"
+			}, {
+				"name": "username",
+				"desc": "Admin Username"
+			}, {
+				"name": "password",
+				"desc": "Admin Password",
+				"password": true,
+				"secret": true
+			}]
+		}
+	},
+	{
+		"model": "appicm.pluginmodule",
+		"fields": {
+			"name": "aci",
+			"description": "ACI (APIC)",
+			"entity_name": "Controller",
+			"entity_name_plural": "Controllers",
+			"sync_interval": 60,
+			"default_icon": "https://community.cisco.com/t5/image/serverpage/image-id/107589iF450166338D15C00/image-size/large?v=v2&px=999"
+		}
+	}
+]
