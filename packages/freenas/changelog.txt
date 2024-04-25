@@ -1,2 +1,8 @@
 4/5/2024
 * Introduction of FreeNAS module
+
+4/9/2024
+* Minor change to error text if API Key is missing
+
+4/25/2024
+* Add device status parsing

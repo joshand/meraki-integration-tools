@@ -27,6 +27,20 @@ def get_freenas_inventory(ip, port, api_key):
         return {}
 
 
+def get_freenas_health(ip, port, api_key):
+    url = "https://" + ip + ":" + port + "/api/v2.0/alert/list"
+    headers = {
+        "Accept": "*/*",
+        "Authorization": "Bearer " + api_key
+    }
+
+    r = requests.get(url, headers=headers, verify=False)
+    if r.ok:
+        return r.json()
+    else:
+        return {}
+
+
 def lookup_device_model(plugin_id, model_string):
     if model_string is None:
         return None, None
@@ -40,6 +54,27 @@ def lookup_device_model(plugin_id, model_string):
             return my_device_model[0], None
         else:
             return None, None
+
+
+def parse_device_logs(log_list):
+    found_error = False
+    for h in log_list:
+        if h["level"] not in ["INFO"]:
+            found_error = True
+
+    UNKNOWN = 0, 'Unknown'
+    OFFLINE = 1, 'Offline'
+    DORMANT = 2, 'Dormant'
+    ALERTING = 3, 'Alerting'
+    ONLINE = 4, 'Online'
+    NOTINSTALLED = 5, 'Not Installed'
+
+    if found_error:
+        return ALERTING[0]
+    else:
+        return ONLINE[0]
+
+    return UNKNOWN[0]
 
 
 def process_freenas_inventory(tenant):
@@ -60,6 +95,8 @@ def process_freenas_inventory(tenant):
             pf_port = "443"
 
         node = get_freenas_inventory(pf_ip, pf_port, pf_apikey)
+        health = get_freenas_health(pf_ip, pf_port, pf_apikey)
+        status = parse_device_logs(health)
         ver = node.get("version")
         model = node.get("system_product")
         sn = node.get("system_serial")
@@ -76,7 +113,8 @@ def process_freenas_inventory(tenant):
                                                                      "devicetype": my_device_type,
                                                                      "controller": c,
                                                                      "devicemodeltype": mdl,
-                                                                     "current_version": ver})
+                                                                     "current_version": ver,
+                                                                     "status": status})
             if created:
                 retdata += " (Added)\n"
             else:

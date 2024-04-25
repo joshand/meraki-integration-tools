@@ -17,7 +17,8 @@
 				"desc": "Device IP"
 			}, {
 				"name": "port",
-				"desc": "Device Port (443)"
+				"desc": "Device Port (443)",
+				"default": "443"
 			}, {
 				"name": "apikey",
 				"desc": "API Key",
