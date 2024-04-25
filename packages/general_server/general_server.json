@@ -1,0 +1,10 @@
+[{
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "Macmini7,1",
+			"named_id": "macmini-7-1",
+			"size_rack_u": 0,
+			"device_type": "server"
+		}
+	}
+]

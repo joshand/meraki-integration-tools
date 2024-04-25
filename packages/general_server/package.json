@@ -1,0 +1,20 @@
+{
+	"name": "general_server",
+	"version": 0.1,
+	"unique_id": "b82e148f-acd9-4e05-9e30-9b53111bb93f",
+	"files": [{
+			"file": "general_server.json",
+			"target": "database",
+			"relationships": [
+				{
+					"source_table": "DeviceType",
+					"source_field_match": "name=\"general_server\"",
+					"source_field_link": "id",
+					"destination_table": "PluginModule",
+					"destination_field_match": "name=\"general_server\"",
+					"destination_field_link": "devicetype_id"
+				}
+			]
+		}
+	]
+}
