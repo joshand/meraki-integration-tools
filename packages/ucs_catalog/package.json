@@ -1,6 +1,6 @@
 {
 	"name": "ucs_catalog",
-	"version": 0.1,
+	"version": 0.2,
 	"unique_id": "fe572152-15c3-4bdd-8dee-e2802fdb9077",
 	"files": [{
 			"file": "ucs_catalog.json",

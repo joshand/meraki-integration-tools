@@ -14,5 +14,29 @@
 			"size_rack_u": 2,
 			"device_type": "server"
 		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "BE6M-M5-K9",
+			"named_id": "ucs-be6m-m5-k9",
+			"size_rack_u": 1,
+			"device_type": "server"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "CTI-CMS-1000-M5-K9",
+			"named_id": "ucs-cti-cms1000-m5-k9",
+			"size_rack_u": 1,
+			"device_type": "server"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "UCSB-B200-M3",
+			"named_id": "ucs-b200-m3",
+			"size_rack_u": 0,
+			"device_type": "server"
+		}
 	}
 ]
