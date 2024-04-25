@@ -7,12 +7,13 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://downloads.momentum-ui.com/@momentum-ui/core/css/momentum-ui.min.css" rel="stylesheet">
-    <link href="https://downloads.momentum-ui.com/@momentum-ui/icons/css/momentum-ui-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@momentum-ui/core@19.15.31/css/momentum-ui.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@momentum-ui/icons@8.33.0/css/momentum-ui-icons.css" rel="stylesheet">
 {#    <link href="{% static "magnetic.css" %}" rel="stylesheet">#}
     <link href="{% static "ps_styles.css" %}" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/phosphor-icons"></script>
+{#    <script src="https://unpkg.com/phosphor-icons"></script>#}
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <title>Cisco Lab Tools</title>
     <style>
         a {
@@ -558,6 +559,13 @@
                                         <div class="md-list-item__center">Configure Sites</div>
                                     </a>
                                 </div>
+
+                                <a href="/home/devices" class="md-list-item" role="listitem" id="md-sidebar__nav-item-1" data-md-event-key="md-sidebar__nav-item-1">
+                                    <div class="md-list-item__left">
+                                        <i class="ph ph-devices" style="font-size: 20px;"></i>
+                                    </div>
+                                    <div class="md-list-item__center">Devices</div>
+                                </a>
 
 
 {#                                <div class="md-list-item" id="md-sidebar__nav-item-4-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-4-0" data-md-keyboard-key="integration" onclick="toggleMenu('intmenu');">#}
