@@ -137,3 +137,9 @@ upload
 icm/settings.py
 /static
 /packages/old
+dbexport.json
+scripts/ws_api_gw.py
+scripts/ws_client_test.py
+scripts/ws_server.py
+templates/home/old_tenant_settings.html
+todo.txt
