@@ -85,6 +85,25 @@ def lookup_device_model(plugin_id, model_string):
             return None, None
 
 
+def parse_device_status(status_text, error_text):
+    UNKNOWN = 0, 'Unknown'
+    OFFLINE = 1, 'Offline'
+    DORMANT = 2, 'Dormant'
+    ALERTING = 3, 'Alerting'
+    ONLINE = 4, 'Online'
+    NOTINSTALLED = 5, 'Not Installed'
+
+    if status_text == "Unreachable":
+        return OFFLINE[0]
+    if status_text == "Reachable":
+        if error_text != "null":
+            return ALERTING[0]
+        else:
+            return ONLINE[0]
+
+    return UNKNOWN[0]
+
+
 def process_dnac_inventory(tenant):
     controllers = Controller.objects.filter(tenant=tenant).filter(devicetype__name="dnac").filter(enabled=True)
     retdata = ""
@@ -125,7 +144,8 @@ def process_dnac_inventory(tenant):
                                                                          "devicetype": my_device_type,
                                                                          "controller": c,
                                                                          "devicemodeltype": mdl,
-                                                                         "current_version": ver})
+                                                                         "current_version": ver,
+                                                                         "status": 4})
                 if created:
                     retdata += " (Added)\n"
                 else:
@@ -133,6 +153,8 @@ def process_dnac_inventory(tenant):
 
         devices = get_dnac_inventory(pf_ip, pf_port, token)
         for device in devices:
+            # print(json.dumps(device, indent=4))
+            # print("=====================================")
             model = device.get("platformId", None)
             mdl, err = lookup_device_model(plugin_id, model)
             if err:
@@ -141,6 +163,12 @@ def process_dnac_inventory(tenant):
                 sn = device.get("serialNumber", "")
                 mac = device.get("macAddress", "")
                 name = device.get("name", mac)
+                if device.get("softwareType") is not None:
+                    dev_ver = str(device.get("softwareType", "")) + " " + str(device.get("softwareVersion", ""))
+                else:
+                    dev_ver = str(device.get("softwareVersion", ""))
+
+                dev_status = parse_device_status(device.get("reachabilityStatus", ""), device.get("errorCode", ""))
                 retdata += "* Device: " + str(sn)
                 res, created = Device.objects.update_or_create(tenant=tenant, serial_number=sn,
                                                                defaults={"basemac": mac, "orphaned": False,
@@ -148,7 +176,10 @@ def process_dnac_inventory(tenant):
                                                                          "rawconfig": device,
                                                                          "devicetype": my_device_type,
                                                                          "controller": c,
-                                                                         "devicemodeltype": mdl})
+                                                                         "devicemodeltype": mdl,
+                                                                         "current_version": dev_ver,
+                                                                         "status": dev_status})
+
                 if created:
                     retdata += " (Added)\n"
                 else:

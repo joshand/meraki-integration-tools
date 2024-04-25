@@ -9,3 +9,6 @@
 4/5/2024
 * Add unique_id to manifest package
 * Capture DNAC Software version
+
+4/25/2024
+* Add device model and device status parsing (DNAC itself will always show 'online')
