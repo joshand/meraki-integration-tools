@@ -68,11 +68,13 @@ urlpatterns = [
     re_path(r'^home/status-task$', views.status_task, name='status_task'),
     re_path(r'^home/config-package$', views.config_package, name='config_package'),
     re_path(r'^home/upload-package$', views.upload_package, name='upload_package'),
+    re_path(r'^home/devices', views.show_devices, name='show_devices'),
     re_path(r'^task/result', views.status_task_result, name='status_task_result'),
     re_path(r'^module', views.module_ui, name='module_ui'),
     re_path(r'^home/settings-sites', views.show_config, name='show_config'),
     re_path(r'^home/settings-layout', views.show_layout, name='show_layout'),
     re_path(r'^api/get-devices', views.api_get_devices, name='get_devices'),
+    re_path(r'^export', views.export_data, name='export_data'),
 
                   # url(r'^api/v0/tenant/(?P<id>[0-9a-f-]+)$', views.TenantAPIView.as_view()),
     # url(r'^api/v0/tenant/$', views.TenantAPIListView.as_view()),
