@@ -1,0 +1,13 @@
+{
+	"name": "nexus_catalog",
+	"version": 0.1,
+	"unique_id": "564af003-b569-4d38-a174-5c66c0cdef42",
+	"files":
+	[
+		{
+			"file": "nexus_catalog.json",
+			"target": "database",
+			"relationships": []
+		}
+	]
+}

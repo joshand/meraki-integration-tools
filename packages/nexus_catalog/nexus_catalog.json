@@ -1,0 +1,19 @@
+[{
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "N9K-C93600CD-GX",
+			"named_id": "nexus-93600cd-gx",
+			"size_rack_u": 1,
+			"device_type": "switch"
+		}
+	},
+	{
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "N9K-C93180YC-FX3",
+			"named_id": "nexus-93180yc-fx3",
+			"size_rack_u": 1,
+			"device_type": "switch"
+		}
+	}
+]
