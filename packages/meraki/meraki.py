@@ -64,6 +64,26 @@ def getorgs(args):
 #     return {"template": "home/config_dashboard.html", "desc": "Meraki Dashboard", "data": dashboards}
 
 
+def parse_device_status(status_text):
+    UNKNOWN = 0, 'Unknown'
+    OFFLINE = 1, 'Offline'
+    DORMANT = 2, 'Dormant'
+    ALERTING = 3, 'Alerting'
+    ONLINE = 4, 'Online'
+    NOTINSTALLED = 5, 'Not Installed'
+
+    if status_text == "alerting":
+        return ALERTING[0]
+    if status_text == "dormant":
+        return DORMANT[0]
+    if status_text == "offline":
+        return OFFLINE[0]
+    if status_text == "online":
+        return ONLINE[0]
+
+    return UNKNOWN[0]
+
+
 def process_meraki_inventory(tenant):
     retdata = "--This is the Meraki Dashboard Discovery module--\n"
     controllers = Controller.objects.filter(tenant=tenant).filter(devicetype__name="Meraki").filter(enabled=True)
@@ -96,7 +116,17 @@ def process_meraki_inventory(tenant):
         dashboard = meraki.DashboardAPI(base_url=base_url, api_key=api_key, suppress_logging=True,
                                         print_console=False, output_log=False, caller=settings.CUSTOM_UA)
         inv = dashboard.organizations.getOrganizationInventoryDevices(org_id)
+        inv2 = dashboard.organizations.getOrganizationDevices(org_id)
+        inv3 = dashboard.organizations.getOrganizationDevicesStatuses(org_id)
 
+        device_json = {}
+        for i in inv2:
+            device_json[i["serial"]] = {"version": i["firmware"]}
+
+        for i in inv3:
+            device_json[i["serial"]]["status"] = parse_device_status(i["status"])
+
+        # print(device_json)
         devlist = []
         devices = Device.objects.filter(tenant=tenant).filter(controller=c)
         for device in devices:
@@ -115,11 +145,26 @@ def process_meraki_inventory(tenant):
                 retdata += "(Error: Unable to find model '" + str(device["model"]) + "' in database.)\n"
                 continue
 
+            if sn not in device_json:
+                dev_ver = "N/A: Device parked in inventory"
+                dev_status = 5                  # Not Installed
+            else:
+                dev_ver = device_json.get(sn, {}).get("version")
+                dev_status = device_json.get(sn, {}).get("status")
+
+            if dev_ver in ["Not running configured version", "Firmware locked. Please contact support."]:
+                dev_ver = "N/A: " + dev_ver
+
+            # print(dev_ver, sn, device_json.get(sn))
             res, created = Device.objects.update_or_create(tenant=tenant, serial_number=sn,
                                                            defaults={"basemac": device["mac"], "orphaned": False,
                                                                      "name": device["name"] if device["name"] else device["mac"],
-                                                                     "rawconfig": device, "devicetype": my_device_type,
-                                                                     "controller": c, "devicemodeltype": my_device_model[0]})
+                                                                     "rawconfig": device,
+                                                                     "devicetype": my_device_type,
+                                                                     "controller": c,
+                                                                     "devicemodeltype": my_device_model[0],
+                                                                     "current_version": dev_ver,
+                                                                     "status": dev_status})
             if created:
                 retdata += "(Added)\n"
             else:

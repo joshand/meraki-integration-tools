@@ -13,3 +13,6 @@
 4/5/2024
 * Add unique_id to manifest package
 * Remove catalyst devices from Meraki package since they live in a dedicated package now
+
+4/25/2024
+* Add device model and device status parsing
