@@ -13,6 +13,10 @@
     <input type="checkbox" id="hide_uninstalled" checked>&nbsp;Hide Non-Installed Devices
     <input type="checkbox" id="hide_dormant" checked>&nbsp;Hide Dormant Devices
     <input type="checkbox" id="hide_offline">&nbsp;Hide Offline Devices
+    <input type="checkbox" id="hide_online">&nbsp;Hide Online Devices
+    <br>
+    <input type="checkbox" id="hide_offline_vms" checked>&nbsp;Hide Offline VMs
+    <input type="checkbox" id="hide_online_vms">&nbsp;Hide Online VMs
 
     <div class="row" style="padding: 0">
         <div class="md-data-table__wrapper" style="padding:0rem 0rem;">
@@ -41,14 +45,6 @@
         let dt_url = "/api/get-devices";
         $(document).ready( function () {
             myTable = $('#myTable').DataTable({
-                {#"search": {#}
-                {#    "search": "Not Installed"#}
-                {# },#}
-                {#rowCallback: function (row, data) {#}
-                {#    if (data["status"] === 'Not Installed') {#}
-                {#        $(row).hide();#}
-                {#    }#}
-                {# },#}
                 "paging": false,
                 "ajax": {
                     url: dt_url,
@@ -90,7 +86,19 @@
                         return false;
                     }
 
-                    if ((searchData[9] === "Offline") && (document.getElementById("hide_offline").checked)) {
+                    if ((searchData[4] !== "Virtual Machine") && (searchData[9] === "Offline") && (document.getElementById("hide_offline").checked)) {
+                        return false;
+                    }
+
+                    if ((searchData[4] !== "Virtual Machine") && (searchData[9] === "Online") && (document.getElementById("hide_online").checked)) {
+                        return false;
+                    }
+
+                    if ((searchData[4] === "Virtual Machine") && (searchData[9] === "Offline") && (document.getElementById("hide_offline_vms").checked)) {
+                        return false;
+                    }
+
+                    if ((searchData[4] === "Virtual Machine") && (searchData[9] === "Online") && (document.getElementById("hide_online_vms").checked)) {
                         return false;
                     }
 
