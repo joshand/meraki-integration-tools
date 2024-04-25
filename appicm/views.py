@@ -1,4 +1,5 @@
 import base64
+import csv
 
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
@@ -298,11 +299,20 @@ def api_get_devices(request):
                 </div>
             </div>
         """
+        plugin_id = dev.devicetype.plugin_id
+        module_name = PluginModule.objects.filter(plugin_id=plugin_id).first()
+        if module_name:
+            show_name = module_name.description
+        else:
+            show_name = dev.devicetype.name
+
         devices["data"].append({"id": str(dev.id),
                                 "visible": True,
                                 "name": str(dev.name),
+                                "version": str(dev.current_version),
+                                "status": str(dev.get_status()),
                                 "basemac": str(dev.basemac),
-                                "devicetype": str(dev.devicetype.name),
+                                "devicetype": str(show_name),
                                 "serial_number": str(dev.serial_number),
                                 "devicemodeltype": str(dev.devicemodeltype.name),
                                 "icon": dev_icon,
@@ -921,6 +931,20 @@ def module_ui(request):
 #                     return JsonResponse(outjson)
 #
 #     return JsonResponse(outjson)
+
+
+def show_devices(request):
+    tenant = get_tenant(request)
+    error_text = None
+    if not tenant:
+        return redirect('/tenant')
+
+    crumbs = '<li class="current">Devices</li>'
+    response = render(request, 'home/devices.html', {"crumbs": crumbs, "tenant": tenant,
+                                                     "error": error_text,
+                                                     "global": get_globals(request, tenant)})
+    response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
+    return response
 
 
 class TenantViewSet(viewsets.ModelViewSet):
@@ -1857,3 +1881,19 @@ class UploadViewSet(viewsets.ModelViewSet):
     """
     queryset = Upload.objects.all().order_by('description')
     serializer_class = UploadSerializer
+
+
+def export_data(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="somefilename.csv"'},
+    )
+
+    writer = csv.writer(response)
+    writer.writerow(["manufacturer", "model", "slug", "u_height"])
+    dmts = DeviceModelType.objects.all()
+    for dmt in dmts:
+        writer.writerow(["Cisco", dmt.name, dmt.named_id, dmt.size_rack_u])
+
+    return response
