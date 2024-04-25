@@ -10,6 +10,9 @@
     <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
 
     <h4 class="md-h4--bold md-font-color--alternate docs-section__title">Devices</h4>
+    <input type="checkbox" id="hide_uninstalled" checked>&nbsp;Hide Non-Installed Devices
+    <input type="checkbox" id="hide_dormant" checked>&nbsp;Hide Dormant Devices
+    <input type="checkbox" id="hide_offline">&nbsp;Hide Offline Devices
 
     <div class="row" style="padding: 0">
         <div class="md-data-table__wrapper" style="padding:0rem 0rem;">
@@ -38,6 +41,14 @@
         let dt_url = "/api/get-devices";
         $(document).ready( function () {
             myTable = $('#myTable').DataTable({
+                {#"search": {#}
+                {#    "search": "Not Installed"#}
+                {# },#}
+                {#rowCallback: function (row, data) {#}
+                {#    if (data["status"] === 'Not Installed') {#}
+                {#        $(row).hide();#}
+                {#    }#}
+                {# },#}
                 "paging": false,
                 "ajax": {
                     url: dt_url,
@@ -62,7 +73,7 @@
                     { "data": "basemac", "visible": false },
                     { "data": "status" },
                 ],
-                "order": [[5, 'asc']]
+                "order": [[6, 'asc']]
             });
 
             $.fn.dataTable.ext.search.push(
@@ -71,13 +82,31 @@
                         return true;
                     }
 
+                    if ((searchData[9] === "Not Installed") && (document.getElementById("hide_uninstalled").checked)) {
+                        return false;
+                    }
+
+                    if ((searchData[9] === "Dormant") && (document.getElementById("hide_dormant").checked)) {
+                        return false;
+                    }
+
+                    if ((searchData[9] === "Offline") && (document.getElementById("hide_offline").checked)) {
+                        return false;
+                    }
+
+
                     let isvisible = searchData[1];
                     if (isvisible === "true") {
                         return true;
                     }
+
                     return false;
                 }
             );
+
+             $('input:checkbox').on('change', function () {
+                myTable.draw();
+             });
         });
 
     </script>
