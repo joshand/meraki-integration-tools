@@ -35,6 +35,7 @@ from appicm.models import *
 from scripts.common import get_script
 # from scripts.tunnels import start_tunnel, stop_tunnel, health_check
 from datetime import datetime, timedelta
+import random
 from . import ws_server
 from . import ws_api_gw
 
@@ -48,10 +49,12 @@ def check_operation():
         Operation.objects.create(reload_tasks=False)
     elif len(operations) > 0:
         if operations[0].reload_tasks:
+            cron.remove_all_jobs()
             TaskResult.objects.create(tenant=get_default_tenant(obj=True), taskname="task_scheduler", result="reloaded tasks")
             operations[0].reload_tasks = False
             operations[0].save()
-            start()
+            # start()
+            run_tasks()
 
 
 # def tunnel_health_check():
@@ -91,7 +94,7 @@ def start():
         # scheduler may already be running
         pass
     cron.remove_all_jobs()
-    cron.add_job(log_cleanup, 'interval', hours=1)
+    # cron.add_job(log_cleanup, 'interval', hours=1)
     cron.add_job(check_operation, 'interval', seconds=60)
     # cron.add_job(tunnel_health_check, 'interval', seconds=60)
     #
@@ -105,6 +108,13 @@ def start():
     # for tc in tcs:
     #     job = cron.add_job(start_tunnel, args=[tc])
 
+    run_tasks()
+
+    # Shutdown your cron thread if the web process is stopped
+    atexit.register(lambda: cron.shutdown(wait=False))
+
+
+def run_tasks():
     tenant_list = []
     tenants = Tenant.objects.exclude(id=get_default_tenant())
     for tenant in tenants:
@@ -169,10 +179,11 @@ def start():
                 else:
                     cron.add_job(job)
             else:
+                timer = pm.sync_interval + random.randint(1, 10)
                 if mode == "tenant":
-                    cron.add_job(job, 'interval', kwargs={"tenant_list": [str(pm.tenant.id)]}, seconds=pm.sync_interval)
+                    cron.add_job(job, 'interval', kwargs={"tenant_list": [str(pm.tenant.id)]}, seconds=timer)
                 else:
-                    cron.add_job(job, 'interval', seconds=pm.sync_interval)
+                    cron.add_job(job, 'interval', seconds=timer)
 
     # ims = IntegrationModule.objects.all()
     # for im in ims:
@@ -193,9 +204,7 @@ def start():
     # job2 = cron.add_job(scripts.network_monitor.run, 'interval', seconds=30)
     # job3 = cron.add_job(scripts.client_monitor.run, 'interval', seconds=30)
     # job4 = cron.add_job(scripts.clean_tasks.run, 'interval', minutes=60)
-
-    # Shutdown your cron thread if the web process is stopped
-    atexit.register(lambda: cron.shutdown(wait=False))
+    log_cleanup()
 
 
 def run():
