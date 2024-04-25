@@ -3,4 +3,5 @@
 
 4/25/2024
 * Fix device serial number parsing and get esxi host status
+* Add VMs to database as well
 

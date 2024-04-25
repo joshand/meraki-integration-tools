@@ -92,6 +92,20 @@ def get_inventory(ip, port, api_key):
         return {}
 
 
+def get_inventory_vm(ip, port, api_key):
+    url = "https://" + ip + ":" + port + "/api/vcenter/vm"
+    headers = {
+        "Accept": "application/json",
+        "vmware-api-session-id": api_key
+    }
+
+    req = requests.request("GET", url, headers=headers, verify=False)
+    if req.ok:
+        return req.json()
+    else:
+        return {}
+
+
 def lookup_device_model(plugin_id, model_string):
     if model_string is None:
         return None, None
@@ -114,6 +128,14 @@ def parse_device_status(state_text, status_text):
     ALERTING = 3, 'Alerting'
     ONLINE = 4, 'Online'
     NOTINSTALLED = 5, 'Not Installed'
+
+    if state_text == "vm":
+        if status_text == "POWERED_ON":
+            return ONLINE[0]
+        elif status_text == "POWERED_OFF":
+            return OFFLINE[0]
+        else:
+            return UNKNOWN[0]
 
     if state_text == "CONNECTED":
         if status_text == "green":
@@ -168,6 +190,26 @@ def process_inventory(tenant):
                         retdata += " (Added)\n"
                     else:
                         retdata += " (Updated)\n"
+
+        token = get_token(pf_ip, pf_port, pf_username, pf_password)
+        vms = get_inventory_vm(pf_ip, pf_port, token)
+        for vm in vms:
+            mdl, err = lookup_device_model(plugin_id, "Virtual Machine")
+            retdata += "* VM: " + str(vm["vm"])
+            vm_status = parse_device_status("vm", vm["power_state"])
+            res, created = Device.objects.update_or_create(tenant=tenant, serial_number=vm["vm"],
+                                                           defaults={"basemac": None, "orphaned": False,
+                                                                     "name": vm["name"],
+                                                                     "rawconfig": vm,
+                                                                     "devicetype": my_device_type,
+                                                                     "controller": c,
+                                                                     "devicemodeltype": mdl,
+                                                                     "current_version": "N/A",
+                                                                     "status": vm_status})
+            if created:
+                retdata += " (Added)\n"
+            else:
+                retdata += " (Updated)\n"
 
     return retdata
 

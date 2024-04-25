@@ -1,5 +1,12 @@
 [
 	{
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "Virtual Machine",
+			"named_id": "vmware-virtual-machine",
+			"device_type": "vm"
+		}
+	}, {
 		"model": "appicm.devicetype",
 		"fields": {
 			"name": "vcenter",
