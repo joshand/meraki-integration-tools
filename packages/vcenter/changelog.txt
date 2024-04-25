@@ -1,0 +1,6 @@
+4/9/2024
+* Initial release
+
+4/25/2024
+* Fix device serial number parsing and get esxi host status
+

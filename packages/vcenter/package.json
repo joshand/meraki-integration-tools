@@ -1,0 +1,24 @@
+{
+	"name": "vcenter",
+	"version": 0.1,
+	"unique_id": "b66e6059-6823-4896-83d5-f7ad59689c5b",
+	"files": [{
+			"file": "vcenter.py",
+			"target": "scripts"
+		},
+		{
+			"file": "vcenter.json",
+			"target": "database",
+			"relationships": [
+				{
+					"source_table": "DeviceType",
+					"source_field_match": "name=\"vcenter\"",
+					"source_field_link": "id",
+					"destination_table": "PluginModule",
+					"destination_field_match": "name=\"vcenter\"",
+					"destination_field_link": "devicetype_id"
+				}
+			]
+		}
+	]
+}

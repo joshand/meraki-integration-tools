@@ -1,0 +1,45 @@
+[
+	{
+		"model": "appicm.devicetype",
+		"fields": {
+			"name": "vcenter",
+			"supportscontroller": false,
+			"parmdef": [{
+				"name": "tunnel",
+				"desc": "Tunnel Client",
+				"style": "dropdown",
+				"source": "get_tunnel_clients",
+				"default_load": true,
+				"args": ["tenant"],
+				"display": "lookup|TunnelClient|description"
+			}, {
+				"name": "ip",
+				"desc": "vCenter IP"
+			}, {
+				"name": "port",
+				"desc": "vCenter Port (443)",
+				"default": "443"
+			}, {
+				"name": "username",
+				"desc": "Admin Username",
+				"default": "administrator@vsphere.local"
+			}, {
+				"name": "password",
+				"desc": "Admin Password",
+				"password": true,
+				"secret": true
+			}]
+		}
+	},
+	{
+		"model": "appicm.pluginmodule",
+		"fields": {
+			"name": "vcenter",
+			"description": "vCenter",
+			"entity_name": "Instance",
+			"entity_name_plural": "Instances",
+			"sync_interval": 60,
+			"default_icon": "https://corp.inforlandia.com/wp-content/uploads/2019/10/vcenterserver.jpg"
+		}
+	}
+]
