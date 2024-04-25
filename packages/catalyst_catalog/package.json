@@ -1,0 +1,20 @@
+{
+	"name": "catalyst",
+	"version": 0.2,
+	"unique_id": "2574bf88-d8ff-4201-9dfb-3525d124fefb",
+	"files": [{
+			"file": "catalyst.json",
+			"target": "database",
+			"relationships": [
+				{
+					"source_table": "DeviceType",
+					"source_field_match": "name=\"catalyst\"",
+					"source_field_link": "id",
+					"destination_table": "PluginModule",
+					"destination_field_match": "name=\"catalyst\"",
+					"destination_field_link": "devicetype_id"
+				}
+			]
+		}
+	]
+}
