@@ -936,6 +936,14 @@ class Controller(models.Model):
 
 
 class Device(models.Model):
+    class DeviceStatus(models.IntegerChoices):
+        UNKNOWN = 0, 'Unknown'
+        OFFLINE = 1, 'Offline'
+        DORMANT = 2, 'Dormant'
+        ALERTING = 3, 'Alerting'
+        ONLINE = 4, 'Online'
+        NOTINSTALLED = 5, 'Not Installed'
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
@@ -950,9 +958,14 @@ class Device(models.Model):
     rawconfig = models.JSONField(default=dict, editable=False)
     current_version = models.CharField(max_length=50, blank=True, default=None, null=True)
     other_data = models.JSONField(blank=True, null=False, default=dict)
+    status = models.IntegerField(default=DeviceStatus.UNKNOWN, choices=DeviceStatus.choices)
 
     def __str__(self):
         return str(self.name) + " -- " + str(self.serial_number) + " (" + str(self.devicemodeltype) + ")"
+
+
+    def get_status(self):
+        return self.DeviceStatus.choices[self.status][1]
 
 
 class L1InterfaceType(models.Model):
