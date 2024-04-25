@@ -1,0 +1,23 @@
+{
+	"name": "iosxe16",
+	"version": 0.3,
+	"files": [{
+			"file": "iosxe16.py",
+			"target": "scripts"
+		},
+		{
+			"file": "iosxe16.json",
+			"target": "database",
+			"relationships": [
+				{
+					"source_table": "DeviceType",
+					"source_field_match": "name=\"iosxe16\"",
+					"source_field_link": "id",
+					"destination_table": "PluginModule",
+					"destination_field_match": "name=\"iosxe16\"",
+					"destination_field_link": "devicetype_id"
+				}
+			]
+		}
+	]
+}

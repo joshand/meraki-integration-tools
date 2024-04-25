@@ -1,0 +1,3 @@
+9/16/2022
+* Removed tenant field & updated to match new import version
+* Add basic code for pulling device info

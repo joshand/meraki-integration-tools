@@ -1,0 +1,109 @@
+[{
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "C8300-1N1S-6T",
+			"named_id": "catalyst-router-c8300",
+			"device_type": "router"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "ISR4451-X",
+			"named_id": "catalyst-router-4451",
+			"device_type": "router"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "C9300-24P",
+			"named_id": "catalyst-device-c9300-24p",
+			"device_type": "switch"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "C9800-L-C",
+			"named_id": "catalyst-device-c9800-l-c",
+			"device_type": "wireless_controller"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "C9500-48Y4C",
+			"named_id": "catalyst-device-c9500-48y4c",
+			"device_type": "switch"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "C9500-24Y4C",
+			"named_id": "catalyst-device-c9500-24y4c",
+			"device_type": "switch"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "C9300-48U",
+			"named_id": "catalyst-device-c9300-48u",
+			"device_type": "switch"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "C9300-48P",
+			"named_id": "catalyst-device-c9300-48p",
+			"device_type": "switch"
+		}
+	}, {
+		"model": "appicm.devicemodeltype",
+		"fields": {
+			"name": "C9200-48P",
+			"named_id": "catalyst-device-c9200-48p",
+			"device_type": "switch"
+		}
+	},
+	{
+		"model": "appicm.devicetype",
+		"fields": {
+			"name": "iosxe16",
+			"supportscontroller": false,
+			"parmdef": [{
+				"name": "tunnel",
+				"desc": "Tunnel Client",
+				"style": "dropdown",
+				"source": "get_tunnel_clients",
+				"default_load": true,
+				"args": ["tenant"],
+				"display": "slice|-8|"
+			}, {
+				"name": "ip",
+				"desc": "Device IP"
+			}, {
+				"name": "port",
+				"desc": "Device Port (443)"
+			}, {
+				"name": "console_ip",
+				"desc": "Console IP Port"
+			}, {
+				"name": "username",
+				"desc": "Admin Username"
+			}, {
+				"name": "password",
+				"desc": "Admin Password",
+				"password": true,
+				"secret": true
+			}]
+		}
+	},
+	{
+		"model": "appicm.pluginmodule",
+		"fields": {
+			"name": "iosxe16",
+			"description": "IOS-XE 16+",
+			"entity_name": "Device",
+			"entity_name_plural": "Devices",
+			"sync_interval": 600,
+			"default_icon": "https://www.cisco.com/c/dam/m/en_us/solutions/enterprise-networks/services-top-4/catalyst-9300-vs-9500/images/switch-icon-3.png"
+		}
+	}
+]
