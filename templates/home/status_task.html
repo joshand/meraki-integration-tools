@@ -4,12 +4,13 @@
 {% block content %}
     <script>
         function getResult(obj) {
-            getdata("/task/result/" + obj, null, 2, null, "logmodal", "logdata", null, null, null, null);
+            getdata("/task/result/" + obj, null, 2, null, "logModal", "logContent", null, null, null, null);
         }
     </script>
+    <h4 class="md-h4--bold md-font-color--alternate docs-section__title">Task Results</h4>
+
     <div class="md-data-table" style="width: 100%;">
         <div class="md-data-table__wrapper">
-            Task Results
             <table class="testTableClass">
                 <thead class="md-data-table__thead">
                     <tr>
@@ -32,7 +33,7 @@
                             {{ d.taskname }}
                         </td>
                         <td>
-                            <a title="View Results" onclick="getResult('{{ d.id }}')"><span class="icon icon-file-text_24"></span></a>
+                            <a href="#" title="View Results" onclick="getResult('{{ d.id }}')"><i class='ph ph ph-file-text' style='font-size: 20px'></i></a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -40,7 +41,25 @@
             </table>
         </div>
 
-        <div id="logmodal" class="md-modal__backdrop fade in" style="display:none; width: 100px;height: 50px;position:fixed; top: calc(50% - 25px);left: calc(50% - 50px);">
+    <!-- Add Log Modal -->
+    <div class="modal fade" id="logModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="logModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="transform:none !important;width:600px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="popupLabel">Task Results</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="overflow:auto">
+                    <div id="logContent" style="text-align: left;margin-left: 25px;" class="md-modal__body"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div id="oldlogmodal" class="md-modal__backdrop fade in" style="display:none; width: 100px;height: 50px;position:fixed; top: calc(50% - 25px);left: calc(50% - 50px);">
             <div role="dialog" id="react-aria-modal-dialog" class="md-modal md-modal--default in" aria-labelledby="modal1">
                 <div class="md-modal__content">
                     <div class="md-modal__flex-container">
