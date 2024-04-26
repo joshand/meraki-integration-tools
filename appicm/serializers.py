@@ -6,7 +6,7 @@ from django.forms import ValidationError
 class ShowTenantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tenant
-        fields = ('id', 'url', 'name')
+        fields = ('id', 'name')
 
 
 class TunnelClientSerializer(serializers.ModelSerializer):
@@ -18,19 +18,19 @@ class TunnelClientSerializer(serializers.ModelSerializer):
 class ShowDeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
-        fields = ('id', 'url', 'name', 'devicetype')
+        fields = ('id', 'name', 'devicetype')
 
 
 class ShowDeviceModelTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
-        fields = ('id', 'url', 'name')
+        fields = ('id', 'name')
 
 
 class ShowAuthTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuthType
-        fields = ('id', 'url', 'name')
+        fields = ('id', 'name')
 
 
 class ShowDeviceTypeSerializer(serializers.ModelSerializer):
@@ -38,19 +38,19 @@ class ShowDeviceTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DeviceType
-        fields = ('id', 'url', 'name', 'defaultmgmtaddress', 'py_mod_name', 'authtype')
+        fields = ('id', 'name', 'defaultmgmtaddress', 'authtype')
 
 
 class ShowControllerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Controller
-        fields = ('id', 'url', 'name')
+        fields = ('id', 'name')
 
 
 class ShowL1InterfaceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = L1InterfaceType
-        fields = ('id', 'url', 'name')
+        fields = ('id', 'name')
 
 
 class ShowL1InterfaceSerializer(serializers.ModelSerializer):
@@ -58,46 +58,46 @@ class ShowL1InterfaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = L1Interface
-        fields = ('id', 'url', 'name', 'device')
+        fields = ('id', 'name', 'device')
 
 
 class ShowL2InterfaceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = L2InterfaceType
-        fields = ('id', 'url', 'name')
+        fields = ('id', 'name')
 
 
 class ShowL2InterfaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = L2Interface
-        fields = ('id', 'url', 'number', 'name')
+        fields = ('id', 'number', 'name')
 
 
 class ShowL2DomainTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = L2DomainType
-        fields = ('id', 'url', 'name')
+        fields = ('id', 'name')
 
 
 class ShowL3InterfaceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = L3InterfaceType
-        fields = ('id', 'url', 'name')
+        fields = ('id', 'name')
 
 
 class ShowL3DomainSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = L3Domain
-        fields = ('id', 'url', 'name')
+        fields = ('id', 'name')
 
 
 class TenantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tenant
-        fields = ('id', 'url', 'name')
+        fields = ('id', 'name')
 
 
 class AuthTypeSerializer(serializers.ModelSerializer):
@@ -106,7 +106,7 @@ class AuthTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceType
         depth = 2
-        fields = ('id', 'url', 'name', 'tenant')
+        fields = ('id', 'name', 'tenant')
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -136,7 +136,7 @@ class DeviceModelTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DeviceModelType
-        fields = ('id', 'url', 'name', 'tenant')
+        fields = ('id', 'name', 'tenant')
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -158,7 +158,7 @@ class DeviceModelTypeSerializer(serializers.ModelSerializer):
 class DeviceTypeSerializerFlat(serializers.ModelSerializer):
     class Meta:
         model = DeviceType
-        fields = ('id', 'name', 'py_mod_name', 'defaultmgmtaddress', 'tenant', 'authtype')
+        fields = ('id', 'name', 'defaultmgmtaddress', 'tenant', 'authtype')
 
 
 class DeviceTypeSerializer(serializers.ModelSerializer):
@@ -168,7 +168,7 @@ class DeviceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceType
         depth = 2
-        fields = ('id', 'url', 'name', 'py_mod_name', 'defaultmgmtaddress', 'tenant', 'authtype')
+        fields = ('id', 'name', 'defaultmgmtaddress', 'tenant', 'authtype')
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -209,7 +209,7 @@ class ControllerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Controller
-        fields = ('id', 'url', 'name', 'authparm', 'mgmtaddress', 'tenant', 'devicetype', 'tenant_detail', 'devicetype_detail')
+        fields = ('id', 'name', 'authparm', 'mgmtaddress', 'tenant', 'devicetype', 'tenant_detail', 'devicetype_detail')
         read_only_fields = ('tenant', 'devicetype')
 
     def get_devicetype(self, obj):
@@ -258,7 +258,7 @@ class PluginModuleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PluginModule
-        fields = ('id', 'url', 'name', 'description', 'entity_name', 'entity_name_plural', 'py_mod_name', 'sync_interval', 'default_icon', 'tenant', 'devicetype', 'tenant_detail', 'devicetype_detail')
+        fields = ('id', 'name', 'description', 'entity_name', 'entity_name_plural', 'sync_interval', 'default_icon', 'tenant', 'devicetype', 'tenant_detail', 'devicetype_detail')
 
     def __init__(self, *args, **kwargs):
         super(PluginModuleSerializer, self).__init__(*args, **kwargs)
@@ -277,7 +277,7 @@ class IntegrationModuleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IntegrationModule
-        fields = ('id', 'url', 'name', 'description', 'notes', 'py_mod_name', 'sync_interval', 'is_multi_select', 'tenant', 'pm1', 'pm2', 'tenant_detail', 'pm1_detail', 'pm2_detail')
+        fields = ('id', 'name', 'description', 'notes', 'sync_interval', 'is_multi_select', 'tenant', 'pm1', 'pm2', 'tenant_detail', 'pm1_detail', 'pm2_detail')
 
     def __init__(self, *args, **kwargs):
         super(IntegrationModuleSerializer, self).__init__(*args, **kwargs)
@@ -299,7 +299,7 @@ class IntegrationConfigurationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IntegrationConfiguration
-        fields = ('id', 'url', 'tenant', 'integrationmodule', 'pm1', 'pm2', 'tenant_detail', 'integrationmodule_detail', 'pm1_detail', 'pm2_detail')
+        fields = ('id', 'tenant', 'integrationmodule', 'pm1', 'pm2', 'tenant_detail', 'integrationmodule_detail', 'pm1_detail', 'pm2_detail')
 
     def get_integrationmodule(self, obj):
         return str(obj.id)
@@ -358,7 +358,7 @@ class DeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
         depth = 2
-        fields = ('id', 'url', 'name', 'serial_number', 'authparm', 'mgmtaddress', 'tenant', 'devicetype', 'controller', 'devicemodeltype')
+        fields = ('id', 'name', 'serial_number', 'authparm', 'mgmtaddress', 'tenant', 'devicetype', 'controller', 'devicemodeltype')
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -413,7 +413,7 @@ class L1InterfaceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = L1InterfaceType
         depth = 2
-        fields = ('id', 'url', 'name', 'description', 'tenant')
+        fields = ('id', 'name', 'description', 'tenant')
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -446,7 +446,7 @@ class L1InterfaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = L1Interface
         depth = 2
-        fields = ('id', 'url', 'name', 'tenant', 'l1interfacetype', 'device')
+        fields = ('id', 'name', 'tenant', 'l1interfacetype', 'device')
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -495,7 +495,7 @@ class L1DomainSerializer(serializers.ModelSerializer):
     class Meta:
         model = L1Domain
         depth = 2
-        fields = ('id', 'url', 'tenant', 'l1interfacea', 'l1interfaceb')
+        fields = ('id', 'tenant', 'l1interfacea', 'l1interfaceb')
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -569,7 +569,7 @@ class L2InterfaceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = L2InterfaceType
         depth = 2
-        fields = ('id', 'url', 'name', 'tenant')
+        fields = ('id', 'name', 'tenant')
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -602,7 +602,7 @@ class L2InterfaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = L2Interface
         depth = 2
-        fields = ('id', 'url', 'number', 'name', 'tenant', 'l2interfacetype')   # , 'device'
+        fields = ('id', 'number', 'name', 'tenant', 'l2interfacetype')   # , 'device'
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -649,7 +649,7 @@ class L2DomainTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = L2DomainType
         depth = 2
-        fields = ('id', 'url', 'name', 'tenant')
+        fields = ('id', 'name', 'tenant')
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -683,7 +683,7 @@ class L2DomainSerializer(serializers.ModelSerializer):
     class Meta:
         model = L2Domain
         depth = 2
-        fields = ('id', 'url', 'allowedrange', 'tenant', 'l2domaintype', 'l2interface', 'l1interface')
+        fields = ('id', 'allowedrange', 'tenant', 'l2domaintype', 'l2interface', 'l1interface')
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -753,7 +753,7 @@ class L3InterfaceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = L3InterfaceType
         depth = 2
-        fields = ('id', 'url', 'name', 'tenant')
+        fields = ('id', 'name', 'tenant')
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -785,7 +785,7 @@ class L3DomainSerializer(serializers.ModelSerializer):
     class Meta:
         model = L3Domain
         depth = 2
-        fields = ('id', 'url', 'name', 'tenant', 'device')
+        fields = ('id', 'name', 'tenant', 'device')
 
     def create(self, validated_data):
         tenants_data = validated_data.pop('tenant')
@@ -830,7 +830,7 @@ class L3InterfaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = L3Interface
         depth = 2
-        fields = ('id', 'url', 'ipaddress', 'mask', 'tenant', 'device', 'l3interfacetype', 'l2interface', 'l3domain')
+        fields = ('id', 'ipaddress', 'mask', 'tenant', 'device', 'l3interfacetype', 'l2interface', 'l3domain')
 
     def create(self, validated_data):
         print(validated_data)
@@ -887,13 +887,13 @@ class L3InterfaceSerializer(serializers.ModelSerializer):
 class UploadZipSerializer(serializers.ModelSerializer):
     class Meta:
         model = UploadZip
-        fields = ('id', 'url', 'description', 'file', 'tenant', 'uploaded_at')
+        fields = ('id', 'description', 'file', 'tenant', 'uploaded_at')
 
 
 class UploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Upload
-        fields = ('id', 'url', 'description', 'file', 'filename', 'tenant', 'uploaded_at')
+        fields = ('id', 'description', 'file', 'filename', 'tenant', 'uploaded_at')
 
 #
 # class TunnelClientSerializer(serializers.ModelSerializer):
