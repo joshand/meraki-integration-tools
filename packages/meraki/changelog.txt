@@ -16,3 +16,7 @@
 
 4/25/2024
 * Add device model and device status parsing
+
+4/26/2024
+* Get subnets and ip addresses and add them to IPAM
+

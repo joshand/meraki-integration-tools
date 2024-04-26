@@ -91,16 +91,16 @@ def process_meraki_inventory(tenant):
         return None
 
     my_device_type = DeviceType.objects.filter(name="Meraki").exclude(plugin_id__isnull=True).exclude(plugin_id__exact='')[0]
-    lst_port_type = L1InterfaceType.objects.filter(name="802.3ab")
-    lst_vlan_type = L2InterfaceType.objects.filter(name="VLAN")
-    lst_trunk = L2DomainType.objects.filter(name="Trunk")
-    lst_access = L2DomainType.objects.filter(name="Access")
-    if len(lst_port_type) > 0 and len(lst_vlan_type) > 0 and len(lst_trunk) > 0 and len(lst_access) > 0:
+    lst_port_type = L1InterfaceType.objects.filter(name="802.3ab").first()
+    lst_vlan_type = L2InterfaceType.objects.filter(name="VLAN").first()
+    lst_trunk = L2DomainType.objects.filter(name="Trunk").first()
+    lst_access = L2DomainType.objects.filter(name="Access").first()
+    if lst_port_type and lst_vlan_type and lst_trunk and lst_access:
         process_interfaces = True
-        my_port_type = lst_access[0]
-        my_vlan_type = lst_vlan_type[0]
-        my_trunk = lst_trunk[0]
-        my_access = lst_access[0]
+        my_port_type = lst_port_type
+        my_vlan_type = lst_vlan_type
+        my_trunk = lst_trunk
+        my_access = lst_access
     else:
         process_interfaces = False
     for c in controllers:
@@ -120,8 +120,92 @@ def process_meraki_inventory(tenant):
         inv3 = dashboard.organizations.getOrganizationDevicesStatuses(org_id)
 
         device_json = {}
+        dev_l3 = {}
         for i in inv2:
             device_json[i["serial"]] = {"version": i["firmware"]}
+            if i["productType"] == "switch":
+                try:
+                    inv4 = dashboard.switch.getDeviceSwitchRoutingInterfaces(i["serial"])
+                    if len(inv4) > 0:
+                        dev_l3[i["serial"]] = {"data": inv4, "type": "switch", "stack": None}
+                    stacks = dashboard.switch.getNetworkSwitchStacks(i["networkId"])
+                    for stack in stacks:
+                        inv5 = dashboard.switch.getNetworkSwitchStackRoutingInterfaces(i["networkId"], stack["id"])
+                        if len(inv5) > 0:
+                            dev_l3[stack["id"]] = {"data": inv5, "type": "stack", "stack": stack}
+                except:
+                    pass
+            elif i["productType"] == "appliance":
+                try:
+                    inv4 = dashboard.appliance.getNetworkApplianceVlans(i["networkId"])
+                    if len(inv4) > 0:
+                        dev_l3[i["serial"]] = {"data": inv4, "type": "appliance", "stack": None}
+                    inv5 = dashboard.appliance.getNetworkApplianceSingleLan(i["networkId"])
+                    if inv5:
+                        dev_l3[i["serial"]] = {"data": [inv5], "type": "appliance_single", "stack": None}
+                except:
+                    pass
+
+        for device_or_stack in dev_l3:
+            elem_type = dev_l3[device_or_stack]["type"]
+            elem_stack = dev_l3[device_or_stack]["stack"]
+            for l3interface in dev_l3[device_or_stack]["data"]:
+                if elem_type in ["switch", "stack"]:
+                    int_name = l3interface["name"]
+                    int_subnet = l3interface["subnet"]
+                    int_ip = l3interface["interfaceIp"]
+                    int_vlan = l3interface["vlanId"]
+                elif elem_type in ["appliance"]:
+                    int_name = l3interface["name"]
+                    int_subnet = l3interface["subnet"]
+                    int_ip = l3interface["applianceIp"]
+                    int_vlan = l3interface["id"]
+                elif elem_type in ["appliance_single"]:
+                    int_name = device_or_stack
+                    int_subnet = l3interface["subnet"]
+                    int_ip = l3interface["applianceIp"]
+                    int_vlan = 1
+                else:
+                    continue
+
+                vlan_obj, _ = VLAN.objects.update_or_create(tenant=tenant, number=int_vlan, defaults={"name": int_name})
+                if elem_type == "stack":
+                    for sw_sn in elem_stack["serials"]:
+                        # print(sw_sn, elem_stack, Device.objects.filter(serial_number=sw_sn))
+                        dev = Device.objects.filter(serial_number=sw_sn).first()
+                        subnet_obj, created = Subnet.objects.update_or_create(tenant=tenant, subnet=int_subnet,
+                                                                              defaults={"name": int_name,
+                                                                                        "vlan": vlan_obj})
+                        subnet_obj.device.add(dev)
+                        subnet_obj.save()
+                        if created:
+                            subnet_obj.autoscan = False
+                            subnet_obj.save()
+
+                        address_obj, created = Address.objects.update_or_create(tenant=tenant, subnet=subnet_obj,
+                                                                                address=int_ip,
+                                                                                defaults={"description": int_name + " (DG)",
+                                                                                          "status": 2})
+                        address_obj.device.add(dev)
+                        address_obj.save()
+                else:
+                    dev = Device.objects.filter(serial_number=device_or_stack).first()
+                    subnet_obj, created = Subnet.objects.update_or_create(tenant=tenant, subnet=int_subnet,
+                                                                          defaults={"name": int_name,
+                                                                                    "vlan": vlan_obj})
+                    subnet_obj.device.add(dev)
+                    subnet_obj.save()
+                    if created:
+                        subnet_obj.autoscan = False
+                        subnet_obj.save()
+
+                    address_obj, created = Address.objects.update_or_create(tenant=tenant, subnet=subnet_obj,
+                                                                            address=int_ip,
+                                                                            defaults={"description": int_name + " (DG)",
+                                                                                      "status": 2})
+                    address_obj.device.add(dev)
+                    address_obj.save()
+                # print(subnet_obj, address_obj)
 
         for i in inv3:
             device_json[i["serial"]]["status"] = parse_device_status(i["status"])
