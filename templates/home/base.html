@@ -7,15 +7,43 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/@momentum-ui/core@19.15.31/css/momentum-ui.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/@momentum-ui/icons@8.33.0/css/momentum-ui-icons.css" rel="stylesheet">
+{#    <link href="https://cdn.jsdelivr.net/npm/@momentum-ui/core@19.15.31/css/momentum-ui.min.css" rel="stylesheet">#}
+{#    <link href="https://cdn.jsdelivr.net/npm/@momentum-ui/icons@8.33.0/css/momentum-ui-icons.css" rel="stylesheet">#}
 {#    <link href="{% static "magnetic.css" %}" rel="stylesheet">#}
-    <link href="{% static "ps_styles.css" %}" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{#    <link href="{% static "ps_styles.css" %}" rel="stylesheet">#}
+{#    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>#}
 {#    <script src="https://unpkg.com/phosphor-icons"></script>#}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+    <link href="https://cdn.datatables.net/2.0.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.5/js/dataTables.min.js"></script>
+
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <title>Cisco Lab Tools</title>
     <style>
+        .btn-toggle {
+            display: inline-flex;
+            color: rgba(255, 255, 255, .65);
+            background-color: transparent;
+        }
+
+        .btn-toggle::after {
+            width: 1.25em;
+            line-height: 0;
+            content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%28255,255,255,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+            transition: transform .35s ease;
+            transform-origin: .5em 50%;
+        }
+
+        .btn-toggle[aria-expanded="true"] {
+            color: rgba(255, 255, 255, .85);
+        }
+        .btn-toggle[aria-expanded="true"]::after {
+            transform: rotate(90deg);
+        }
+
         a {
           text-decoration: none !important;
         }
@@ -344,291 +372,203 @@
     </script>
 </head>
 
-<body>
+<body class="d-flex flex-column overflow-hidden vh-100">
     <div id="preloader" style="display: none;"><img src="https://apps.cisco.com/Commerce/staticContent/ngws_Q3FY20_V2/images/preloader.gif" /></div>
-    <div id="app" class="md md--sites">
-        <div class="docs-main">
-            <header class="md-top-bar md-top-bar--dark" role="navigation">
-                <div class="md-top-bar__container">
-                    <div class="md-top-bar__brand">
-                        <span class="md-brand" href="/home">
-                            <div class="md-brand__logo md-brand__logo--pad">
-                                <!-- Note: use either image or icon, but not both -->
-                                <img src="{% static 'cisco-logo-transparent.png' %}" alt="Cisco" style="z-index:99999">
-{#                                <i class="icon icon-cisco-logo_16" style="z-index:99999"></i>#}
+    <nav class="navbar navbar-expand-md bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none" href="#">
+                <img src="{% static 'cisco-logo-transparent.png' %}" alt="Logo" width="48" height="24" class="d-inline-block align-text-top">
+                <span class="fs-4" style="margin-left: 10px">Lab Tools</span>
+            </a>
+
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i id="userIcon" class="ph ph-user" style="margin-right: 10px; font-size: 24px"></i>
+                    <strong>{{ user.get_username }}</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow dropdown-menu-end" aria-labelledby="dropdownUser1">
+                    <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                    {% if plugin_id %}
+                    <li><a class="dropdown-item" href="#">Package ID: {{ plugin_id }}</a></li>
+                    {% endif %}
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <div class="col-2 bg-dark text-white">
+                <div class="flex-shrink-0 p-3 bg-dark text-white" style="width: 280px;">
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i id="userIcon" class="ph ph-user" style="margin-right: 10px; font-size: 24px"></i>
+                            <strong>{{ tenant.name }}</strong>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow dropdown-menu-end" aria-labelledby="dropdownUser1">
+                            {% for tenant in global.tenants %}
+                            <li><a class="dropdown-item" href="{{ baseurl }}?tenant={{ tenant.id }}">{{ tenant.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <ul class="nav nav-pills flex-column mb-auto">
+                        <li class="border-top my-3"></li>
+                        <li class="nav-item">
+                            <a href="/home" class="text-decoration-none text-white nav-link{% if menuopen == "home" %} active{% endif %}" aria-current="page">
+                                <i class="ph ph-house" style="font-size: 20px"></i>
+                                Home
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <button class="nav-link btn btn-toggle align-items-center rounded {% if ddopen != "status" %}collapsed{% endif %} text-white" data-bs-toggle="collapse" data-bs-target="#status-collapse" aria-expanded="{% if ddopen == "status" %}true{% else %}false{% endif %}">
+                                <i class="ph ph-rocket" style="font-size: 20px"></i>
+                                &nbsp;Status&nbsp;
+                            </button>
+                            <div class="collapse{% if ddopen == "status" %} show{% endif %}" id="status-collapse">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1">
+                                    <li class="nav-item">
+                                        <a href="/home/status-task" class="text-decoration-none text-white nav-link{% if menuopen == "task-results" %} active{% endif %}" aria-current="page">
+                                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#status"/></svg>
+                                            Task Results
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="md-brand__title" style="z-index:99999">Lab Tools</div>
-                        </span>
-                    </div>
-                    <div class="md-top-bar__right ">
-                        <div class="md-top-bar__user">
-                            <span>{{ user.get_username }}</span>
-                            <a onclick="toggleUser('userIcon', 'dropdownUserMenu', 'userMenuContainer', 'userMenuContent')"><i id="userIcon" class="icon icon-user_24 ignore"></i></a>
-                        </div>
-                    </div>
-
-                    <div id="dropdownUserMenu" class="md-event-overlay md-event-overlay--arrow md-event-overlay--bottom" style="display:none;">
-                        <div id="userMenuContainer" class="md-event-overlay__children">
-                            <div id="userMenuContent" class="md-list md-list--vertical" role="list">
-{#                                <a aria-current="false" class="md-list-item" id="md-list-item-2" role="listitem" tabindex="-1" data-md-event-key="md-list-item-2" onclick="startResync()">#}
-{#                                    <span>Start Resync</span>#}
-{#                                </a>#}
-                                <a href="/settings" aria-current="false" class="md-list-item" id="md-list-item-2-1" role="listitem" tabindex="-1" data-md-event-key="md-list-item-2-1">
-                                    <span>Settings</span>
-                                </a>
-                                <a href="/logout" aria-current="false" class="md-list-item" id="md-list-item-2-2" role="listitem" tabindex="-1" data-md-event-key="md-list-item-2-2">
-                                    <span>Log out</span>
-                                </a>
-                                {% if plugin_id %}
-                                <a href="#" aria-current="false" class="md-list-item" id="md-list-item-2-3" role="listitem" tabindex="-1" data-md-event-key="md-list-item-2-3">
-                                    <span style="font-size: small; color: gray"><i>Package ID: {{ plugin_id }}</i></span>
-                                </a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="md-tb-mobile__mask" role="none"></div>
-                </div>
-            </header>
-
-            <div class="md-sidebar__wrapper md-sidebar__wrapper--fixed docs-side-nav">
-                <div class="md-sidebar md-sidebar--dark md-sidebar--fixed md-sidebar--global md-sidebar--indented md-sidebar--nested">
-{#                <div class="md-sidebar md-sidebar--dark md-sidebar--global md-sidebar--nested md-sidebar--expanded">#}
-                    <div class="md-sidebar__header"></div>
-                    <div class="md-sidebar__header"></div>
-                    <div class="md-sidebar__body">
-                        <div class="md-sidebar-nav">
-                            <div class="md-list md-list--vertical md-sidebar-nav__group md-sidebar-nav__group--primary" role="list">
-                                <a class="md-list-item" role="listitem" id="md-sidebar__nav-item-0" data-md-event-key="md-sidebar__nav-item-0">
-                                    <div class="md-input-container columns medium-6" id="orgcontainer">
-                                        <div class="md-input__wrapper md-select">
-                                            <button id="btntenant" class="ignore md-button md-button--36 active" alt="" type="button" aria-labelledby="orglabel" tabindex="30" name="md-select-69" aria-haspopup="listbox" onclick="toggleList('btntenant', 'dropdowntenant', 'listtenant')">
-                                                <span class="ignore md-button__children" style="opacity: 1;">
-                                                    <div class="ignore md-list-item__left" id="tenantlabel" style="font-size: small">
-                                                        {{ tenant.name }}
-                                                        <i class="ignore icon icon-arrow-down_16"></i>
-                                                    </div>
-                                                </span>
-                                            </button>
-                                            <div class="md-event-overlay md-event-overlay--bottom" id="dropdowntenant" style="display:none;">
-                                                <div class="md-event-overlay__children" id="listtenant">
-                                                    <div id="tenantcontent" class="md-list md-list--vertical md-list" role="listbox" aria-labelledby="md-select-69__label" aria-multiselectable="false">
-                                                        {% for tenant in global.tenants %}
-                                                        <div aria-current="true" class="md-list-item" id="md-list-73__so-item" role="option" value="{{ tenant.id }}" tabindex="0" title="{{ tenant.name }}">
-                                                            <div style="color: black; font-size: small" class="md-list-item__center" onclick="location.href = '{{ baseurl }}?tenant={{ tenant.id }}'">{{ tenant.name }}</div>
-                                                            <div class="md-list-item__right"></div>
-                                                        </div>
-                                                        {% endfor %}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <a href="/home" class="md-list-item" role="listitem" id="md-sidebar__nav-item-1" data-md-event-key="md-sidebar__nav-item-1">
-                                    <div class="md-list-item__left">
-                                        <i class="md-icon icon icon-house_16" style="font-size: 20px;"></i>
-                                    </div>
-                                    <div class="md-list-item__center">Home</div>
-                                </a>
-                                <div class="md-list-item" id="md-sidebar__nav-item-2-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-2-0" data-md-keyboard-key="current-status" onclick="toggleMenu('statusmenu');">
-                                    <div class="md-list-item__left">
-                                        <i class="md-icon icon icon-launch_20" style="font-size: 20px;"></i>
-                                    </div>
-                                    <div class="md-list-item__center">Status</div>
-                                    <div class="md-list-item__right">
-                                        {% if menuopen == "status" %}
-                                        <i class="md-icon icon icon-arrow-up_12" style="font-size: 12px;"></i>
-                                        {% else %}
-                                        <i class="md-icon icon icon-arrow-down_12" style="font-size: 12px;"></i>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                {% if menuopen == "status" %}
-                                <div id="statusmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--expanded">
-                                {% else %}
-                                <div id="statusmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--collapsed">
-                                {% endif %}
-                                    <a class="md-list-item" id="md-sidebar__nav-item-2-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-2-1" data-md-keyboard-key="tasks" href="/home/status-task">
-                                        <div class="md-list-item__center">Task Results</div>
-                                    </a>
-{#                                    <a class="md-list-item" id="md-sidebar__nav-item-2-2" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-2-2" data-md-keyboard-key="sgacls" href="/home/status-sgacl">#}
-{#                                        <div class="md-list-item__center">ACLs</div>#}
-{#                                    </a>#}
-{#                                    <a class="md-list-item" id="md-sidebar__nav-item-2-3" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-2-3" data-md-keyboard-key="policies" href="/home/status-policy">#}
-{#                                        <div class="md-list-item__center">Egress Policies</div>#}
-{#                                    </a>#}
-                                </div>
-                                <a href="/home/tunnel" class="md-list-item" role="listitem" id="md-sidebar__nav-item-3" data-md-event-key="md-sidebar__nav-item-4">
-                                    <div class="md-list-item__left">
-                                        <i class="md-icon icon icon-condition_16" style="font-size: 20px;"></i>
-                                    </div>
-                                    <div class="md-list-item__center">Tunnel</div>
-                                </a>
-                                <div class="md-list-item" id="md-sidebar__nav-item-3-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-4-0" data-md-keyboard-key="configuration" onclick="toggleMenu('configmenu');">
-                                    <div class="md-list-item__left">
-                                        <i class="md-icon icon icon-area-selector_20" style="font-size: 20px;"></i>
-                                    </div>
-                                    <div class="md-list-item__center">Connect</div>
-                                    <div class="md-list-item__right">
-                                        {% if menuopen == "connect" %}
-                                        <i class="md-icon icon icon-arrow-up_12" style="font-size: 12px;"></i>
-                                        {% else %}
-                                        <i class="md-icon icon icon-arrow-down_12" style="font-size: 12px;"></i>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                {% if menuopen == "connect" %}
-                                <div id="configmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--expanded">
-                                {% else %}
-                                <div id="configmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--collapsed">
-                                {% endif %}
+                        </li>
+                        <li class="nav-item">
+                            <a href="/home/tunnel" class="text-decoration-none text-white nav-link{% if menuopen == "tunnel" %} active{% endif %}" aria-current="page">
+                                <i class="ph ph-pipe" style="font-size: 20px"></i>
+                                Tunnel
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <button class="nav-link btn btn-toggle align-items-center rounded {% if ddopen != "connect" %}collapsed{% endif %} text-white" data-bs-toggle="collapse" data-bs-target="#connect-collapse" aria-expanded="{% if ddopen == "connect" %}true{% else %}false{% endif %}">
+                                <i class="ph ph-path" style="font-size: 20px"></i>
+                                &nbsp;Connect&nbsp;
+                            </button>
+                            <div class="collapse{% if ddopen == "connect" %} show{% endif %}" id="connect-collapse">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1">
                                     {% for connection in global.connections %}
-                                    <a class="md-list-item" id="md-sidebar__nav-item-3-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-4-1" data-md-keyboard-key="config-conn" href="/home/config-conn/{{ connection.name }}">
-                                        <div class="md-list-item__center">{{ connection.description }}</div>
-                                    </a>
+                                    <li class="nav-item">
+                                        <a href="/home/config-conn/{{ connection.name }}" class="text-decoration-none text-white nav-link{% if menuopen == connection.plugin_id %} active{% endif %}" aria-current="page">
+                                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#connection"/></svg>
+                                            {{ connection.description }}
+                                        </a>
+                                    </li>
                                     {% endfor %}
-                                </div>
-                                <a href="/home/integrate" class="md-list-item" role="listitem" id="md-sidebar__nav-item-4" data-md-event-key="md-sidebar__nav-item-5">
-                                    <div class="md-list-item__left">
-                                        <i class="md-icon icon icon-accessories_20" style="font-size: 20px;"></i>
-                                    </div>
-                                    <div class="md-list-item__center">Integrate</div>
-                                </a>
-                                <a href="/home/config-package" class="md-list-item" role="listitem" id="md-sidebar__nav-item-5" data-md-event-key="md-sidebar__nav-item-6">
-                                    <div class="md-list-item__left">
-                                        <i class="md-icon icon icon-cloud-upload_20" style="font-size: 20px;"></i>
-                                    </div>
-                                    <div class="md-list-item__center">Packages</div>
-                                </a>
-                                {% if global.menus|length > 0 %}
-                                    {% for menu in global.menus %}
-                                        <div class="md-list-item" id="md-sidebar__nav-item-6-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-7-0" data-md-keyboard-key="{{ menu.name }}" onclick="toggleMenu('{{ menu.name }}menu');">
-                                            <div class="md-list-item__left">
-                                                <i class="md-icon icon {{ menu.icon }}" style="font-size: 20px;"></i>
-                                            </div>
-                                            <div class="md-list-item__center">{{ menu.name }}</div>
-                                            <div class="md-list-item__right">
-                                                {% if menuopen == menu.name %}
-                                                <i class="md-icon icon icon-arrow-up_12" style="font-size: 12px;"></i>
-                                                {% else %}
-                                                <i class="md-icon icon icon-arrow-down_12" style="font-size: 12px;"></i>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        {% if menuopen == menu.name %}
-                                        <div id="{{ menu.name }}menu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--expanded">
-                                        {% else %}
-                                        <div id="{{ menu.name }}menu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--collapsed">
-                                        {% endif %}
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/home/integrate" class="text-decoration-none text-white nav-link{% if menuopen == "integrate" %} active{% endif %}" aria-current="page">
+                                <i class="ph ph-puzzle-piece" style="font-size: 20px"></i>
+                                Integrate
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/home/config-package" class="text-decoration-none text-white nav-link{% if menuopen == "packages" %} active{% endif %}" aria-current="page">
+                                <i class="ph ph-upload" style="font-size: 20px"></i>
+                                Packages
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <button class="nav-link btn btn-toggle align-items-center rounded {% if ddopen != "settings" %}collapsed{% endif %} text-white" data-bs-toggle="collapse" data-bs-target="#settings-collapse" aria-expanded="{% if ddopen == "settings" %}true{% else %}false{% endif %}">
+                                <i class="ph ph-gear" style="font-size: 20px"></i>
+                                &nbsp;Settings&nbsp;
+                            </button>
+                            <div class="collapse{% if ddopen == "settings" %} show{% endif %}" id="settings-collapse">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1">
+                                    <li class="nav-item">
+                                        <a href="/home/settings-sites" class="text-decoration-none text-white nav-link{% if menuopen == "settings-sites" %} active{% endif %}" aria-current="page">
+                                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#settings"/></svg>
+                                            Configure Sites
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/home/devices" class="text-decoration-none text-white nav-link{% if menuopen == "devices" %} active{% endif %}" aria-current="page">
+                                <i class="ph ph-devices" style="font-size: 20px"></i>
+                                Devices
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/home/ipam-subnet" class="text-decoration-none text-white nav-link{% if menuopen == "ipam" %} active{% endif %}" aria-current="page">
+                                <i class="ph ph-article" style="font-size: 20px"></i>
+                                IPAM
+                            </a>
+                        </li>
+
+
+                        {% if global.menus|length > 0 %}
+                            {% for menu in global.menus %}
+                                <li class="mb-1">
+                                    <button class="nav-link btn btn-toggle align-items-center rounded {% if ddopen != menu.name %}collapsed{% endif %} text-white" data-bs-toggle="collapse" data-bs-target="#custom-{{ menu.name }}-collapse" aria-expanded="{% if ddopen == menu.name %}true{% else %}false{% endif %}">
+                                        <i class="ph {{ menu.icon }}" style="font-size: 20px"></i>
+                                        {{ menu.name }}
+                                    </button>
+                                    <div class="collapse{% if ddopen == "settings" %} show{% endif %}" id="custom-{{ menu.name }}-collapse">
+                                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1">
                                             {% for submenu in menu.customtemplate_set.all %}
                                                 {% if submenu.pluginmodule %}
-                                                    <a class="md-list-item" id="md-sidebar__nav-item-7-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-7-1" data-md-keyboard-key="config-conn" href="/module/plugin/{{ submenu.pluginmodule.id }}">
-                                                        <div class="md-list-item__center">{{ submenu.name }}</div>
-                                                    </a>
+                                                    <li class="nav-item">
+                                                        <a href="/module/plugin/{{ submenu.pluginmodule.id }}" class="text-decoration-none text-white nav-link{% if menuopen == submenu.name %} active{% endif %}" aria-current="page">
+                                                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#settings"/></svg>
+                                                            {{ submenu.name }}
+                                                        </a>
+                                                    </li>
                                                 {% else %}
-                                                    <a class="md-list-item" id="md-sidebar__nav-item-7-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-7-1" data-md-keyboard-key="config-conn" href="/module/integration/{{ submenu.integrationmodule.id }}">
-                                                        <div class="md-list-item__center">{{ submenu.name }}</div>
-                                                    </a>
+                                                    <li class="nav-item">
+                                                        <a href="/module/integration/{{ submenu.pluginmodule.id }}" class="text-decoration-none text-white nav-link{% if menuopen == submenu.name %} active{% endif %}" aria-current="page">
+                                                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#settings"/></svg>
+                                                            {{ submenu.name }}
+                                                        </a>
+                                                    </li>
                                                 {% endif %}
                                             {% endfor %}
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-
-                                <div class="md-list-item" id="md-sidebar__nav-item-99-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-99-0" data-md-keyboard-key="configuration" onclick="toggleMenu('settingsmenu');">
-                                    <div class="md-list-item__left">
-                                        <i class="md-icon icon icon-settings_20" style="font-size: 20px;"></i>
+                                        </ul>
                                     </div>
-                                    <div class="md-list-item__center">Settings</div>
-                                    <div class="md-list-item__right">
-                                        {% if menuopen == "tenantsettings" %}
-                                        <i class="md-icon icon icon-arrow-up_12" style="font-size: 12px;"></i>
-                                        {% else %}
-                                        <i class="md-icon icon icon-arrow-down_12" style="font-size: 12px;"></i>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                {% if menuopen == "tenantsettings" %}
-                                <div id="settingsmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--expanded">
-                                {% else %}
-                                <div id="settingsmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--collapsed">
-                                {% endif %}
-                                    <a class="md-list-item" id="md-sidebar__nav-item-99-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-99-1" data-md-keyboard-key="config-sites" href="/home/settings-sites">
-                                        <div class="md-list-item__center">Configure Sites</div>
-                                    </a>
-                                </div>
-
-                                <a href="/home/devices" class="md-list-item" role="listitem" id="md-sidebar__nav-item-1" data-md-event-key="md-sidebar__nav-item-1">
-                                    <div class="md-list-item__left">
-                                        <i class="ph ph-devices" style="font-size: 20px;"></i>
-                                    </div>
-                                    <div class="md-list-item__center">Devices</div>
-                                </a>
-
-
-{#                                <div class="md-list-item" id="md-sidebar__nav-item-4-0" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-4-0" data-md-keyboard-key="integration" onclick="toggleMenu('intmenu');">#}
-{#                                    <div class="md-list-item__left">#}
-{#                                        <i class="md-icon icon icon-accessories_20" style="font-size: 20px;"></i>#}
-{#                                    </div>#}
-{#                                    <div class="md-list-item__center">Integrate</div>#}
-{#                                    <div class="md-list-item__right">#}
-{#                                        {% if menuopen == 3 %}#}
-{#                                        <i class="md-icon icon icon-arrow-up_12" style="font-size: 12px;"></i>#}
-{#                                        {% else %}#}
-{#                                        <i class="md-icon icon icon-arrow-down_12" style="font-size: 12px;"></i>#}
-{#                                        {% endif %}#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                                {% if menuopen == 2 %}#}
-{#                                <div id="intmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--expanded">#}
-{#                                {% else %}#}
-{#                                <div id="intmenu" class="md-sidebar-nav__group md-sidebar-nav__group--secondary md-sidebar-nav__group--collapsed">#}
-{#                                {% endif %}#}
-{#                                    {% for integration in integrations %}#}
-{#                                    <a class="md-list-item" id="md-sidebar__nav-item-4-1" role="listitem" tabindex="-1" data-md-event-key="md-sidebar__nav-item-4-1" data-md-keyboard-key="config-int" href="/home/config-int/{{ integration.name }}">#}
-{#                                        <div class="md-list-item__center">{{ integration.description }}</div>#}
-{#                                    </a>#}
-{#                                    {% endfor %}#}
-{#                                </div>#}
-                            </div>
-                        </div>
-                    </div>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
+            <div class="col overflow-auto h-100 py-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        {{ crumbs|safe }}
+                    </ol>
+                </nav>
 
-            <ul class="md-breadcrumbs" style="grid-area: tabs;">
-{#                <li><a href="javascript:void(0)">Home</a></li>#}
-{#                <li><a href="javascript:void(0)">Library</a></li>#}
-{#                <li class="current">Data</li>#}
-                {{ crumbs|safe }}
-            </ul>
 
-
-{#            <div class="md-page-header md-page-header--left"><div class="md-page-header__container "><div class="md-page-header__title">Components</div><h4 class="md-page-header__lead">Our basic building blocks for designing user interfaces. We provide usage guidelines and code snippets for each component.</h4></div><div style="position: fixed; display: none; z-index: 1200; top: 0px;" class="md-page-header__container "><div class="md-page-header__title">Components</div><h4 class="md-page-header__lead">Our basic building blocks for designing user interfaces. We provide usage guidelines and code snippets for each component.</h4></div></div>#}
-            <div class="docs-content-area">
-                <div class="docs-content-area docs-content-area">
-                    <div class="docs-content__column row">
-                        <div class="docs-section" id="default">
-                            {% block content %}
-                            {% endblock %}
+    {#            <div class="md-page-header md-page-header--left"><div class="md-page-header__container "><div class="md-page-header__title">Components</div><h4 class="md-page-header__lead">Our basic building blocks for designing user interfaces. We provide usage guidelines and code snippets for each component.</h4></div><div style="position: fixed; display: none; z-index: 1200; top: 0px;" class="md-page-header__container "><div class="md-page-header__title">Components</div><h4 class="md-page-header__lead">Our basic building blocks for designing user interfaces. We provide usage guidelines and code snippets for each component.</h4></div></div>#}
+                <div class="docs-content-area">
+                    <div class="docs-content-area docs-content-area">
+                        <div class="docs-content__column row">
+                            <div class="docs-section" id="default">
+                                {% block content %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                        <div class="docs-content__nav">
+                            <div class="md-page-links__container" style="top: 400px;"></div>
                         </div>
                     </div>
-                    <div class="docs-content__nav">
-                        <div class="md-page-links__container" style="top: 400px;"></div>
-                    </div>
-                </div>
-                <div class="md-panel__footer">
-                    <div class="footer__logo">
-{#                        <i class="icon icon-cisco-logo-16"></i>#}
-{#                            <img src="https://video.cisco.com/img/cisco.png" alt="Cisco" style="width:50px">#}
+                    <div class="md-panel__footer">
+                        <div class="footer__logo">
+    {#                        <i class="icon icon-cisco-logo-16"></i>#}
+    {#                            <img src="https://video.cisco.com/img/cisco.png" alt="Cisco" style="width:50px">#}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row">&nbsp;</div>
 {#    <div class="md-panel__footer">#}
 {#        <div class="footer__logo">#}
 {#            <i class="icon icon-cisco-logo"></i>#}
