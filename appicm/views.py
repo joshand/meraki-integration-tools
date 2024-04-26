@@ -711,10 +711,10 @@ def config_conn(request):
                 pval = fld.get("default")
             authdata[pm[0].devicetype.authtype.name][fld["name"]] = pval
 
-        int_id = request.POST.get("objId")
+        int_id = request.POST.get("connectId")
         if int_id == "blank":
             int_id = ""
-        int_desc = request.POST.get("objDesc")
+        int_desc = request.POST.get("connectDescription")
         cont = None
         if int_id is None or int_id == "":
             cont = Controller.objects.create(name=int_desc, devicetype=pm[0].devicetype, authparm=authdata, tenant=tenant)
@@ -737,6 +737,7 @@ def config_conn(request):
                     if fldval and fldval.find("****") < 0:
                         ap["api"][fld["name"]] = fldval
                 cont.authparm = ap
+                print(ap)
 
                 cont.save()
                 try:
