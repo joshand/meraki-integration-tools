@@ -1,17 +1,13 @@
 import ipaddress
 import asyncio
-# from netbox_python import NetBoxClient
+from appicm.models import *
 import requests
 import urllib3
 urllib3.disable_warnings()
-
-API_TOKEN = "62923899c496584405bbc96d4fa4f758195788d2"
-HEADERS = {'Authorization': f'Token {API_TOKEN}', 'Content-Type' : 'application/json' , 'Accept' : 'application/json'}
-NB_URL = "netbox.undocumentedsanity.com"
-IP_ADDR_URL = "https://" + NB_URL + "/api/ipam/ip-addresses/"
+from asgiref.sync import sync_to_async
 
 
-async def ping(host):                                   # add the "async" keyword to make a function asynchronous
+async def ping(host, sn):                               # add the "async" keyword to make a function asynchronous
     host = str(host)                                    # turn ip address object to string
     proc = await asyncio.create_subprocess_shell(       # asyncio can smoothly call subprocess for you
             f'ping {host} -c 1',                   # ping command
@@ -21,29 +17,27 @@ async def ping(host):                                   # add the "async" keywor
     stdout,stderr = await proc.communicate()            # get info from ping process
     if proc.returncode == 0:                            # if process code was 0
         print(f'{host} is alive!')                      # say it's alive!
-        req = requests.get(IP_ADDR_URL + "?address=" + host, headers=HEADERS, verify=False)
-        if req.ok:
-            rjson = req.json()
-            if len(rjson.get("results", [])) == 1:
-                addr_id = rjson.get("results", [{}])[0].get("id")
-                if addr_id:
-                    data = {
-                        "status": "reserved"
-                    }
+        # res = await Address.objects.acreate(tenant=sn.tenant, subnet=sn, address=host)
+        # async_function = sync_to_async(Address.objects.create(tenant=sn.tenant, subnet=sn, address=host), thread_sensitive=True)
+        await create_address(sn, host)
 
-                    req2 = requests.patch(IP_ADDR_URL + str(addr_id) + "/", headers=HEADERS, json=data, verify=False)
-                    print(req2.status_code)
-        else:
-            print("error", req.status_code)
 
-loop = asyncio.get_event_loop()                         # create an async loop
-tasks = []                                              # list to hold ping tasks
-mynet = ipaddress.ip_network('198.51.100.0/24')         # ip address module
-for host in mynet.hosts():                              # loop through subnet hosts
-    task = ping(host)                                   # create async task from function we defined above
-    tasks.append(task)                                  # add task to list of tasks
-tasks = asyncio.gather(*tasks)                          # some magic to assemble the tasks
-loop.run_until_complete(tasks)                          # run all tasks (basically) at once
+@sync_to_async
+def create_address(sn, host):
+    Address.objects.create(tenant=sn.tenant, subnet=sn, address=host)
+
+
+def run():
+    subnets = Subnet.objects.filter(autoscan=True)
+    loop = asyncio.get_event_loop()  # create an async loop
+    for subnet in subnets:
+        tasks = []  # list to hold ping tasks
+        mynet = ipaddress.ip_network(subnet.subnet)  # ip address module
+        for host in mynet.hosts():  # loop through subnet hosts
+            task = ping(host, subnet)  # create async task from function we defined above
+            tasks.append(task)  # add task to list of tasks
+        tasks = asyncio.gather(*tasks)  # some magic to assemble the tasks
+        loop.run_until_complete(tasks)  # run all tasks (basically) at once
 
 #
 # import time
@@ -96,3 +90,18 @@ loop.run_until_complete(tasks)                          # run all tasks (basical
 #                     # If not exists in network but exists in netbox then delete from netbox
 #                     #netbox.ipam.delete_ip_address(str(ipaddress))
 #                     netbox.ipam.update_ip(str(ipaddress),status="deprecated")
+
+# req = requests.get(IP_ADDR_URL + "?address=" + host, headers=HEADERS, verify=False)
+# if req.ok:
+#     rjson = req.json()
+#     if len(rjson.get("results", [])) == 1:
+#         addr_id = rjson.get("results", [{}])[0].get("id")
+#         if addr_id:
+#             data = {
+#                 "status": "reserved"
+#             }
+#
+#             req2 = requests.patch(IP_ADDR_URL + str(addr_id) + "/", headers=HEADERS, json=data, verify=False)
+#             print(req2.status_code)
+# else:
+#     print("error", req.status_code)
