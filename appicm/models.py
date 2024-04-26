@@ -124,12 +124,26 @@ class CLLI(models.Model):
         return self.clli
 
 
+class CustomCLLI(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    clli = models.CharField(max_length=6, default=None, null=True)
+
+    class Meta:
+        ordering = ['clli']
+
+    def __str__(self):
+        return self.clli
+
+
 class LocationType(models.Model):
     description = models.CharField(max_length=30)
     tier = models.IntegerField()
     iconname = models.CharField(max_length=30)
     haslocation = models.BooleanField(default=False)
+    hasclli = models.BooleanField(default=False)
+    hasclli_addon = models.BooleanField(default=False)
     other_fields = models.CharField(max_length=50, blank=True, default=None, null=True)
+    child = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='parent')
 
     class Meta:
         ordering = ['tier']
@@ -146,7 +160,8 @@ class LocationObject(models.Model):
     address = map_fields.AddressField(max_length=200, default=None, null=True, blank=True)
     geolocation = map_fields.GeoLocationField(max_length=100, default="", blank=True)
     clli = models.ForeignKey(CLLI, on_delete=models.SET_NULL, null=True, blank=True)
-    clli_addon = models.CharField(max_length=10)
+    custom_clli = models.ForeignKey(CustomCLLI, on_delete=models.SET_NULL, null=True, blank=True)
+    clli_addon = models.CharField(max_length=10, blank=True)
     custom_data = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
@@ -155,6 +170,8 @@ class LocationObject(models.Model):
     def get_clli(self):
         if self.clli:
             return self.clli
+        elif self.custom_clli:
+            return self.custom_clli
 
         current_obj = self
         max_loop_count = 5
@@ -179,6 +196,9 @@ class LocationObject(models.Model):
 
     def calculate_distances(self, max_entries=None):
         thisloc = self.geolocation
+        if self.geolocation is None or thisloc.lat is None or thisloc.lon is None:
+            return []
+
         cllis = CLLI.objects.all()
         clli_list = []
         for clli in cllis:
@@ -195,8 +215,8 @@ class LocationObject(models.Model):
 
 class LocationHierarchy(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    object = models.ForeignKey(LocationObject, on_delete=models.CASCADE, related_name="locationobject")
-    parent = models.ForeignKey(LocationObject, on_delete=models.CASCADE, related_name="locationobjectparent")
+    object = models.ForeignKey(LocationObject, on_delete=models.SET_NULL, null=True, related_name="locationobject")
+    parent = models.ForeignKey(LocationObject, on_delete=models.SET_NULL, null=True, related_name="locationobjectparent")
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, null=False)
 
     def __str__(self):
@@ -1531,3 +1551,16 @@ class TunnelClient(models.Model):
     def __str__(self):
         return str(self.tunnelUrl)
 
+
+class Subnet(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
+    name = models.CharField(max_length=50, default=None, null=True)
+    subnet = models.CharField(max_length=50, default=None, null=True)
+    autoscan = models.BooleanField(default=True, blank=True)
+
+    def __str__(self):
+        return str(self.name)
+
+    def get_usage(self):
+        return "0"
