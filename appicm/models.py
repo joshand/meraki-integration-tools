@@ -1553,12 +1553,27 @@ class TunnelClient(models.Model):
         return str(self.tunnelUrl)
 
 
+class VLAN(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
+    name = models.CharField(max_length=50, default=None, null=True)
+    number = models.IntegerField(default=0, blank=True)
+
+    def __str__(self):
+        if self.name:
+            return str(self.number) + " : " + str(self.name)
+        else:
+            return str(self.number)
+
+
 class Subnet(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
     name = models.CharField(max_length=50, default=None, null=True)
     subnet = models.CharField(max_length=50, default=None, null=True)
+    device = models.ForeignKey(Device, on_delete=models.SET_NULL, blank=True, null=True)
     autoscan = models.BooleanField(default=True, blank=True)
+    vlan = models.ForeignKey(VLAN, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return str(self.name)
@@ -1571,10 +1586,24 @@ class Subnet(models.Model):
 
 
 class Address(models.Model):
+    class AddressStatus(models.IntegerChoices):
+        UNKNOWN = 0, 'Unknown'
+        RESERVED = 1, 'Reserved'
+        IN_USE = 2, 'In Use'
+        PLANNED = 3, 'Planned'
+        OTHER = 4, 'Other'
+        UNUSED = 5, 'Unused'
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
+    description = models.CharField(max_length=50, default=None, null=True)
     subnet = models.ForeignKey(Subnet, on_delete=models.CASCADE, blank=False, null=True)
     address = models.CharField(max_length=50, default=None, null=True)
+    device = models.ForeignKey(Device, on_delete=models.SET_NULL, blank=True, null=True)
+    status = models.IntegerField(default=AddressStatus.UNKNOWN, choices=AddressStatus.choices)
 
     def __str__(self):
         return str(self.address)
+
+    def get_status(self):
+        return self.AddressStatus.choices[self.status][1]
