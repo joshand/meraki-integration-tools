@@ -24,7 +24,7 @@ async def ping(host, sn):                               # add the "async" keywor
 
 @sync_to_async
 def create_address(sn, host):
-    Address.objects.create(tenant=sn.tenant, subnet=sn, address=host)
+    Address.objects.update_or_create(tenant=sn.tenant, subnet=sn, address=host, defaults={"status": 2})
 
 
 def run():
