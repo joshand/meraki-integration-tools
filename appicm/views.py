@@ -29,6 +29,7 @@ import requests
 import googlemaps
 from rest_framework.permissions import IsAuthenticated
 import ipaddress
+from .serializers import DeviceSerializer
 
 
 @xframe_options_exempt
@@ -400,10 +401,13 @@ def api_get_subnets(request):
     subnets = {"data": []}
     sns = Subnet.objects.filter(tenant=tenant)
     for sn in sns:
+        dev_text = "<br>".join([str(obj) for obj in sn.device.all()])
         subnets["data"].append({"id": str(sn.id),
                                 "visible": True,
                                 "name": "<a href='/home/ipam-address?subnet=" + str(sn.id) + "'>" + str(sn.name) + "</a>",
                                 "subnet": str(sn.subnet),
+                                "vlan": str(sn.vlan.number),
+                                "device": dev_text,
                                 "usage": str(sn.get_usage()),
                                 "autoscan": str(sn.autoscan),
                                 "actions": "<a href='#' onclick='loadModal(\"" + str(sn.id) + "\", \"" + str(sn.name) + "\", \"" + str(sn.subnet) + "\", \"" + str(sn.autoscan) + "\")'><i class='ph ph-pencil' style='font-size: 20px'></i></a>",
@@ -424,11 +428,12 @@ def api_get_addresses(request):
     ip_list = []
     for addr in addrs:
         ip_list.append(str(addr.address))
+        dev_text = "<br>".join([str(obj) for obj in addr.device.all()])
         subnets["data"].append({"id": str(addr.id),
                                 "visible": True,
                                 "ip": str(addr.address),
                                 "description": addr.description,
-                                "device": str(addr.device.id) if addr.device else "",
+                                "device": dev_text,
                                 "status": addr.get_status(),
                                 "actions": "",
                                 "DT_RowId": "row_" + str(addr.id)
