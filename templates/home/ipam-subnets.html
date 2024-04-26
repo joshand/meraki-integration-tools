@@ -19,6 +19,8 @@
                         <th class="sorting hidden" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 0px;" aria-sort="ascending" aria-label="Visible: activate to sort column descending">Visible</th>
                         <th class="sorting sorting_asc" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 121px;" aria-sort="ascending" aria-label="Name: activate to sort column descending">Name</th>
                         <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 34px;" aria-label="Subnet: activate to sort column ascending">Subnet</th>
+                        <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 34px;" aria-label="VLAN: activate to sort column ascending">VLAN</th>
+                        <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 84px;" aria-label="Device: activate to sort column ascending">Device(s)</th>
                         <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 34px;" aria-label="Scan: activate to sort column ascending">Auto-Scan</th>
                         <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 34px;" aria-label="Usage: activate to sort column ascending">Usage</th>
                         <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 34px;" aria-label="Actions">Actions</th>
@@ -83,9 +85,14 @@
                     { "data": "visible", "visible": false },
                     { "data": "name" },
                     { "data": "subnet" },
+                    { "data": "vlan" },
+                    { "data": "device" },
                     { "data": "autoscan" },
                     { "data": "usage" },
                     { "data": "actions", "orderable": false },
+                ],
+                columnDefs: [
+                    { type: 'ip-address', targets: 3 }
                 ],
                 "order": [[2, 'asc']]
             });
