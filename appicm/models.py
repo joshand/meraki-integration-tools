@@ -22,6 +22,7 @@ import traceback
 from django_google_maps import fields as map_fields
 import math
 from operator import itemgetter
+import ipaddress
 
 
 plugin_id_remap = ["DeviceModelType", "DeviceType", "CustomMenu", "CustomTemplate", "PluginModule", "IntegrationModule"]
@@ -1563,4 +1564,17 @@ class Subnet(models.Model):
         return str(self.name)
 
     def get_usage(self):
-        return "0"
+        used = len(self.address_set.all())
+        hsts = ipaddress.IPv4Network(self.subnet).hosts()
+        usable = sum(1 for _ in hsts)
+        return str(used) + "/" + str(usable) + " (" + str(round((used/usable)*100, 2)) + "% used)"
+
+
+class Address(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
+    subnet = models.ForeignKey(Subnet, on_delete=models.CASCADE, blank=False, null=True)
+    address = models.CharField(max_length=50, default=None, null=True)
+
+    def __str__(self):
+        return str(self.address)
