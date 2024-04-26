@@ -402,12 +402,31 @@ def api_get_subnets(request):
     for sn in sns:
         subnets["data"].append({"id": str(sn.id),
                                 "visible": True,
-                                "name": str(sn.name),
+                                "name": "<a href='/home/ipam-address?subnet=" + str(sn.id) + "'>" + str(sn.name) + "</a>",
                                 "subnet": str(sn.subnet),
                                 "usage": str(sn.get_usage()),
                                 "autoscan": str(sn.autoscan),
-                                "actions": "<a onclick='loadModal(\"" + str(sn.id) + "\", \"" + str(sn.name) + "\", \"" + str(sn.subnet) + "\", \"" + str(sn.autoscan) + "\")'><i class='ph ph-pencil' style='font-size: 20px'></i></a>",
+                                "actions": "<a href='#' onclick='loadModal(\"" + str(sn.id) + "\", \"" + str(sn.name) + "\", \"" + str(sn.subnet) + "\", \"" + str(sn.autoscan) + "\")'><i class='ph ph-pencil' style='font-size: 20px'></i></a>",
                                 "DT_RowId": "row_" + str(sn.id)
+                                })
+
+    return JsonResponse(subnets, safe=False)
+
+
+def api_get_addresses(request):
+    tenant = get_tenant(request)
+    if not tenant:
+        return JsonResponse([], safe=False)
+
+    subnets = {"data": []}
+    subnet_id = request.GET.get("subnet")
+    addrs = Address.objects.filter(tenant=tenant, subnet_id=subnet_id)
+    for addr in addrs:
+        subnets["data"].append({"id": str(addr.id),
+                                "visible": True,
+                                "ip": str(addr.address),
+                                "actions": "",
+                                "DT_RowId": "row_" + str(addr.id)
                                 })
 
     return JsonResponse(subnets, safe=False)
@@ -1195,9 +1214,61 @@ def show_subnets(request):
             print(created, sn_obj)
 
     crumbs = '<li class="breadcrumb-item">IPAM</li><li class="breadcrumb-item active">Subnets</li>'
-    response = render(request, 'home/subnets.html', {"crumbs": crumbs, "tenant": tenant,
+    response = render(request, 'home/ipam-subnets.html', {"crumbs": crumbs, "tenant": tenant,
                                                      "error": err, "ctx": context, "menuopen": "ipam",
                                                      "global": get_globals(request, tenant)})
+    response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
+    return response
+
+
+def show_addresses(request):
+    tenant = get_tenant(request)
+    error_text = None
+    if not tenant:
+        return redirect('/tenant')
+
+    err = None
+    context = {}
+
+    # if request.method == 'POST':
+    #     subnet_id = request.POST.get("subnet_id")
+    #     desc = request.POST.get("description")
+    #     subnet = request.POST.get("subnet")
+    #     a_scan = request.POST.get("scan")
+    #     if a_scan == "on":
+    #         autoscan = True
+    #     else:
+    #         autoscan = False
+    #
+    #     if "/" not in subnet:
+    #         subnet = subnet + "/32"
+    #
+    #     sn = None
+    #
+    #     try:
+    #         sn = ipaddress.IPv4Network(subnet)
+    #     except Exception as e:
+    #         err = e
+    #         context = {"description": desc, "subnet": subnet, "scan": autoscan}
+    #
+    #     if not err:
+    #         if subnet_id == "":
+    #             sn_obj = Subnet.objects.create(subnet=str(sn), tenant=tenant, name=desc, autoscan=autoscan)
+    #             created = True
+    #         else:
+    #             sn_obj, created = Subnet.objects.update_or_create(id=subnet_id, subnet=str(sn), tenant=tenant,
+    #                                                               defaults={"name": desc, "autoscan": autoscan})
+    #         print(created, sn_obj)
+
+    sn_id = request.GET.get("subnet")
+    sn = Subnet.objects.filter(id=sn_id).first()
+    addresses = Address.objects.filter(subnet=sn)
+
+    crumbs = '<li class="breadcrumb-item">IPAM</li><li class="breadcrumb-item"><a href="/home/ipam-subnets">Subnets</a></li><li class="breadcrumb-item active">' + sn.subnet + '</li>'
+    response = render(request, 'home/ipam-addresses.html', {"crumbs": crumbs, "tenant": tenant,
+                                                            "error": err, "ctx": context, "menuopen": "ipam",
+                                                            "global": get_globals(request, tenant),
+                                                            "sn": sn, "addr": addresses})
     response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
     return response
 
