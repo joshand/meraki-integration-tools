@@ -28,6 +28,7 @@ from django.shortcuts import get_object_or_404
 import requests
 import googlemaps
 from rest_framework.permissions import IsAuthenticated
+import ipaddress
 
 
 @xframe_options_exempt
@@ -144,11 +145,12 @@ def home(request):
     for site in sites:
         site_list.append({"lat": site.geolocation.lat, "lng": site.geolocation.lon})
 
-    crumbs = '<li class="current">Home</li>'
+    crumbs = '<li class="breadcrumb-item active">Home</li>'
     response = render(request, 'home/home.html', {"baseurl": "http://" + request.get_host() + "/home", "crumbs": crumbs,
                                                   "tenant": tenant, "global": get_globals(request, tenant),
                                                   "homelinks": homelinks, "sites": site_list,
-                                                  "google_api_key": settings.GOOGLE_MAPS_API_KEY
+                                                  "google_api_key": settings.GOOGLE_MAPS_API_KEY,
+                                                  "menuopen": "home",
                                                   })
 
     response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
@@ -160,71 +162,138 @@ def show_config(request):
     if not tenant:
         return redirect('/tenant')
 
+    get_act = request.GET.get("action")
+
+    if get_act == "delete":
+        obj_id = request.GET.get("id")
+        lo = LocationObject.objects.filter(tenant=tenant, id=obj_id).first()
+        lh = LocationHierarchy.objects.filter(tenant=tenant, object=lo).first()
+        child = LocationHierarchy.objects.filter(tenant=tenant, parent=lo).first()
+        child.parent = lh.parent
+        child.save()
+        lh.delete()
+        lo.delete()
+        # print(lo, lh, child)
+
     if request.method == 'POST':
         print(request.POST)
-        objType = request.POST.get("objType")
-        if objType == "site":
-            siteid = request.POST.get("siteId")
-            sitedesc = request.POST.get("siteDesc")
-            siteaddr = request.POST.get("siteAddr")
-            gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
-            geocode_result = gmaps.geocode(siteaddr)
-            if len(geocode_result) > 0:
-                loc_raw = geocode_result[0].get("geometry", {}).get("location", None)
-                # loc = "lat=" + str(loc_raw.get("lat")) + ",long=" + str(loc_raw.get("lng"))
-                loc = str(loc_raw.get("lat")) + "," + str(loc_raw.get("lng"))
-            else:
-                loc = None
+        act = request.POST.get("action")
+        if act == "addChild":
+            description = request.POST.get("description")
+            parent_id = request.POST.get("parent_id")
+            location_type = request.POST.get("location_type")
 
-            if siteid == "":
-                Site.objects.create(tenant=tenant, name=sitedesc, address=siteaddr, geolocation=loc)
+            lo = LocationObject.objects.create(tenant=tenant, description=description, locationtype_id=location_type)
+            lh = LocationHierarchy.objects.create(tenant=tenant, object=lo, parent_id=parent_id)
+        elif act == "moveLocation":
+            move_object_id = request.POST.get("move_object_id")
+            move_new_location = request.POST.get("move_new_location")
+            lo = LocationObject.objects.filter(id=move_object_id).first()
+            ln = LocationObject.objects.filter(id=move_new_location).first()
+            lh = LocationHierarchy.objects.filter(object=lo).first()
+            lh.parent = ln
+            lh.save()
+            # print(lo, ln, lh)
+        elif act == "editLocation":
+            edit_object_id = request.POST.get("edit_object_id")
+            location_description = request.POST.get("location_description")
+            location_address = request.POST.get("location_address")
+            update_geolocation_p = request.POST.get("update_geolocation")
+            location_code_addon = request.POST.get("location_code_addon")
+            if update_geolocation_p == "on":
+                update_geolocation = True
             else:
-                Site.objects.filter(id=siteid).update(name=sitedesc, address=siteaddr, geolocation=loc)
-        elif objType == "floor":
-            parentid = request.POST.get("parentId")
-            objId = request.POST.get("objId")
-            objName = request.POST.get("objDesc")
+                update_geolocation = False
 
-            if objId == "":
-                Floor.objects.create(tenant=tenant, site_id=parentid, name=objName)
+            if update_geolocation and location_address not in ["", None]:
+                gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+                geocode_result = gmaps.geocode(location_address)
+                if len(geocode_result) > 0:
+                    loc_raw = geocode_result[0].get("geometry", {}).get("location", None)
+                    loc = str(loc_raw.get("lat")) + "," + str(loc_raw.get("lng"))
+                else:
+                    loc = ""
             else:
-                Floor.objects.filter(id=objId).update(name=objName)
-        elif objType == "room":
-            parentid = request.POST.get("parentId")
-            objId = request.POST.get("objId")
-            objName = request.POST.get("objDesc")
+                loc = ""
 
-            if objId == "":
-                Room.objects.create(tenant=tenant, floor_id=parentid, name=objName)
-            else:
-                Room.objects.filter(id=objId).update(name=objName)
-        elif objType == "row":
-            parentid = request.POST.get("parentId")
-            objId = request.POST.get("objId")
-            objName = request.POST.get("objDesc")
+            LocationObject.objects.filter(id=edit_object_id).update(description=location_description, address=location_address, geolocation=loc, clli_addon=location_code_addon)
+        elif act == "setCLLI":
+            clli_object_id = request.POST.get("clli_object_id")
+            clli = request.POST.get("clli")
+            custom_location_code = request.POST.get("custom_location_code")
 
-            if objId == "":
-                Row.objects.create(tenant=tenant, room_id=parentid, name=objName)
-            else:
-                Row.objects.filter(id=objId).update(name=objName)
-        elif objType == "rack":
-            parentid = request.POST.get("parentId")
-            objId = request.POST.get("objId")
-            objName = request.POST.get("objDesc")
-            objRU = request.POST.get("s_objFld1")
+            print(clli_object_id, clli, custom_location_code)
 
-            if objId == "":
-                Rack.objects.create(tenant=tenant, row_id=parentid, name=objName, height=objRU)
+            if clli == "custom":
+                c = CustomCLLI.objects.create(clli=custom_location_code)
+                LocationObject.objects.filter(id=clli_object_id).update(clli_id=None, custom_clli=c)
             else:
-                Rack.objects.filter(id=objId).update(name=objName, height=objRU)
-        elif objType == "clli":
-            cityid = request.POST.get("cityId")
-            selected_clli = request.POST.get("selectedclli")
+                LocationObject.objects.filter(id=clli_object_id).update(clli_id=clli, custom_clli=None)
 
-            if cityid == "":
-                pass
-            else:
-                CityState.objects.filter(id=cityid).update(clli_id=selected_clli)
+        else:
+            objType = request.POST.get("objType")
+            if objType == "site":
+                siteid = request.POST.get("siteId")
+                sitedesc = request.POST.get("siteDesc")
+                siteaddr = request.POST.get("siteAddr")
+                gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+                geocode_result = gmaps.geocode(siteaddr)
+                if len(geocode_result) > 0:
+                    loc_raw = geocode_result[0].get("geometry", {}).get("location", None)
+                    # loc = "lat=" + str(loc_raw.get("lat")) + ",long=" + str(loc_raw.get("lng"))
+                    loc = str(loc_raw.get("lat")) + "," + str(loc_raw.get("lng"))
+                else:
+                    loc = None
+
+                if siteid == "":
+                    Site.objects.create(tenant=tenant, name=sitedesc, address=siteaddr, geolocation=loc)
+                else:
+                    Site.objects.filter(id=siteid).update(name=sitedesc, address=siteaddr, geolocation=loc)
+            elif objType == "floor":
+                parentid = request.POST.get("parentId")
+                objId = request.POST.get("objId")
+                objName = request.POST.get("objDesc")
+
+                if objId == "":
+                    Floor.objects.create(tenant=tenant, site_id=parentid, name=objName)
+                else:
+                    Floor.objects.filter(id=objId).update(name=objName)
+            elif objType == "room":
+                parentid = request.POST.get("parentId")
+                objId = request.POST.get("objId")
+                objName = request.POST.get("objDesc")
+
+                if objId == "":
+                    Room.objects.create(tenant=tenant, floor_id=parentid, name=objName)
+                else:
+                    Room.objects.filter(id=objId).update(name=objName)
+            elif objType == "row":
+                parentid = request.POST.get("parentId")
+                objId = request.POST.get("objId")
+                objName = request.POST.get("objDesc")
+
+                if objId == "":
+                    Row.objects.create(tenant=tenant, room_id=parentid, name=objName)
+                else:
+                    Row.objects.filter(id=objId).update(name=objName)
+            elif objType == "rack":
+                parentid = request.POST.get("parentId")
+                objId = request.POST.get("objId")
+                objName = request.POST.get("objDesc")
+                objRU = request.POST.get("s_objFld1")
+
+                if objId == "":
+                    Rack.objects.create(tenant=tenant, row_id=parentid, name=objName, height=objRU)
+                else:
+                    Rack.objects.filter(id=objId).update(name=objName, height=objRU)
+            elif objType == "clli":
+                cityid = request.POST.get("cityId")
+                selected_clli = request.POST.get("selectedclli")
+
+                if cityid == "":
+                    pass
+                else:
+                    CityState.objects.filter(id=cityid).update(clli_id=selected_clli)
 
     # intopts = IntegrationModule.objects.filter(Q(tenant__name="Default") | Q(tenant_id=tenant_id))
     # intconfigs = IntegrationConfiguration.objects.filter(tenant_id=tenant_id)
@@ -243,10 +312,11 @@ def show_config(request):
     # cities = CityState.objects.filter(tenant=tenant)
     hierarchy_locations = LocationHierarchy.objects.filter(tenant=tenant).filter(parent__locationtype__tier=0)
 
-    crumbs = '<li class="current">Settings</li>'
+    crumbs = '<li class="breadcrumb-item active">Settings</li>'
     return render(request, "home/tenant_settings.html", {"crumbs": crumbs, "tenant": tenant,
                                                          "global": get_globals(request, tenant),
-                                                         "data": hierarchy_locations})
+                                                         "data": hierarchy_locations,
+                                                         "menuopen": "settings-sites", "ddopen": "settings"})
 
 
 def show_layout(request):
@@ -276,7 +346,7 @@ def show_layout(request):
 
     enc_data = base64.b64encode(json.dumps(data).encode("ascii")).decode("ascii")
 
-    crumbs = '<li class="current">Settings</li><li class="current">Sites</li>'
+    crumbs = '<li class="breadcrumb-item">Settings</li><li class="breadcrumb-item active">Sites</li>'
     return render(request, "home/rack_layout.html", {"crumbs": crumbs, "tenant": tenant,
                                                      "global": get_globals(request, tenant),
                                                      "rack": rackid, "data": enc_data, "size": size_ru})
@@ -322,6 +392,140 @@ def api_get_devices(request):
     return JsonResponse(devices, safe=False)
 
 
+def api_get_subnets(request):
+    tenant = get_tenant(request)
+    if not tenant:
+        return JsonResponse([], safe=False)
+
+    subnets = {"data": []}
+    sns = Subnet.objects.filter(tenant=tenant)
+    for sn in sns:
+        subnets["data"].append({"id": str(sn.id),
+                                "visible": True,
+                                "name": str(sn.name),
+                                "subnet": str(sn.subnet),
+                                "usage": str(sn.get_usage()),
+                                "autoscan": str(sn.autoscan),
+                                "actions": "<a onclick='loadModal(\"" + str(sn.id) + "\", \"" + str(sn.name) + "\", \"" + str(sn.subnet) + "\", \"" + str(sn.autoscan) + "\")'><i class='ph ph-pencil' style='font-size: 20px'></i></a>",
+                                "DT_RowId": "row_" + str(sn.id)
+                                })
+
+    return JsonResponse(subnets, safe=False)
+
+
+def get_parents(location_obj):
+    ptypes = get_parent_types(location_obj.locationtype)
+    parents = LocationObject.objects.filter(locationtype_id__in=ptypes)
+
+    plist = []
+    for p in parents:
+        plist.append({"id": str(p.id), "description": p.description, "type": p.locationtype.description})
+    return plist
+
+
+def get_parent_types(location_obj):
+    parent_obj = location_obj.parent.first()
+    if parent_obj:
+        return [parent_obj.id] + get_parent_types(parent_obj)
+
+    return []
+
+
+def get_children(location_obj):
+    if location_obj.child:
+        return [{"id": str(location_obj.child.id), "description": location_obj.child.description}] + get_children(location_obj.child)
+
+    return []
+
+
+def get_locations(locations_query, counter, level, root_node=False):
+    if len(locations_query) == 0:
+        return [], counter
+
+    # print(locations_query, counter, level)
+    ll = []
+    for hl in locations_query:
+        counter += 1
+        if root_node:
+            obj = hl.parent
+        else:
+            obj = hl.object
+        ll_id = str(obj.id)
+        ll_icon = obj.locationtype.iconname
+        if root_node:
+            ll_desc = obj.description
+        else:
+            ll_desc = obj.locationtype.description + ": " + obj.description
+        ll_addr = str(obj.address) if obj.address else ""
+        ll_code = str(obj.get_clli()) if obj.get_clli() else ""
+        ll_act_edit = "<a href='#' title='Edit " + obj.locationtype.description + "' onclick='loadEditModal(\"" + obj.locationtype.description + "\", \"" + str(obj.id) + "\", \"" + str(obj.description) + "\", \"" + str(obj.address) + "\", \"" + str(obj.locationtype.hasclli_addon) + "\", \"" + str(obj.clli_addon) + "\")'><i class='ph ph-pencil' style='font-size: 20px'></i></a>"
+        ll_act_del = "<a title='Delete " + obj.locationtype.description + "' href='/home/settings-sites" + "?id=" + str(obj.id) + "&action=delete" + "'><i class='ph ph-trash' style='font-size: 20px'></i></a>"
+
+        parents = get_parents(obj)
+        parents_b64 = base64.b64encode(json.dumps(parents).encode('ascii')).decode('ascii')
+        ll_act_move = "<a href='#' title='Move " + obj.locationtype.description + "' onclick='loadMoveModal(\"" + obj.locationtype.description + "\", \"" + str(obj.id) + "\", \"" + str(obj.description) + "\", \"" + parents_b64 + "\")'><i class='ph ph-arrow-u-up-right' style='font-size: 20px'></i></a>"
+
+        children = get_children(obj.locationtype)
+        children_b64 = base64.b64encode(json.dumps(children).encode('ascii')).decode('ascii')
+
+        if obj.locationtype.child:
+            ll_act_add = "<a href='#' title='Add Child Location' onclick='loadHierarchyModal(\"" + str(obj.id) + "\", \"" + str(obj.description) + "\", \"" + children_b64 + "\");'><span class='ph ph-plus-square' style='font-size: 20px'></span></a>"
+        else:
+            ll_act_add = ""
+
+        if root_node:
+            ll_act = ll_act_add
+        else:
+            ll_act = ll_act_edit + ll_act_del + ll_act_add + ll_act_move
+
+        if obj.locationtype.hasclli:
+            std_clli = ""
+            cust_clli = ""
+            if obj.clli:
+                std_clli = str(obj.clli.id)
+            elif obj.custom_clli:
+                cust_clli = obj.custom_clli.clli
+
+            dist = base64.b64encode(json.dumps(obj.calculate_distances(max_entries=10)).encode('ascii')).decode('ascii')
+            ll_act += """<a href="#" title="Select Location Code" onclick="loadCLLIModal('""" + str(obj.id) + """', '""" + dist + """', '""" + std_clli + """', '""" + cust_clli + """');"><span class="ph ph-file-code" style='font-size: 20px'></span></a>"""
+
+        ll.append({"id": ll_id,
+                   "visible": True,
+                   "sortorder": counter,
+                   "description": ("&nbsp;" * level) + "<span class='" + ll_icon + "'></span>&nbsp;&nbsp;" + ll_desc,
+                   "address": ll_addr,
+                   "location_code": ll_code,
+                   "actions": ll_act,
+                   "DT_RowId": "row_" + ll_id
+                   })
+
+        # print(obj, counter, level)
+        ltmp, counter = get_locations(LocationHierarchy.objects.filter(parent=obj), counter, level+4)
+        # print(obj, len(ltmp), LocationHierarchy.objects.filter(parent=obj))
+        ll += ltmp
+        if root_node:
+            break
+
+    return ll, counter
+
+
+def api_get_locations(request):
+    tenant = get_tenant(request)
+    if not tenant:
+        return JsonResponse([], safe=False)
+
+    locations_list = []
+    counter = 0
+    level = 0
+    hierarchy_locations = LocationHierarchy.objects.filter(tenant=tenant).filter(parent__locationtype__tier=0)
+    ll, counter = get_locations(hierarchy_locations, counter, level, root_node=True)
+    locations_list += ll
+    locations_dict = {"data": locations_list}
+
+    # print(json.dumps(locations_dict, indent=4))
+    return JsonResponse({"data": locations_list}, safe=False)
+
+
 def my_settings(request):
     tenant = get_tenant(request)
     if not tenant:
@@ -354,7 +558,7 @@ def my_settings(request):
 
     admins = tenant.appuser_set.all()
 
-    crumbs = '<li class="current">Settings</li>'
+    crumbs = '<li class="breadcrumb-item active">Settings</li>'
     response = render(request, 'home/settings.html', {"baseurl": "http://" + request.get_host() + "/settings", "crumbs": crumbs,
                                                       "tenant": tenant, "global": get_globals(request, tenant),
                                                       "admins": admins})
@@ -565,12 +769,13 @@ def config_conn(request):
     # print(Controller.objects.filter(tenant=tenant))
     print(pm, pm[0].devicetype, Controller.objects.filter(devicetype=pm[0].devicetype))
 
-    crumbs = '<li class="current">Connect</li><li class="current">' + pm[0].description + '</li>'
-    response = render(request, "home/config_connection.html", {"crumbs": crumbs, "menuopen": "connect",
+    crumbs = '<li class="breadcrumb-item">Connect</li><li class="breadcrumb-item active">' + pm[0].description + '</li>'
+    response = render(request, "home/config_connection.html", {"crumbs": crumbs,
                                                                "tenant": tenant,
                                                                "mod": pm[0], "data": dashboards,
                                                                "plugin_id": plugin_id,
-                                                               "global": get_globals(request, tenant)})
+                                                               "global": get_globals(request, tenant),
+                                                               "menuopen": plugin_id, "ddopen": "connect"})
     response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
     return response
 
@@ -596,9 +801,9 @@ def show_tunnel(request):
 
     tunnels = TunnelClient.objects.filter(tenant=tenant)
 
-    crumbs = '<li class="current">Tunnel</li>'
+    crumbs = '<li class="breadcrumb-item active">Tunnel</li>'
     response = render(request, "home/list_tunnel.html", {"crumbs": crumbs, "tunnels": tunnels,
-                                                         "tenant": tenant,
+                                                         "tenant": tenant, "menuopen": "tunnel",
                                                          "global": get_globals(request, tenant)})
 
     response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
@@ -628,9 +833,9 @@ def show_int(request):
         else:
             unavail_opts.append(intopt)
 
-    crumbs = '<li class="current">Integrate</li>'
+    crumbs = '<li class="breadcrumb-item active">Integrate</li>'
     response = render(request, "home/list_integration.html", {"crumbs": crumbs, "integrations": intconfigs,
-                                                              "tenant": tenant,
+                                                              "tenant": tenant, "menuopen": "integrate",
                                                               "avail": avail_opts, "unavail": unavail_opts,
                                                               "global": get_globals(request, tenant)})
 
@@ -704,7 +909,7 @@ def config_int(request):
         pm1_controllers = Controller.objects.filter(tenant=tenant).filter(devicetype=intopt.pm1.devicetype)
         pm2_controllers = Controller.objects.filter(tenant=tenant).filter(devicetype=intopt.pm2.devicetype)
 
-        crumbs = '<li><a href="/home/integrate">Integrate</a></li><li class="current">' + intopt.description + '</li>'
+        crumbs = '<li class="breadcrumb-item"><a href="/home/integrate">Integrate</a></li><li class="breadcrumb-item active">' + intopt.description + '</li>'
         response = render(request, "home/config_integration.html", {"crumbs": crumbs,
                                                                     "tenant": tenant,
                                                                     "m1": pm1_controllers, "m2": pm2_controllers,
@@ -726,11 +931,12 @@ def status_task(request):
     else:
         trs = TaskResult.objects.filter(tenant=tenant).filter(runtime__gt=time_threshold)
 
-    crumbs = '<li>Status</li><li class="current">Task Results</li>'
+    crumbs = '<li class="breadcrumb-item">Status</li><li class="breadcrumb-item active">Task Results</li>'
     response = render(request, "home/status_task.html", {"crumbs": crumbs, "menuopen": "status",
                                                          "tenant": tenant,
                                                          "data": trs,
-                                                         "global": get_globals(request, tenant)})
+                                                         "global": get_globals(request, tenant),
+                                                         "menuopen": "task-results", "ddopen": "status"})
     response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
     return response
 
@@ -751,10 +957,11 @@ def config_package(request):
     uploadzip = UploadZip.objects.filter(tenant=tenant)
     uplzip_global = UploadZip.objects.filter(tenant=get_default_tenant(obj=True))
 
-    crumbs = '<li class="current">Configuration</li><li class="current">Packages</li>'
+    crumbs = '<li class="breadcrumb-item">Configuration</li><li class="breadcrumb-item active">Packages</li>'
     response = render(request, 'home/packages.html', {"crumbs": crumbs, "tenant": tenant,
                                                       "data": {"zip": uploadzip, "global_zip": uplzip_global},
-                                                      "global": get_globals(request, tenant)})
+                                                      "global": get_globals(request, tenant),
+                                                      "menuopen": "packages"})
     response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
     return response
 
@@ -792,7 +999,7 @@ def upload_package(request):
             print("form invalid")
 
     form = UploadForm()
-    crumbs = '<li class="current">Configuration</li><li><a href="/home/config-package">Packages</a></li><li class="current">Upload</li>'
+    crumbs = '<li class="breadcrumb-item">Configuration</li><li class="breadcrumb-item"><a href="/home/config-package">Packages</a></li><li class="breadcrumb-item active">Upload</li>'
     response = render(request, 'home/upload_package.html', {"crumbs": crumbs, "tenant": tenant, "error": error_text,
                                                             "form": form, "global": get_globals(request, tenant)})
     response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
@@ -836,7 +1043,7 @@ def module_ui(request):
         del retval["desc"]
 
         retval["global"] = get_globals(request, tenant)
-        crumbs = '<li class="current">Connect</li><li class="current">' + crumbdesc + '</li>'
+        crumbs = '<li class="breadcrumb-item">Connect</li><li class="breadcrumb-item active">' + crumbdesc + '</li>'
         retval["crumbs"] = crumbs
         menuopen = get_menu(pm[0], item_type)
         retval["menuopen"] = menuopen
@@ -939,9 +1146,56 @@ def show_devices(request):
     if not tenant:
         return redirect('/tenant')
 
-    crumbs = '<li class="current">Devices</li>'
+    crumbs = '<li class="breadcrumb-item active">Devices</li>'
     response = render(request, 'home/devices.html', {"crumbs": crumbs, "tenant": tenant,
-                                                     "error": error_text,
+                                                     "error": error_text, "menuopen": "devices",
+                                                     "global": get_globals(request, tenant)})
+    response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
+    return response
+
+
+def show_subnets(request):
+    tenant = get_tenant(request)
+    error_text = None
+    if not tenant:
+        return redirect('/tenant')
+
+    err = None
+    context = {}
+
+    if request.method == 'POST':
+        subnet_id = request.POST.get("subnet_id")
+        desc = request.POST.get("description")
+        subnet = request.POST.get("subnet")
+        a_scan = request.POST.get("scan")
+        if a_scan == "on":
+            autoscan = True
+        else:
+            autoscan = False
+
+        if "/" not in subnet:
+            subnet = subnet + "/32"
+
+        sn = None
+
+        try:
+            sn = ipaddress.IPv4Network(subnet)
+        except Exception as e:
+            err = e
+            context = {"description": desc, "subnet": subnet, "scan": autoscan}
+
+        if not err:
+            if subnet_id == "":
+                sn_obj = Subnet.objects.create(subnet=str(sn), tenant=tenant, name=desc, autoscan=autoscan)
+                created = True
+            else:
+                sn_obj, created = Subnet.objects.update_or_create(id=subnet_id, subnet=str(sn), tenant=tenant,
+                                                                  defaults={"name": desc, "autoscan": autoscan})
+            print(created, sn_obj)
+
+    crumbs = '<li class="breadcrumb-item">IPAM</li><li class="breadcrumb-item active">Subnets</li>'
+    response = render(request, 'home/subnets.html', {"crumbs": crumbs, "tenant": tenant,
+                                                     "error": err, "ctx": context, "menuopen": "ipam",
                                                      "global": get_globals(request, tenant)})
     response.set_cookie(key='tenant_id', value=str(tenant.id), samesite="lax", secure=False)
     return response
