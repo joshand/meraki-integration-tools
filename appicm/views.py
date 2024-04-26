@@ -421,13 +421,31 @@ def api_get_addresses(request):
     subnets = {"data": []}
     subnet_id = request.GET.get("subnet")
     addrs = Address.objects.filter(tenant=tenant, subnet_id=subnet_id)
+    ip_list = []
     for addr in addrs:
+        ip_list.append(str(addr.address))
         subnets["data"].append({"id": str(addr.id),
                                 "visible": True,
                                 "ip": str(addr.address),
+                                "description": addr.description,
+                                "device": str(addr.device.id) if addr.device else "",
+                                "status": addr.get_status(),
                                 "actions": "",
                                 "DT_RowId": "row_" + str(addr.id)
                                 })
+
+    ips = ipaddress.IPv4Network(addrs.first().subnet.subnet).hosts()
+    for ip in ips:
+        if str(ip) not in ip_list:
+            subnets["data"].append({"id": None,
+                                    "visible": True,
+                                    "ip": str(ip),
+                                    "description": "",
+                                    "device": "",
+                                    "status": "Unused",
+                                    "actions": "",
+                                    "DT_RowId": "row_" + str(ip)
+                                    })
 
     return JsonResponse(subnets, safe=False)
 
