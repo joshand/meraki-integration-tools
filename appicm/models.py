@@ -923,7 +923,8 @@ class DeviceModelType(models.Model):
         ordering = ['tenant', 'name']
 
     def __str__(self):
-        return self.name + " (" + self.tenant.name + ")"
+        return self.name
+        # return self.name + " (" + self.tenant.name + ")"
 
 
 class DeviceType(models.Model):
@@ -1571,7 +1572,7 @@ class Subnet(models.Model):
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, blank=False, default=get_default_tenant, null=True)
     name = models.CharField(max_length=50, default=None, null=True)
     subnet = models.CharField(max_length=50, default=None, null=True)
-    device = models.ForeignKey(Device, on_delete=models.SET_NULL, blank=True, null=True)
+    device = models.ManyToManyField(Device, blank=True)
     autoscan = models.BooleanField(default=True, blank=True)
     vlan = models.ForeignKey(VLAN, on_delete=models.SET_NULL, blank=True, null=True)
 
@@ -1599,7 +1600,7 @@ class Address(models.Model):
     description = models.CharField(max_length=50, default=None, null=True)
     subnet = models.ForeignKey(Subnet, on_delete=models.CASCADE, blank=False, null=True)
     address = models.CharField(max_length=50, default=None, null=True)
-    device = models.ForeignKey(Device, on_delete=models.SET_NULL, blank=True, null=True)
+    device = models.ManyToManyField(Device, blank=True)
     status = models.IntegerField(default=AddressStatus.UNKNOWN, choices=AddressStatus.choices)
 
     def __str__(self):
