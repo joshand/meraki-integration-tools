@@ -154,37 +154,37 @@ def get_action_icons(value):
     else:
         if value.locationtype.haslocation:
             html += """
-                <a title="Edit """ + str(value.locationtype.description) + """" onclick="loadModalNew('Edit """ + str(value.locationtype.description) + """', '""" + str(value.id) + """', '""" + str(value.description) + """', '""" + str(value.address) + """', '')"><span class="icon icon-edit_24"></span></a>
+                <a title="Edit """ + str(value.locationtype.description) + """" onclick="loadModalNew('Edit """ + str(value.locationtype.description) + """', '""" + str(value.id) + """', '""" + str(value.description) + """', '""" + str(value.address) + """', '')"><span class="ph ph-pencil"></span></a>
             """
         else:
             if value.locationtype.other_fields:
                 of = value.locationtype.other_fields
                 of_val = value.custom_data.get(of, None)
                 html += """
-                    <a title="Edit """ + str(value.locationtype.description) + """" onclick="loadSimpleModal('Edit """ + str(value.locationtype.description) + """', '', '""" + str(value.id) + """', '""" + str(value.description) + """', '""" + str(value.description) + """', '""" + str(of) + """', '""" + str(of_val) + """')"><span class="icon icon-edit_24"></span></a>
+                    <a title="Edit """ + str(value.locationtype.description) + """" onclick="loadSimpleModal('Edit """ + str(value.locationtype.description) + """', '', '""" + str(value.id) + """', '""" + str(value.description) + """', '""" + str(value.description) + """', '""" + str(of) + """', '""" + str(of_val) + """')"><span class="ph ph-pencil"></span></a>
                 """
             else:
                 html += """
-                    <a title="Edit """ + str(value.locationtype.description) + """" onclick="loadSimpleModal('Edit """ + str(value.locationtype.description) + """', '', '""" + str(value.id) + """', '""" + str(value.description) + """', '""" + str(value.description) + """', '', '')"><span class="icon icon-edit_24"></span></a>
+                    <a title="Edit """ + str(value.locationtype.description) + """" onclick="loadSimpleModal('Edit """ + str(value.locationtype.description) + """', '', '""" + str(value.id) + """', '""" + str(value.description) + """', '""" + str(value.description) + """', '', '')"><span class="ph ph-pencil"></span></a>
                 """
 
         html += """
-            <a title="Delete """ + str(value.locationtype.description) + """" href="/home/settings-sites/""" + str(value.locationtype.description) + """?id=""" + str(value.id) + """&action=del""" + str(value.locationtype.description) + """"><span class="icon icon-delete_24"></span></a>
+            <a title="Delete """ + str(value.locationtype.description) + """" href="/home/settings-sites/""" + str(value.locationtype.description) + """?id=""" + str(value.id) + """&action=del""" + str(value.locationtype.description) + """"><span class="ph ph-trash"></span></a>
         """
 
     if value.locationtype.haslocation:
         dist = base64.b64encode(json.dumps(value.calculate_distances(max_entries=10)).encode('ascii')).decode('ascii')
         html += """
-            <a title="Select Location Code" onclick="loadCLLIModal('""" + str(value.id) + """', '""" + dist + """');"><span class="icon icon-view-list_24"></span></a>
+            <a title="Select Location Code" onclick="loadCLLIModal('""" + str(value.id) + """', '""" + dist + """');"><span class="ph ph-file-code"></span></a>
         """
 
     if value.locationtype.description in ["Rack", "rack"]:
         html += """
-            <a title="Rack Layout" href="/home/settings-layout?rack=""" + str(value.id) + """"><span class="icon icon-annotation-legacy_16" style="font-size: 1.6em;"></span></a>
+            <a title="Rack Layout" href="/home/settings-layout?rack=""" + str(value.id) + """"><span class="ph ph-square-split-vertical" style="font-size: 1.6em;"></span></a>
         """
 
     html += """
-        <a title="Add """ + str(value.locationtype.description) + """" onclick="loadSimpleModal('Add """ + str(value.locationtype.description) + """', '""" + str(value.id) + """', '', '""" + str(value.locationtype.description) + """', '', '', '');"><span class="icon icon-add_24"></span></a>
+        <a title="Add """ + str(value.locationtype.description) + """" onclick="loadSimpleModal('Add """ + str(value.locationtype.description) + """', '""" + str(value.id) + """', '', '""" + str(value.locationtype.description) + """', '', '', '');"><span class="ph ph-plus-square"></span></a>
     """
 
     return html
