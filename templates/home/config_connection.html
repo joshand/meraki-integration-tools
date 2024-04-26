@@ -2,7 +2,7 @@
 {% load extras %}
 
 {% block content %}
-    <h4 class="md-h4--bold md-font-color--alternate docs-section__title">Connected {{ mod.description }} {{ mod.entity_name_plural }}  <a title="Add {{ mod.entity_name }}" onclick="loadModal('blank', '')"><span class="icon icon-document-create_16"></span></a></h4>
+    <h4 class="md-h4--bold md-font-color--alternate docs-section__title">Connected {{ mod.description }} {{ mod.entity_name_plural }}<a href="#" title="Add {{ mod.entity_name }}" role="button" class="btn" onclick="loadModal('blank', '')"><i class="ph ph-plus-square" style="margin-left: -5px; font-size: 20px"></i></a></h4>
     <div class="md-data-table" style="width: 100%;">
         <div class="md-data-table__wrapper">
             <table class="testTableClass">
@@ -20,7 +20,7 @@
                 <tbody class="md-data-table__tbody">
 {#                {% if data|length <= 0 %}#}
                     {% for fv in mod.devicetype.parmdef %}
-                        <input type="hidden" name="modaldata-blank-{{ fv.name }}" id="modaldata-blank-{{ fv.name }}" value="{{ fv|lookup:'default' }}">
+                        <input type="hidden" name="connectModaldata-blank-{{ fv.name }}" id="connectModaldata-blank-{{ fv.name }}" value="{{ fv|lookup:'default' }}">
                     {% endfor %}
 {#                {% else %}#}
                     {% for d in data %}
@@ -36,41 +36,41 @@
                                         {% else %}
                                             <td>{{ d.authparm|lookup:fv.name|apikey }}</td>
                                         {% endif %}
-                                        <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|apikey }}">
+                                        <input type="hidden" name="connectModaldata-{{ d.id }}-{{ fv.name }}" id="connectModaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|apikey }}">
                                     {% elif fv.password %}
                                         {% if fv.display %}
                                             <td>{{ d.authparm|lookup:fv.name|password|display:fv.display|safe }}</td>
                                         {% else %}
                                             <td>{{ d.authparm|lookup:fv.name|password }}</td>
                                         {% endif %}
-                                        <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|password }}">
+                                        <input type="hidden" name="connectModaldata-{{ d.id }}-{{ fv.name }}" id="connectModaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|password }}">
                                     {% else %}
                                         {% if fv.display %}
                                             <td>{{ d.authparm|lookup:fv.name|display:fv.display|safe }}</td>
                                         {% else %}
                                             <td>{{ d.authparm|lookup:fv.name }}</td>
                                         {% endif %}
-                                        <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name }}">
+                                        <input type="hidden" name="connectModaldata-{{ d.id }}-{{ fv.name }}" id="connectModaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name }}">
                                     {% endif %}
                                 {% else %}
                                     {% if fv.secret %}
-                                        <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|apikey }}">
+                                        <input type="hidden" name="connectModaldata-{{ d.id }}-{{ fv.name }}" id="connectModaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|apikey }}">
                                     {% elif fv.password %}
-                                        <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|password }}">
+                                        <input type="hidden" name="connectModaldata-{{ d.id }}-{{ fv.name }}" id="connectModaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name|password }}">
                                     {% else %}
-                                        <input type="hidden" name="modaldata-{{ d.id }}-{{ fv.name }}" id="modaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name }}">
+                                        <input type="hidden" name="connectModaldata-{{ d.id }}-{{ fv.name }}" id="connectModaldata-{{ d.id }}-{{ fv.name }}" value="{{ d.authparm|lookup:fv.name }}">
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
                             <td>
-                                <input type="hidden" name="modaldata-{{ d.id }}" id="modaldata-{{ d.id }}" value="{{ mod.devicetype.parmdef|dump }}">
-                                <a title="Edit {{ mod.entity_name }}" onclick="loadModal('{{ d.id }}', '{{ d.name }}')"><span class="icon icon-edit_24"></span></a>
-                                <a title="Delete {{ mod.entity_name }}" href="/home/config-conn/{{ mod.name }}?id={{ d.id }}&action=delobj"><span class="icon icon-delete_24"></span></a>
+                                <input type="hidden" name="connectModaldata-{{ d.id }}" id="connectModaldata-{{ d.id }}" value="{{ mod.devicetype.parmdef|dump }}">
+                                <a href="#" title="Edit {{ mod.entity_name }}" onclick="loadModal('{{ d.id }}', '{{ d.name }}')"><i class='ph ph-pencil' style='font-size: 20px'></i></a>
+                                <a title="Delete {{ mod.entity_name }}" href="/home/config-conn/{{ mod.name }}?id={{ d.id }}&action=delobj"><i class='ph ph-trash' style='font-size: 20px'></i></a>
 
                                 {% if d.enabled %}
-                                <a title="Disable" href="/home/config-conn/{{ mod.name }}?id={{ d.id }}&action=disable"><span class="icon icon-microphone-muted_24"></span></a>
+                                <a title="Disable" href="/home/config-conn/{{ mod.name }}?id={{ d.id }}&action=disable"><i class='ph ph-cloud-slash' style='font-size: 20px'></i></a>
                                 {% else %}
-                                <a title="Enable" href="/home/config-conn/{{ mod.name }}?id={{ d.id }}&action=enable"><span class="icon icon-microphone_24"></span></a>
+                                <a title="Enable" href="/home/config-conn/{{ mod.name }}?id={{ d.id }}&action=enable"><i class='ph ph-cloud' style='font-size: 20px'></i></a>
                                 {% endif %}
                             </td>
                         </tr>
@@ -82,6 +82,50 @@
 
         <script>
             function loadModal(inp_id, inp_name) {
+                let fd = document.getElementById("connectFuncdata");
+                let fd_data = {"id": inp_id};
+                let mod_text = document.getElementById("connectModaldata-" + inp_id).value;
+                if (mod_text !== "") {
+                    let mod_json = JSON.parse(mod_text);
+                    document.getElementById("connectId").value = inp_id;
+                    document.getElementById("connectDescription").value = inp_name;
+                    for (let i in mod_json) {
+                        {#console.log("modaldata-" + inp_id + "-" + mod_json[i].name);#}
+                        let elm = document.getElementById("connectModaldata-" + inp_id + "-" + mod_json[i].name);
+                        let mdl = document.getElementById(mod_json[i].name);
+                        {#console.log(elm);#}
+                        {#console.log(mdl);#}
+                        {#console.log(mod_json[i].default_load);#}
+                        if ((elm && mdl) || (mod_json[i].default_load)) {
+                            let ev = "";
+                            if (elm && mdl) {
+                                ev = elm.value;
+                            }
+                            if (mod_json[i].style === "dropdown") {
+                                fd.value = JSON.stringify(fd_data);
+                                postdata('/exec/{{ mod.name }}/' + mod_json[i].source, ev, 1, 'connectFuncdata', mod_json[i].name + '-container', mod_json[i].name, mod_json[i].name + '-label', mod_json[i].name, mod_json[i].name + '-name', null);
+                                {#postdata('/exec/{{ mod.name }}/' + mod_json[i].source, ev, 1, 'funcdata', mod_json[i].name + '-container', mod_json[i].name + '-content', mod_json[i].name + '-label', mod_json[i].name, mod_json[i].name + '-name', null);#}
+                            }
+                            mdl.value = ev;
+                            fd_data[mod_json[i].name] = ev;
+                        } else {
+                            fd_data[mod_json[i].name] = mod_json[i].default;
+                        }
+                        // if the requires_ok is set, disable the ok button
+                        if (mod_json[i].requires_ok === true) {
+                            let btn = document.getElementById("okbutton");
+                            {#btn.setAttribute("disabled", "disabled");#}
+                            btn.innerHTML = '<button type="submit" class="md-button md-button--36 md-button--blue" alt="Submit Form" type="button" aria-label="Submit Form" disabled="disabled"><span class="md-button__children">OK</span></button>'
+                            // if there is already content in the form, we might immediately set it back to enabled...
+                            checkok(mod_json[i].name);
+                        }
+                    }
+                    fd.value = JSON.stringify(fd_data);
+                }
+                $('#connectModal').modal('show');
+            }
+
+            function oldloadModal(inp_id, inp_name) {
                 let fd = document.getElementById("funcdata");
                 let fd_data = {"id": inp_id};
                 let mod_text = document.getElementById("modaldata-" + inp_id).value;
@@ -172,6 +216,61 @@
                 }
             }
         </script>
+
+    <!-- Configure Connection Modal -->
+    <div class="modal fade" id="connectModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="connectModalLabel" aria-hidden="true">
+        <form method="post" action="/home/config-conn/{{ mod.name }}">
+            {% csrf_token %}
+            <input type="hidden" name="connectId" id="connectId">
+            <input type="hidden" name="connectFuncdata" id="connectFuncdata" value="">
+            <input type="hidden" name="connectModaldata-blank" id="connectModaldata-blank" value="{{ mod.devicetype.parmdef|dump }}">
+            <div class="modal-dialog" style="transform:none !important;width:600px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="popupLabel">{{ mod.entity_name }} Configuration</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="overflow:auto">
+                        <div class="mb-3" style="padding-top:11px;">
+                            <label for="description">{{ mod.entity_name }} Description:</label>
+                            <input type="text" class="form-control" id="connectDescription" name="connectDescription" placeholder="Enter {{ pm.entity_name }} Description">
+                        </div>
+                        {% for fv in mod.devicetype.parmdef %}
+                            {% if fv.display != False %}
+                                {% if fv.style == "display_raw_json" %}
+                                    <div class="mb-3" style="padding-top:11px;">
+                                        <label for="{{ fv.name }}">{{ fv.desc }}:</label>
+                                        <textarea id="{{ fv.name }}" name="{{ fv.name }}" readonly style="width:100%" onchange="checkok('{{ fv.name }}')">{{ fv.platform }}</textarea>
+                                    </div>
+                                {% elif fv.style == "dropdown" %}
+                                    <div class="mb-3" style="padding-top:11px;">
+                                        <label for="{{ fv.name }}">{{ fv.desc }}:</label>
+                                        <select class="form-control" name="{{ fv.name }}" id="{{ fv.name }}">
+                                        </select>
+                                    </div>
+                                {% elif fv.style == "checkbox" %} {# untested #}
+                                    <div class="mb-3" style="padding-top:11px;">
+                                        <input type="checkbox" id="{{ fv.name }}" name="{{ fv.name }}">&nbsp;<label for="{{ fv.name }}">{{ fv.desc }}</label>
+                                    </div>
+                                {% else %}
+                                    <div class="mb-3" style="padding-top:11px;">
+                                        <label for="{{ fv.name }}">{{ fv.desc }}</label>
+                                        <input type="text" class="form-control" id="{{ fv.name }}" name="{{ fv.name }}" placeholder="{{ fv.desc }}" {% if fv.default %} value="{{ fv.default }}" {% endif %} onchange="updatefuncdata('{{ fv.name }}')">
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <input type="hidden" id="{{ fv.name }}" name="{{ fv.name }}" placeholder="{{ fv.desc }}" onchange="updatefuncdata('{{ fv.name }}')">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button id="okbutton" type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 
         <form method="POST" action="/home/config-conn/{{ mod.name }}" style="width:100%;padding:0px">
             {% csrf_token %}
